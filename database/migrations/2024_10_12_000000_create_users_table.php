@@ -15,8 +15,15 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->string('phone')->unique();
             $table->string('password');
+            $table->foreignId('role_id')->constrained('roles');
+            // Student columns
+            $table->foreignId('class_id')->nullable()->constrained('classes');
+            // Teacher columns
+            $table->foreignId('subject_id')->nullable()->constrained('subjects');
+            $table->integer('salary')->nullable();
+
             $table->rememberToken();
             $table->timestamps();
         });

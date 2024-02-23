@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9c491b8531eec05ba41a11d9276a5749",
+    "content-hash": "578059e2fbe07ddc0fef4c44cddb2eda",
     "packages": [
         {
             "name": "brick/math",
@@ -129,6 +129,78 @@
                 }
             ],
             "time": "2023-12-11T17:09:12+00:00"
+        },
+        {
+            "name": "cerbero/laravel-enum",
+            "version": "1.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cerbero90/laravel-enum.git",
+                "reference": "e4d2b5d11e7a1eb1c5a8f409df52d5646aecbea8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cerbero90/laravel-enum/zipball/e4d2b5d11e7a1eb1c5a8f409df52d5646aecbea8",
+                "reference": "e4d2b5d11e7a1eb1c5a8f409df52d5646aecbea8",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/console": ">=5.6",
+                "illuminate/support": ">=5.6",
+                "php": "^7.1|^8.0",
+                "rexlabs/enum": "^2.0"
+            },
+            "require-dev": {
+                "orchestra/testbench": ">=3.6",
+                "phpunit/phpunit": ">=7.0",
+                "squizlabs/php_codesniffer": "^3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Cerbero\\LaravelEnum\\Providers\\LaravelEnumServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Cerbero\\LaravelEnum\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Andrea Marco Sartori",
+                    "email": "andrea.marco.sartori@gmail.com",
+                    "homepage": "https://github.com/cerbero90",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Enum generator for Laravel.",
+            "homepage": "https://github.com/cerbero90/laravel-enum",
+            "keywords": [
+                "cerbero",
+                "enum",
+                "laravel-enum"
+            ],
+            "support": {
+                "issues": "https://github.com/cerbero90/laravel-enum/issues",
+                "source": "https://github.com/cerbero90/laravel-enum/tree/1.3.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/cerbero90",
+                    "type": "github"
+                }
+            ],
+            "time": "2022-11-10T09:10:35+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -3184,6 +3256,56 @@
                 }
             ],
             "time": "2023-11-08T05:53:05+00:00"
+        },
+        {
+            "name": "rexlabs/enum",
+            "version": "2.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rexlabsio/enum-php.git",
+                "reference": "1cd66f358b7c6df20df96052a76ef947bf23a2c2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rexlabsio/enum-php/zipball/1cd66f358b7c6df20df96052a76ef947bf23a2c2",
+                "reference": "1cd66f358b7c6df20df96052a76ef947bf23a2c2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0 <8.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.5.7|^7.5|^8.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Rexlabs\\Enum\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jodie Dunlop",
+                    "email": "jodie.dunlop@rexlabs.com.au"
+                }
+            ],
+            "description": "Enumeration (enum) implementation for PHP",
+            "keywords": [
+                "constants",
+                "enum",
+                "enumeration",
+                "library",
+                "valuelist"
+            ],
+            "support": {
+                "issues": "https://github.com/rexlabsio/enum-php/issues",
+                "source": "https://github.com/rexlabsio/enum-php/tree/2.3.0"
+            },
+            "time": "2023-07-20T01:12:31+00:00"
         },
         {
             "name": "symfony/console",
