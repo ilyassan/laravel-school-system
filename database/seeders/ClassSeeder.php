@@ -15,10 +15,11 @@ class ClassSeeder extends Seeder
     {
         // Insert default classes
         $classes = [
-            '2BAC-1',
-            '2BAC-2',
-            '2BAC-3',
-            '2BAC-4',
+            'BAC-1',
+            'BAC-2',
+            'BAC-3',
+            'BAC-4',
+            'BAC-5',
         ];
 
         foreach ($classes as $className) {

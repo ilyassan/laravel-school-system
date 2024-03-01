@@ -1,12 +1,6 @@
 @extends('layouts.master')
 @section('title', 'Dashboard')
 
-@section('css')
-<!--  Owl-carousel css-->
-<link href="{{URL::asset('assets/plugins/owl-carousel/owl.carousel.css')}}" rel="stylesheet" />
-<!-- Maps css -->
-<link href="{{URL::asset('assets/plugins/jqvmap/jqvmap.min.css')}}" rel="stylesheet">
-@endsection
 @section('page-header')
 				<!-- breadcrumb -->
 				<div class="breadcrumb-header justify-content-between">
@@ -49,7 +43,7 @@
 									</div>
 								</div>
 							</div>
-							<span id="compositeline4" class="pt-1">5,9,5,6,4,12,18,14,10,15,12,5,8,5,12,5,12,10,16,12</span>
+							<span id="compositeline4" class="pt-1">5,9,5,6,4,12,18,14,10,15,12,5,8,5,12,5,12,10,16,12,9,5,6,4</span>
 						</div>
 					</div>
 					<div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
@@ -71,7 +65,7 @@
 									</div>
 								</div>
 							</div>
-							<span id="compositeline3" class="pt-1">5,10,5,20,22,12,15,18,20,15,8,12,22,5,10,12,22,15,16,10</span>
+							<span id="compositeline3" class="pt-1">5,10,5,20,22,12,15,18,20,15,8,12,22,5,10,12,22,15,16,10,9,5,6,6</span>
 						</div>
 					</div>
 					<div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
@@ -93,7 +87,7 @@
 									</div>
 								</div>
 							</div>
-							<span id="compositeline2" class="pt-1">3,2,4,6,12,14,8,7,14,16,12,7,8,4,3,2,2,5,6,7</span>
+							<span id="compositeline2" class="pt-1">3,2,4,6,12,14,8,7,14,16,12,7,8,4,3,2,2,5,6,7,9,5,8,10</span>
 						</div>
 					</div>
 					<div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
@@ -115,7 +109,7 @@
 									</div>
 								</div>
 							</div>
-							<span id="compositeline" class="pt-1">5,9,5,6,4,12,18,14,10,15,12,5,8,5,12,5,12,10,16,12</span>
+							<span id="compositeline" class="pt-1">5,9,5,6,4,12,18,14,10,15,12,5,8,5,12,5,12,10,16,12,9,5,6,10</span>
 						</div>
 					</div>
 				</div>
@@ -130,7 +124,7 @@
 									<h4 class="card-title mb-0">Students Absence</h4>
 									<i class="mdi mdi-dots-horizontal text-gray"></i>
 								</div>
-								<p class="tx-12 text-muted mb-0">Students Absence Last Week.</p>
+								<p class="tx-12 text-muted mb-0">Students absence last week.</p>
 							</div>
 							<div class="card-body">
 								<div class="ht-200 ht-lg-250">
@@ -145,7 +139,7 @@
 								<div class="d-flex justify-content-between">
 									<h4 class="card-title mb-1">Students Gender</h4>
 								</div>
-								<p class="tx-12 text-muted mb-0">Students Gender Distribution Overview.</p>
+								<p class="tx-12 text-muted mb-0">Students gender distribution overview.</p>
 							</div>
 							<div class="ht-200 ht-sm-300" id="flotPie1"></div>
 						</div>
@@ -285,7 +279,7 @@
 					</div>
 					<div class="col-md-12 col-lg-4 col-xl-4">
 						<div class="card card-dashboard-eight pb-2">
-							<h6 class="card-title">Top 5 Classes</h6><span class="d-block mg-b-10 text-muted tx-12">The top 5 classes based by notes.</span>
+							<h6 class="card-title">Top 5 Classes</h6><span class="d-block mg-b-10 text-muted tx-12">The top 5 classes based on notes average.</span>
 							<div class="list-group h-100 justify-content-around">
 								<div class="list-group-item border-top-0">
 									<i class="mdi mdi-account-multiple"></i>
@@ -304,7 +298,7 @@
 									<p>CLASS-D</p><span>BAC-5</span>
 								</div>
 								<div class="list-group-item border-top-0 border-bottom-0 mb-0">
-										<i class="mdi mdi-account-multiple"></i>
+									<i class="mdi mdi-account-multiple"></i>
 									<p>CLASS-E</p><span>BAC-4</span>
 								</div>
 							</div>
