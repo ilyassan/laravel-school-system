@@ -50,12 +50,12 @@
 						<div class="card overflow-hidden sales-card bg-success-gradient">
 							<div class="pl-3 pt-3 pr-3 pb-2 pt-0">
 								<div class="">
-									<h6 class="mb-3 tx-12 text-white">AVG STUDENTS NOTES</h6>
+									<h6 class="mb-3 tx-12 text-white">AVG STUDENTS GRADES</h6>
 								</div>
 								<div class="pb-0 mt-0">
 									<div class="d-flex">
 										<div class="">
-											<h4 class="tx-20 font-weight-bold mb-1 text-white">20/17.45</h4>
+											<h4 class="tx-20 font-weight-bold mb-1 text-white">17.45/20</h4>
 											<p class="mb-0 tx-12 text-white op-7">Compared to last month</p>
 										</div>
 										<span class="float-right my-auto mr-auto">
@@ -116,9 +116,9 @@
 				<!-- row closed -->
 
 				<!-- row opened -->
-				<div class="row row-sm">
+				<div class="row row-sm row-deck">
 					<div class="col-md-12 col-lg-12 col-xl-6">
-						<div class="card" style="height: 390px">
+						<div class="card">
 							<div class="card-header bg-transparent pd-b-0 pd-t-20 bd-b-0">
 								<div class="d-flex justify-content-between">
 									<h4 class="card-title mb-0">Students Absence</h4>
@@ -134,7 +134,7 @@
 						</div>
 					</div>
 					<div class="col-lg-12 col-xl-6">
-						<div class="card card-dashboard-map-one justify-content-md-between" style="height: 390px">
+						<div class="card card-dashboard-map-one justify-content-md-between" style="min-height: 300px">
 							<div>
 								<div class="d-flex justify-content-between">
 									<h4 class="card-title mb-1">Students Gender</h4>
@@ -153,7 +153,7 @@
 						<div class="card">
 							<div class="card-header">
 								<h3 class="card-title mb-1">Teachers Report</h3>
-								<span class="tx-12 tx-muted mb-3 ">Lastest reports sending by the teachers.</span>
+								<span class="tx-12 tx-muted mb-3 ">Latest reports sending by the teachers.</span>
 							</div>
 							<div class="card-body pt-1">
 								<div>
@@ -187,10 +187,10 @@
 					<div class="col-md-12 col-xl-8">
 						<div class="card card-table-two">
 							<div class="d-flex justify-content-between">
-								<h4 class="card-title mb-1">Lastest Charges</h4>
+								<h4 class="card-title mb-1">Latest Charges</h4>
 								<i class="mdi mdi-dots-horizontal text-gray"></i>
 							</div>
-							<span class="tx-12 tx-muted mb-3 ">Lastest charges paying by the school.</span>
+							<span class="tx-12 tx-muted mb-3 ">Latest charges paying by the school.</span>
 							<div class="table-responsive country-table">
 								<table class="table table-striped table-bordered mb-0 text-sm-nowrap text-lg-nowrap text-xl-nowrap">
 									<thead>
@@ -246,7 +246,7 @@
 						<div class="card">
 							<div class="card-header">
 								<h3 class="card-title mb-1">Students Report</h3>
-								<span class="tx-12 tx-muted mb-3 ">Lastest reports sending by the students.</span>
+								<span class="tx-12 tx-muted mb-3 ">Latest reports sending by the students.</span>
 							</div>
 							<div class="card-body pt-1">
 								<div>
@@ -279,7 +279,7 @@
 					</div>
 					<div class="col-md-12 col-lg-4 col-xl-4">
 						<div class="card card-dashboard-eight pb-2">
-							<h6 class="card-title">Top 5 Classes</h6><span class="d-block mg-b-10 text-muted tx-12">The top 5 classes based on notes average.</span>
+							<h6 class="card-title">Top 5 Classes</h6><span class="d-block mg-b-10 text-muted tx-12">The top 5 classes based on grades average.</span>
 							<div class="list-group h-100 justify-content-around">
 								<div class="list-group-item border-top-0">
 									<i class="mdi mdi-account-multiple"></i>

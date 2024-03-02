@@ -7,7 +7,7 @@
 					<div class="left-content">
 						<div>
 						  <h2 class="main-content-title tx-24 mg-b-1 mg-b-lg-1">Hi, welcome back!</h2>
-						  <p class="mg-b-0">School Overview</p>
+						  <p class="mg-b-0">Teacher Dashboard</p>
 						</div>
 					</div>
 				</div>
@@ -20,12 +20,12 @@
 						<div class="card overflow-hidden sales-card bg-success-gradient">
 							<div class="pl-3 pt-3 pr-3 pb-2 pt-0">
 								<div class="">
-									<h6 class="mb-3 tx-12 text-white">YOUR AVG STUDENTS NOTES</h6>
+									<h6 class="mb-3 tx-12 text-white">YOUR AVG STUDENTS GRADES</h6>
 								</div>
 								<div class="pb-0 mt-0">
 									<div class="d-flex">
 										<div class="">
-											<h4 class="tx-20 font-weight-bold mb-1 text-white">20/17.45</h4>
+											<h4 class="tx-20 font-weight-bold mb-1 text-white">17.45/20</h4>
 											<p class="mb-0 tx-12 text-white op-7">Compared to last month</p>
 										</div>
 										<span class="float-right my-auto mr-auto">
@@ -106,7 +106,7 @@
 				<!-- row opened -->
 				<div class="row row-sm row-deck">
 					<div class="col-md-12 col-lg-12 col-xl-6">
-						<div class="card" style="height: 390px">
+						<div class="card">
 							<div class="card-header bg-transparent pd-b-0 pd-t-20 bd-b-0">
 								<div class="d-flex justify-content-between">
 									<h4 class="card-title mb-0">Your Students Classes Absence</h4>
@@ -138,7 +138,7 @@
 				<div class="row row-sm row-deck">
 					<div class="col-md-12 col-lg-4 col-xl-4">
 						<div class="card card-dashboard-eight pb-2">
-							<h6 class="card-title">Top 5 Students</h6><span class="d-block mg-b-10 text-muted tx-12">The top 5 students in your classes based on notes.</span>
+							<h6 class="card-title">Top 5 Students</h6><span class="d-block mg-b-10 text-muted tx-12">The top 5 students in your classes based on grades.</span>
 							<div class="list-group h-100 justify-content-around">
 								<div class="list-group-item border-top-0">
 									<i class="mdi mdi-account"></i>
@@ -163,13 +163,13 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-md-12 col-xl-8">
+					<div class="col-md-12 col-lg-8">
 						<div class="card card-table-two">
 							<div class="d-flex justify-content-between">
 								<h4 class="card-title mb-1">Assigned Homeworks</h4>
 								<i class="mdi mdi-dots-horizontal text-gray"></i>
 							</div>
-							<span class="tx-12 tx-muted mb-3 ">Your lastest assigned homeworks to students.</span>
+							<span class="tx-12 tx-muted mb-3 ">Your latest assigned homeworks to students.</span>
 							<div class="table-responsive country-table">
 								<table class="table table-striped table-bordered mb-0 text-sm-nowrap text-lg-nowrap text-xl-nowrap">
 									<thead>
@@ -274,7 +274,5 @@
 {{-- Calendar --}}
 <script src="{{URL::asset('assets/js/app-calendar.js')}}"></script>
 <script src="{{URL::asset('assets/plugins/jquery-ui/ui/widgets/datepicker.js')}}"></script>
-<!--Internal  index js -->
-<script src="{{URL::asset('assets/js/index.js')}}"></script>
 
 @endsection
