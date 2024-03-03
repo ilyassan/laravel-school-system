@@ -22,6 +22,7 @@ class TeacherFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'phone' => fake()->unique()->numerify('0#########'),
             'password' => Hash::make('password'),
+            'gender' => fake()->randomElement(['M','F']),
             'role_id' => UserRole::TEACHER,
             'salary' => round(fake()->numberBetween(3500, 15000), -2),
             'remember_token' => Str::random(10),
