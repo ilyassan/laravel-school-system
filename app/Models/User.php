@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserRole;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -12,6 +13,30 @@ class User extends Authenticatable
     use HasApiTokens, Notifiable;
 
     protected $guarded = [];
+
+
+    /* ### Scope ### */
+    
+    // Get admins only
+    public function scopeAdmins($query)
+    {
+        return $query->where('role_id', UserRole::ADMIN);
+    }
+
+    // Get teachers only
+    public function scopeTeachers($query)
+    {
+        return $query->where('role_id', UserRole::TEACHER);
+    }
+
+    // Get students only
+    public function scopeStudents($query)
+    {
+        return $query->where('role_id', UserRole::STUDENT);
+    }
+
+
+    /* ### Student Relations ### */
 
     // Relationship: Student belongs to a class
     public function class()
@@ -25,6 +50,15 @@ class User extends Authenticatable
         return $this->hasMany(Absence::class, 'student_id');
     }
     
+
+    /* ### Teacher Relations ### */
+
+    // Relationship: Teacher has one subject
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class, 'subject_id');
+    }
+
     // Relationship: Teacher has many classes
     public function classes()
     {

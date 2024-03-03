@@ -2,14 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Role;
-use App\Models\User;
-use App\Enums\UserRole;
 use App\Models\Classes;
 use App\Models\Subject;
 use Illuminate\Database\Seeder;
 use Database\Factories\TeacherFactory;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class TeacherSeeder extends Seeder
 {
@@ -21,7 +17,7 @@ class TeacherSeeder extends Seeder
         $subjectsIds = Subject::pluck('id'); // Get all subject IDs
         $classesIds = Classes::pluck('id'); // Get all class IDs
 
-        $teachers = TeacherFactory::new()->count(6)->create();
+        $teachers = TeacherFactory::new()->count($classesIds->count() * 3)->create();
 
         foreach ($teachers as $index => $teacher) {
             // Assign each teacher to a class
@@ -31,8 +27,12 @@ class TeacherSeeder extends Seeder
             $randomClassId = collect($classesIds)->filter(fn($id) => $id !== $classId)->random();
             $teacher->classes()->attach([$classId, $randomClassId]);
 
-            // Assign a random subject to each teacher
-            $teacher->subject_id = $subjectsIds->random();
+            // give teacher a subject
+            $subjectId = $subjectsIds->random();
+            if ($index < $subjectsIds->count()) {
+                $subjectId = $subjectsIds[$index];
+            }
+            $teacher->subject_id = $subjectId;
             $teacher->save();
         }
     }

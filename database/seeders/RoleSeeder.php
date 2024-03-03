@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Role;
 use App\Enums\UserRole;
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class RoleSeeder extends Seeder
 {
@@ -14,20 +13,10 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {   
-        Role::create([
-            'id' => UserRole::ADMIN,
-            'name' => 'admin',
+        Role::insert([
+            ['id' => UserRole::ADMIN, 'name' => 'admin'],
+            ['id' => UserRole::TEACHER, 'name' => 'teacher'],
+            ['id' => UserRole::STUDENT, 'name' => 'student'],
         ]);
-        
-        Role::create([
-            'id' => UserRole::TEACHER,
-            'name' => 'teacher',
-        ]);
-        
-        Role::create([
-            'id' => UserRole::STUDENT,
-            'name' => 'student',
-        ]);
-        
     }
 }

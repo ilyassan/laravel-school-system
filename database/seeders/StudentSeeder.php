@@ -2,12 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use App\Enums\UserRole;
 use App\Models\Classes;
 use Database\Factories\StudentFactory;
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class StudentSeeder extends Seeder
 {
@@ -16,14 +13,14 @@ class StudentSeeder extends Seeder
      */
     public function run(): void
     {
-        $classes = Classes::pluck('id');
+        // Get all class IDs
+        $classIds = Classes::pluck('id')->toArray();
 
-        // Create 10 users for each class
-        foreach ($classes as $classId) {
-            StudentFactory::new()->count(10)->create()->each(function ($user) use ($classId){
-                $user->class_id = $classId;
-                $user->save();
-             });
-        };
+        // Create students for each class
+        foreach ($classIds as $classId) {
+            StudentFactory::new()->count(10)->create([
+                'class_id' => $classId,
+            ]);
+        }
     }
 }

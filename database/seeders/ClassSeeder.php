@@ -14,7 +14,7 @@ class ClassSeeder extends Seeder
     public function run(): void
     {
         // Insert default classes
-        $classes = [
+        $classesName = [
             'BAC-1',
             'BAC-2',
             'BAC-3',
@@ -22,8 +22,11 @@ class ClassSeeder extends Seeder
             'BAC-5',
         ];
 
-        foreach ($classes as $className) {
-            Classes::create(['name' => $className]);
+        $classes = [];
+        foreach ($classesName as $className) {
+            $classes[] = ['name' => $className];
         }
+
+        Classes::insert($classes);
     }
 }

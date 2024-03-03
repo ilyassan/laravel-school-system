@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Subject;
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class SubjectSeeder extends Seeder
 {
@@ -14,15 +13,20 @@ class SubjectSeeder extends Seeder
     public function run(): void
     {
         // Insert main subjects
-        $subjects = [
+        $subjectsName = [
             'Mathematics',
             'Economics',
             'English',
             'Arabic',
+            'History',
+            'Information technology',
         ];
 
-        foreach ($subjects as $subjectName) {
-            Subject::create(['name' => $subjectName]);
+        $subjects = [];
+        foreach ($subjectsName as $subjectName) {
+            $subjects[] = ['name' => $subjectName];
         } 
+
+        Subject::insert($subjects);
     }
 }
