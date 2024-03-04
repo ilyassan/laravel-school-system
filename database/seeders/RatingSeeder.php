@@ -14,12 +14,12 @@ class RatingSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = User::where('role_id', '!=', UserRole::ADMIN)->get();
+        $usersIds = User::where('role_id', '!=', UserRole::ADMIN)->pluck('id');
 
         $ratings = [];
-        foreach ($users as $user) {
+        foreach ($usersIds as $userId) {
             $ratings[] = [
-                'user_id' => $user->id,
+                'user_id' => $userId,
                 'rating' => rand(1, 5),
                 'comment' => fake()->realText(),
             ];

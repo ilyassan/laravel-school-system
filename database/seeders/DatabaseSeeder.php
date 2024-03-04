@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             AbsenceSeeder::class,
             GradeSeeder::class,
             RatingSeeder::class,
+            ReportSeeder::class,
         ]);
     }
 }

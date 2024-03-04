@@ -14,7 +14,7 @@ class StudentSeeder extends Seeder
     public function run(): void
     {
         // Get all class IDs
-        $classIds = Classes::pluck('id')->toArray();
+        $classIds = Classes::pluck('id');
 
         // Create students for each class
         foreach ($classIds as $classId) {
