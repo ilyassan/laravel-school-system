@@ -14,17 +14,12 @@ class ClassSeeder extends Seeder
     public function run(): void
     {
         // Insert default classes
-        $classesName = [
-            'BAC-1',
-            'BAC-2',
-            'BAC-3',
-            'BAC-4',
-            'BAC-5',
-        ];
 
+        $numberOfClasses = 12;
         $classes = [];
-        foreach ($classesName as $className) {
-            $classes[] = ['name' => $className];
+
+        for ($i = 1; $i <= $numberOfClasses; $i++) {
+            $classes[] = ['name' => 'BAC-' . $i];
         }
 
         Classes::insert($classes);

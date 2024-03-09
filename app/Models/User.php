@@ -4,9 +4,13 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\UserRole;
+use App\Models\ClassTeacher;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use League\CommonMark\Environment\Environment;
 
 class User extends Authenticatable
 {
@@ -14,6 +18,13 @@ class User extends Authenticatable
 
     protected $guarded = [];
 
+    public const NAME_COLUMN_NAME = "name"; 
+
+    public const GENDER_COLUMN_NAME = "gender"; 
+    
+    public const GENDER_MALE = "M"; 
+
+    public const GENDER_FEMALE = "F"; 
 
     /* ### Scope ### */
     
@@ -45,11 +56,15 @@ class User extends Authenticatable
     }
 
     // Relationship: Student has many absences
-    public function studentAbsences()
+    public function studentAbsences(): HasMany
     {
         return $this->hasMany(Absence::class, 'student_id');
     }
-    
+
+    public function studentTeachers()
+    {
+        return $this->class->teachers();
+    }
 
     /* ### Teacher Relations ### */
 

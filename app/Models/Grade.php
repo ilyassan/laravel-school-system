@@ -15,4 +15,6 @@ class Grade extends Model
         'subject_id',
         'grade',
     ];
+
+    public const GRADE_COLUMN_NAME = 'grade';
 }

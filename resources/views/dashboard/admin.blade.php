@@ -33,12 +33,12 @@
 								<div class="pb-0 mt-0">
 									<div class="d-flex">
 										<div class="">
-											<h4 class="tx-20 font-weight-bold mb-1 text-white">$4,820.50</h4>
+											<h4 class="tx-20 font-weight-bold mb-1 text-white">{{$totalCharges->currentMonth}} DH</h4>
 											<p class="mb-0 tx-12 text-white op-7">Compared to last month</p>
 										</div>
 										<span class="float-right my-auto mr-auto">
-											<i class="fas fa-arrow-circle-down text-white"></i>
-											<span class="text-white op-7"> -2.09%</span>
+											<i class="fas fa-arrow-circle-{{$totalCharges->variation_rate > 0 ? 'up': 'down'}} text-white"></i>
+											<span class="text-white op-7">{{$totalCharges->variation_rate}}%</span>
 										</span>
 									</div>
 								</div>
@@ -50,17 +50,17 @@
 						<div class="card overflow-hidden sales-card bg-success-gradient">
 							<div class="pl-3 pt-3 pr-3 pb-2 pt-0">
 								<div class="">
-									<h6 class="mb-3 tx-12 text-white">AVG STUDENTS GRADES</h6>
+									<h6 class="mb-3 tx-12 text-white">AVG STUDENT GRADE</h6>
 								</div>
 								<div class="pb-0 mt-0">
 									<div class="d-flex">
 										<div class="">
-											<h4 class="tx-20 font-weight-bold mb-1 text-white">17.45/20</h4>
+											<h4 class="tx-20 font-weight-bold mb-1 text-white">{{$avgStudentGrade->currentMonth}}/20</h4>
 											<p class="mb-0 tx-12 text-white op-7">Compared to last month</p>
 										</div>
 										<span class="float-right my-auto mr-auto">
-											<i class="fas fa-arrow-circle-up text-white"></i>
-											<span class="text-white op-7"> 9%</span>
+											<i class="fas fa-arrow-circle-{{$avgStudentGrade->variation_rate > 0 ? 'up': 'down'}} text-white"></i>
+											<span class="text-white op-7">{{$avgStudentGrade->variation_rate}}%</span>
 										</span>
 									</div>
 								</div>
@@ -77,12 +77,12 @@
 								<div class="pb-0 mt-0">
 									<div class="d-flex">
 										<div class="">
-											<h4 class="tx-20 font-weight-bold mb-1 text-white">7645</h4>
+											<h4 class="tx-20 font-weight-bold mb-1 text-white">{{$studentsCount->currentYear}}</h4>
 											<p class="mb-0 tx-12 text-white op-7">Compared to last year</p>
 										</div>
 										<span class="float-right my-auto mr-auto">
-											<i class="fas fa-arrow-circle-down text-white"></i>
-											<span class="text-white op-7"> +495</span>
+											<i class="fas fa-arrow-circle-{{$studentsCount->variation > 0 ? 'up': 'down'}} text-white"></i>
+											<span class="text-white op-7">{{$studentsCount->variation > 0 ? '+': '-'}}{{$studentsCount->variation}}</span>
 										</span>
 									</div>
 								</div>
@@ -99,12 +99,12 @@
 								<div class="pb-0 mt-0">
 									<div class="d-flex">
 										<div class="">
-											<h4 class="tx-20 font-weight-bold mb-1 text-white">246</h4>
+											<h4 class="tx-20 font-weight-bold mb-1 text-white">{{$teachersCount->currentYear}}</h4>
 											<p class="mb-0 tx-12 text-white op-7">Compared to last year</p>
 										</div>
 										<span class="float-right my-auto mr-auto">
-											<i class="fas fa-arrow-circle-up text-white"></i>
-											<span class="text-white op-7"> +35</span>
+											<i class="fas fa-arrow-circle-{{$teachersCount->variation > 0 ? 'up': 'down'}} text-white"></i>
+											<span class="text-white op-7">{{$teachersCount->variation > 0 ? '+': '-'}}{{$teachersCount->variation}}</span>
 										</span>
 									</div>
 								</div>
@@ -317,6 +317,9 @@
 		'use strict';
 
 		// Absence Chart
+		var lastWeekAbsences = {!! json_encode($lastWeekAbsences) !!};
+		console.log(lastWeekAbsences)
+		var {1:mon, 2:tue, 3:wed, 4:thur, 5:fri, 6:sat} = lastWeekAbsences;
 
 		var ctx1 = document.getElementById('absenceChart').getContext('2d');
 		new Chart(ctx1, {
@@ -325,7 +328,7 @@
 				labels: ['Mon', 'Tue', 'Wed', 'Thurs', 'Fri', 'Sat'],
 				datasets: [{
 					label: 'Hours',
-					data: [12, 39, 20, 10, 25, 18],
+					data: [mon, tue, wed, thur, fri, sat],
 					backgroundColor: '#285cf7'
 				}]
 			},
@@ -370,17 +373,17 @@
 		});
 
 		// Student Gender Chart
-		
+
 		var piedata = [{
 			label: 'Boys',
 			data: [
-				[1, 69]
+				[1, {!! json_encode($studentsCount->boys) !!}]
 			],
 			color: '#36A2EB'
 		}, {
 			label: 'Girls',
 			data: [
-				[1, 59]
+				[1, {!! json_encode($studentsCount->girls) !!}]
 			],
 			color: '#FF6384'
 		}];

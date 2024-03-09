@@ -14,12 +14,15 @@ class SubjectSeeder extends Seeder
     {
         // Insert main subjects
         $subjectsName = [
-            'Mathematics',
-            'Economics',
-            'English',
             'Arabic',
+            'English',
+            'Economics',
+            'Mathematics',
+            'Information Technology',
             'History',
-            'Information technology',
+            'Biology',
+            'Chemistry',
+            'Physics',
         ];
 
         $subjects = [];

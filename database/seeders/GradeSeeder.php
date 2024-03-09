@@ -26,7 +26,7 @@ class GradeSeeder extends Seeder
                         'student_id' => $student->id,
                         'teacher_id' => $teacher->id,
                         'subject_id' => $teacher->subject_id,
-                        'grade' => number_format(mt_rand(0, 200) / 10, 2),
+                        'grade' => number_format(rand(80, 200) / 10, 2), // Grade between 8 and 20
                         'created_at' => $createdAt,
                     ];
                 }

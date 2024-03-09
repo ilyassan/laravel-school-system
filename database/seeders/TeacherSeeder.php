@@ -17,7 +17,7 @@ class TeacherSeeder extends Seeder
         $subjectsIds = Subject::pluck('id'); // Get all subject IDs
         $classesIds = Classes::pluck('id'); // Get all class IDs
 
-        $teachers = TeacherFactory::new()->count($classesIds->count() * 3)->create();
+        $teachers = TeacherFactory::new()->count($classesIds->count() * 5)->create();
 
         foreach ($teachers as $index => $teacher) {
             // Assign each teacher to a class

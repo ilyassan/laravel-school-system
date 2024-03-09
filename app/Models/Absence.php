@@ -16,6 +16,10 @@ class Absence extends Model
         'to',
     ];
 
+    public const FROM_COLUMN_NAME = "from"; 
+    
+    public const TO_COLUMN_NAME = "to"; 
+
     // The absent student
     public function student(){
         return $this->belongsTo(User::class, 'student_id');
@@ -26,4 +30,8 @@ class Absence extends Model
         return $this->belongsTo(User::class, 'teacher_id');
     }
 
+    protected $casts = [
+        'from' => 'datetime',
+        'to' => 'datetime',
+    ];    
 }

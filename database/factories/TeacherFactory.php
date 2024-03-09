@@ -26,6 +26,7 @@ class TeacherFactory extends Factory
             'role_id' => UserRole::TEACHER,
             'salary' => round(fake()->numberBetween(3500, 15000), -2),
             'remember_token' => Str::random(10),
+            'created_at' => fake()->dateTimeBetween('-2 years', 'now'),
         ];
     }
 }

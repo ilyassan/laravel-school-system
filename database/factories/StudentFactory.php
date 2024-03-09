@@ -25,6 +25,7 @@ class StudentFactory extends Factory
             'gender' => fake()->randomElement(['M','F']),
             'role_id' => UserRole::STUDENT,
             'remember_token' => Str::random(10),
+            'created_at' => fake()->dateTimeBetween('-2 years', 'now'),
         ];
     }
 }
