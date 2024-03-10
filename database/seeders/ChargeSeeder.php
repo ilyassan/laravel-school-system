@@ -12,6 +12,6 @@ class ChargeSeeder extends Seeder
      */
     public function run(): void
     {
-        Charge::factory(20)->create();
+        Charge::factory(30)->create();
     }
 }

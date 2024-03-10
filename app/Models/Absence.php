@@ -16,9 +16,9 @@ class Absence extends Model
         'to',
     ];
 
-    public const FROM_COLUMN_NAME = "from"; 
+    public const FROM_COLUMN = "from"; 
     
-    public const TO_COLUMN_NAME = "to"; 
+    public const TO_COLUMN = "to"; 
 
     // The absent student
     public function student(){

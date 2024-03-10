@@ -7,9 +7,7 @@ use App\Enums\UserRole;
 use App\Models\Absence;
 use App\Models\Grade;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -22,16 +20,16 @@ class DashboardController extends Controller
 
             case UserRole::ADMIN: //IF ADMIN
     
-                $currentMonth = Carbon::now()->month();
-                $previousMonth = Carbon::now()->subMonth();
+                $currentMonth = now()->startOfMonth();
+                $previousMonth = now()->subMonth()->startOfMonth();
 
                 // ---- Charges ----
                 $chargesCollection = Charge::whereMonth(Charge::CREATED_AT, $currentMonth)
-                ->orWhereMonth(Charge::CREATED_AT, $previousMonth)
-                ->get();
-
-                $currentMonthCharges = $chargesCollection->where(Charge::CREATED_AT, '>=', now()->month())->sum(fn($charge)=> $charge->price * $charge->quantity);
-                $previousMonthCharges = $chargesCollection->where(Charge::CREATED_AT, '<', now()->month())->sum(fn($charge)=> $charge->price * $charge->quantity);
+                                            ->orWhereMonth(Charge::CREATED_AT, $previousMonth)
+                                            ->get([Charge::CREATED_AT, Charge::PRICE_COLUMN, Charge::QUANTITY_COLUMN]);
+                
+                $currentMonthCharges = $chargesCollection->where(Charge::CREATED_AT, '>=', $currentMonth)->sum(fn($charge)=> $charge->price * $charge->quantity);
+                $previousMonthCharges = $chargesCollection->where(Charge::CREATED_AT, '<', $currentMonth)->sum(fn($charge)=> $charge->price * $charge->quantity);
 
                 $totalCharges = (object) [
                     'currentMonth' => number_format($currentMonthCharges),
@@ -40,11 +38,11 @@ class DashboardController extends Controller
 
                 // ---- Student Grades ----
                 $studentGradesCollection = Grade::whereMonth(Grade::CREATED_AT, $currentMonth)
-                ->orWhereMonth(Grade::CREATED_AT, $previousMonth)
-                ->get([Grade::CREATED_AT, Grade::GRADE_COLUMN_NAME]);
+                                                ->orWhereMonth(Grade::CREATED_AT, $previousMonth)
+                                                ->get([Grade::CREATED_AT, Grade::GRADE_COLUMN]);
                 
-                $currentMonthAvgStudentGrade = $studentGradesCollection->where(Grade::CREATED_AT, '>=', $currentMonth)->avg(Grade::GRADE_COLUMN_NAME);
-                $previousMonthAvgStudentGrade = $studentGradesCollection->where(Grade::CREATED_AT, '<', $previousMonth)->avg(Grade::GRADE_COLUMN_NAME);
+                $currentMonthAvgStudentGrade = $studentGradesCollection->where(Grade::CREATED_AT, '>=', $currentMonth)->avg(Grade::GRADE_COLUMN);
+                $previousMonthAvgStudentGrade = $studentGradesCollection->where(Grade::CREATED_AT, '<', $currentMonth)->avg(Grade::GRADE_COLUMN);
 
                 $avgStudentGrade = (object) [
                     'currentMonth' => number_format($currentMonthAvgStudentGrade, 2),
@@ -53,8 +51,9 @@ class DashboardController extends Controller
 
                 // ---- Teachers ----
                 $teacherCollection = User::teachers()->get([User::CREATED_AT]);
+
                 $currentTeachers = $teacherCollection->count();
-                $previousYearTeachers = $teacherCollection->where(User::CREATED_AT, '<=', Carbon::now()->subYear())->count();
+                $previousYearTeachers = $teacherCollection->where(User::CREATED_AT, '<', now()->startOfYear())->count();
 
                 $teachersCount = (object) [
                     'currentYear' => $currentTeachers,
@@ -62,12 +61,12 @@ class DashboardController extends Controller
                 ];
                 
                 // ---- Students ----
-                $studentCollection = User::students()->get([User::CREATED_AT, User::GENDER_COLUMN_NAME]);
+                $studentCollection = User::students()->get([User::CREATED_AT, User::GENDER_COLUMN]);
 
                 $currentStudents = $studentCollection->count();
-                $previousYearStudents = $studentCollection->where(User::CREATED_AT, '<=', Carbon::now()->subYear())->count();
-                $maleStudents = $studentCollection->where(User::GENDER_COLUMN_NAME, User::GENDER_MALE)->count();
-                $femaleStudents = $studentCollection->where(User::GENDER_COLUMN_NAME, User::GENDER_FEMALE)->count();
+                $previousYearStudents = $studentCollection->where(User::CREATED_AT, '<', now()->startOfYear())->count();
+                $maleStudents = $studentCollection->where(User::GENDER_COLUMN, User::GENDER_MALE)->count();
+                $femaleStudents = $studentCollection->where(User::GENDER_COLUMN, User::GENDER_FEMALE)->count();
                 
                 $studentsCount = (object) [
                     'currentYear' => $currentStudents,
@@ -77,12 +76,11 @@ class DashboardController extends Controller
                 ];
 
                 // ---- Students Absence ----
-                $lastWeekAbsencesCollection = Absence::whereBetween(Absence::FROM_COLUMN_NAME, [
-                    Carbon::now()->subWeek()->startOfWeek(),
-                    Carbon::now()->subWeek()->endOfWeek()->subDay(),
-                ])->get([Absence::FROM_COLUMN_NAME, Absence::TO_COLUMN_NAME]);
+                $lastWeekAbsencesCollection = Absence::whereBetween(Absence::FROM_COLUMN, [
+                    now()->subWeek()->startOfWeek(),
+                    now()->subWeek()->endOfWeek()->subDay(),
+                ])->get([Absence::FROM_COLUMN, Absence::TO_COLUMN]);
 
-                
                 // Group the absences by the day of the week
                 $lastWeekAbsences = [];
                 foreach ($lastWeekAbsencesCollection as $absence) {

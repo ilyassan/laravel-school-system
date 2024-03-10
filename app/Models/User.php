@@ -18,9 +18,9 @@ class User extends Authenticatable
 
     protected $guarded = [];
 
-    public const NAME_COLUMN_NAME = "name"; 
+    public const NAME_COLUMN = "name"; 
 
-    public const GENDER_COLUMN_NAME = "gender"; 
+    public const GENDER_COLUMN = "gender"; 
     
     public const GENDER_MALE = "M"; 
 

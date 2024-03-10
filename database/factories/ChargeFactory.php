@@ -19,7 +19,7 @@ class ChargeFactory extends Factory
         return [
             'title' => fake()->sentence(2, true),
             'description' => fake()->paragraph(),
-            'price' => fake()->numberBetween(1, 200) * 10,
+            'price' => fake()->numberBetween(1, 150) * 10,
             'quantity' => fake()->numberBetween(1, 10),
             'created_at' => fake()->dateTimeBetween('-4 month', 'now'),
         ];

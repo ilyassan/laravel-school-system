@@ -15,4 +15,8 @@ class Charge extends Model
         'price',
         'quantity',
     ];
+
+    public const PRICE_COLUMN = 'price';
+
+    public const QUANTITY_COLUMN = 'quantity';
 }
