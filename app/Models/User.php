@@ -49,14 +49,21 @@ class User extends Authenticatable
 
     /* ### Student Relations ### */
 
+
     // Relationship: Student belongs to a class
     public function class()
     {
         return $this->belongsTo(Classes::class, 'class_id');
     }
 
+    // Relationship: Student has many grades
+    public function grades(): HasMany
+    {
+        return $this->hasMany(Grade::class, 'student_id');
+    }
+
     // Relationship: Student has many absences
-    public function studentAbsences(): HasMany
+    public function absences(): HasMany
     {
         return $this->hasMany(Absence::class, 'student_id');
     }
@@ -67,6 +74,7 @@ class User extends Authenticatable
     }
 
     /* ### Teacher Relations ### */
+
 
     // Relationship: Teacher has one subject
     public function subject()
@@ -81,9 +89,22 @@ class User extends Authenticatable
     }
 
     // Relationship: Teacher has marked many absences
+    public function markedGrades()
+    {
+        return $this->hasMany(Grade::class, 'teacher_id');
+    }
+
+    // Relationship: Teacher has marked many absences
     public function markedAbsences()
     {
         return $this->hasMany(Absence::class, 'teacher_id');
+    }
+
+    /* ### Commun Relations ### */
+
+    public function reports()
+    {
+        return $this->hasMany(Report::class, 'user_id');
     }
     
 

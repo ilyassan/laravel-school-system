@@ -14,7 +14,16 @@
 						<div>
 							<label class="tx-13">Users Ratings</label>
 							<div class="main-star">
-								<i class="typcn typcn-star active"></i> <i class="typcn typcn-star active"></i> <i class="typcn typcn-star active"></i> <i class="typcn typcn-star active"></i> <i class="typcn typcn-star"></i> <span>(14,873)</span>
+								@for ($i = 1; $i <= 5; $i++)
+										@if ($ratings->avg >= $i)
+											<i class="typcn typcn-star-full-outline active"></i> <!-- Full active star -->
+										@elseif($ratings->avg - $i >= -0.5)
+											<i class="typcn typcn-star-half-outline active"></i> <!-- Half active star -->
+										@else
+											<i class="typcn typcn-star-outline"></i> <!-- Inactive star -->
+										@endif
+								@endfor
+								<span>({{$ratings->count}})</span>
 							</div>
 						</div>
 					</div>
@@ -152,33 +161,22 @@
 					<div class="col-md-12 col-xl-4">
 						<div class="card">
 							<div class="card-header">
-								<h3 class="card-title mb-1">Teachers Report</h3>
-								<span class="tx-12 tx-muted mb-3 ">Latest reports sending by the teachers.</span>
+								<h3 class="card-title mb-1">Teachers Reports</h3>
+								<span class="tx-12 tx-muted mb-3 ">Latest reports sent by the teachers.</span>
 							</div>
 							<div class="card-body pt-1">
 								<div>
 									<div class="chips">
-										<div class="team">
-											<a href="#" class="chip">
-												<span class="avatar cover-image" data-image-src="{{URL::asset('assets/img/faces/2.jpg')}}"></span> Victoria
-											</a>
-											<i class="fas fa-envelope text-primary" aria-hidden="true"></i>
-											<p>On the other hand, we denounce with right indignation and dislike imagesralized</p>
-										</div>
-										<div class="team">
-											<a href="#" class="chip">
-												<span class="avatar cover-image" data-image-src="{{URL::asset('assets/img/faces/3.jpg')}}"></span> Nathan
-											</a>
-											<i class="fas fa-envelope text-primary" aria-hidden="true"></i>
-											<p>On the other hand, we denounce with right indignation and dislike imagesralized</p>
-										</div>
-										<div class="team">
-											<a href="#" class="chip">
-												<span class="avatar cover-image" data-image-src="{{URL::asset('assets/img/faces/4.jpg')}}"></span> Alice
-											</a>
-											<i class="fas fa-envelope text-primary" aria-hidden="true"></i>
-											<p class="mb-0">On the other hand, we denounce with right indignation and dislike imagesralized</p>
-										</div>
+										@foreach ($latestTeacherReports as $report)
+											<div class="team">
+												<a href="#" class="chip">
+													<span class="avatar cover-image" data-image-src="{{URL::asset('assets/img/faces/4.jpg')}}"></span>
+													{{$report->user_name}}
+												</a>
+												<i class="fas fa-envelope text-primary" aria-hidden="true"></i>
+												<p class="{{$loop->last ? 'mb-0' : 'mb-2'}}">{{$report->shortDescription}} ...</p>
+											</div>
+										@endforeach
 									</div>
 								</div>
 							</div>
@@ -202,36 +200,14 @@
 										</tr>
 									</thead>
 									<tbody>
-										<tr>
-											<td>19 Nov 2023</td>
-											<td class="tx-right tx-medium tx-inverse">Computers</td>
-											<td class="tx-right tx-medium tx-inverse">10</td>
-											<td class="tx-right tx-medium tx-danger">9500$</td>
-										</tr>
-										<tr>
-											<td>18 Nov 2023</td>
-											<td class="tx-right tx-medium tx-inverse">Independence Day Event</td>
-											<td class="tx-right tx-medium tx-inverse">1</td>
-											<td class="tx-right tx-medium tx-danger">2000$</td>
-										</tr>
-										<tr>
-											<td>17 Nov 2023</td>
-											<td class="tx-right tx-medium tx-inverse">Tables</td>
-											<td class="tx-right tx-medium tx-inverse">20</td>
-											<td class="tx-right tx-medium tx-danger">1500$</td>
-										</tr>
-										<tr>
-											<td>16 Nov 2023</td>
-											<td class="tx-right tx-medium tx-inverse">Eectricity bill</td>
-											<td class="tx-right tx-medium tx-inverse">1</td>
-											<td class="tx-right tx-medium tx-danger">8000$</td>
-										</tr>
-										<tr>
-											<td>15 Nov 2023</td>
-											<td class="tx-right tx-medium tx-inverse">Water Bill</td>
-											<td class="tx-right tx-medium tx-inverse">1</td>
-											<td class="tx-right tx-medium tx-danger">3500%</td>
-										</tr>
+										@foreach ($latestCharges as $charge)
+											<tr>
+												<td>{{$charge->created_at->format('d M Y')}}</td>
+												<td class="tx-right tx-medium tx-inverse">{{$charge->title}}</td>
+												<td class="tx-right tx-medium tx-inverse">{{$charge->quantity}}</td>
+												<td class="tx-right tx-medium tx-danger">{{$charge->price * $charge->quantity}} DH</td>
+											</tr>
+										@endforeach
 									</tbody>
 								</table>
 							</div>
@@ -245,33 +221,22 @@
 					<div class="col-md-12 col-lg-8 col-xl-8">
 						<div class="card">
 							<div class="card-header">
-								<h3 class="card-title mb-1">Students Report</h3>
-								<span class="tx-12 tx-muted mb-3 ">Latest reports sending by the students.</span>
+								<h3 class="card-title mb-1">Students Reports</h3>
+								<span class="tx-12 tx-muted mb-3 ">Latest reports sent by the students.</span>
 							</div>
 							<div class="card-body pt-1">
 								<div>
 									<div class="chips">
-										<div class="team">
-											<a href="#" class="chip">
-												<span class="avatar cover-image" data-image-src="{{URL::asset('assets/img/faces/2.jpg')}}"></span> Victoria
-											</a>
-											<i class="fas fa-envelope text-primary" aria-hidden="true"></i>
-											<p>On the other hand, we denounce with right indignation and dislike imagesralized</p>
-										</div>
-										<div class="team">
-											<a href="#" class="chip">
-												<span class="avatar cover-image" data-image-src="{{URL::asset('assets/img/faces/3.jpg')}}"></span> Nathan
-											</a>
-											<i class="fas fa-envelope text-primary" aria-hidden="true"></i>
-											<p>On the other hand, we denounce with right indignation and dislike imagesralized</p>
-										</div>
-										<div class="team">
-											<a href="#" class="chip">
-												<span class="avatar cover-image" data-image-src="{{URL::asset('assets/img/faces/4.jpg')}}"></span> Alice
-											</a>
-											<i class="fas fa-envelope text-primary" aria-hidden="true"></i>
-											<p class="mb-0">On the other hand, we denounce with right indignation and dislike imagesralized</p>
-										</div>
+										@foreach ($latestStudentsReports as $report)
+											<div class="team">
+												<a href="#" class="chip">
+													<span class="avatar cover-image" data-image-src="{{URL::asset('assets/img/faces/4.jpg')}}"></span>
+													{{$report->user_name}}
+												</a>
+												<i class="fas fa-envelope text-primary" aria-hidden="true"></i>
+												<p class="{{$loop->last ? 'mb-0' : 'mb-2'}}">{{$report->shortDescription}} ...</p>
+											</div>
+										@endforeach
 									</div>
 								</div>
 							</div>
@@ -279,28 +244,14 @@
 					</div>
 					<div class="col-md-12 col-lg-4 col-xl-4">
 						<div class="card card-dashboard-eight pb-2">
-							<h6 class="card-title">Top 5 Classes</h6><span class="d-block mg-b-10 text-muted tx-12">The top 5 classes based on grades average.</span>
+							<h6 class="card-title">Top 5 Classes</h6><span class="d-block mg-b-10 text-muted tx-12">The top 5 classes based on grades average of the last 3 month.</span>
 							<div class="list-group h-100 justify-content-around">
-								<div class="list-group-item border-top-0">
-									<i class="mdi mdi-account-multiple"></i>
-									<p>CLASS-A</p><span>BAC-2</span>
-								</div>
-								<div class="list-group-item border-top-0">
-									<i class="mdi mdi-account-multiple"></i>
-									<p>CLASS-B</p><span>BAC-3</span>
-								</div>
-								<div class="list-group-item border-top-0">
-									<i class="mdi mdi-account-multiple"></i>
-									<p>CLASS-C</p><span>BAC-1</span>
-								</div>
-								<div class="list-group-item border-top-0">
-									<i class="mdi mdi-account-multiple"></i>
-									<p>CLASS-D</p><span>BAC-5</span>
-								</div>
-								<div class="list-group-item border-top-0 border-bottom-0 mb-0">
-									<i class="mdi mdi-account-multiple"></i>
-									<p>CLASS-E</p><span>BAC-4</span>
-								</div>
+								@foreach ($topClasses as $class)									
+									<div class="list-group-item border-top-0 {{$loop->last ? 'border-bottom-0 mb-0' : ''}}">
+										<i class="mdi mdi-account-multiple"></i>
+										<p>CLASS-{{chr(65 + $loop->index)}}</p><span>{{$class->name}}</span>
+									</div>
+								@endforeach
 							</div>
 						</div>
 					</div>

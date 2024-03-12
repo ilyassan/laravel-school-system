@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Grade;
 use App\Models\Charge;
+use App\Models\Report;
 use App\Enums\UserRole;
 use App\Models\Absence;
-use App\Models\Grade;
-use App\Models\User;
+use App\Models\Classes;
+use App\Models\Rating;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,19 +25,34 @@ class DashboardController extends Controller
     
                 $currentMonth = now()->startOfMonth();
                 $previousMonth = now()->subMonth()->startOfMonth();
+                $threeMonthAgo = now()->startOfMonth()->subMonths(3);
+
+                $latestChargesLimit = 5;
+                $latestReportsLimit= 3;
+                $topClassesLimit= 5;
+
+                // ---- Ratings ----
+                $ratingsCollection = Rating::all(Rating::RATING_COLUMN);
+
+                $ratings = (object) [
+                    'count' => number_format($ratingsCollection->count()),
+                    'avg' => $ratingsCollection->avg(Rating::RATING_COLUMN)
+                ];
 
                 // ---- Charges ----
-                $chargesCollection = Charge::whereMonth(Charge::CREATED_AT, $currentMonth)
+                $currentAndPreviousMonthChargesCollection = Charge::whereMonth(Charge::CREATED_AT, $currentMonth)
                                             ->orWhereMonth(Charge::CREATED_AT, $previousMonth)
                                             ->get([Charge::CREATED_AT, Charge::PRICE_COLUMN, Charge::QUANTITY_COLUMN]);
                 
-                $currentMonthCharges = $chargesCollection->where(Charge::CREATED_AT, '>=', $currentMonth)->sum(fn($charge)=> $charge->price * $charge->quantity);
-                $previousMonthCharges = $chargesCollection->where(Charge::CREATED_AT, '<', $currentMonth)->sum(fn($charge)=> $charge->price * $charge->quantity);
+                $currentMonthCharges = $currentAndPreviousMonthChargesCollection->where(Charge::CREATED_AT, '>=', $currentMonth)->sum(fn($charge)=> $charge->price * $charge->quantity);
+                $previousMonthCharges = $currentAndPreviousMonthChargesCollection->where(Charge::CREATED_AT, '<', $currentMonth)->sum(fn($charge)=> $charge->price * $charge->quantity);
 
                 $totalCharges = (object) [
                     'currentMonth' => number_format($currentMonthCharges),
-                    'variation_rate' =>  number_format($currentMonthCharges / $previousMonthCharges * 100 - 100, 2) ,
+                    'variation_rate' =>  $previousMonthCharges !== 0 ? number_format($currentMonthCharges / $previousMonthCharges * 100 - 100, 2) : null,
                 ];
+
+                $latestCharges = Charge::latest()->limit($latestChargesLimit)->get();
 
                 // ---- Student Grades ----
                 $studentGradesCollection = Grade::whereMonth(Grade::CREATED_AT, $currentMonth)
@@ -46,7 +64,7 @@ class DashboardController extends Controller
 
                 $avgStudentGrade = (object) [
                     'currentMonth' => number_format($currentMonthAvgStudentGrade, 2),
-                    'variation_rate' => number_format($currentMonthAvgStudentGrade / $previousMonthAvgStudentGrade * 100 - 100, 2),
+                    'variation_rate' => $previousMonthAvgStudentGrade !== 0 ? number_format($currentMonthAvgStudentGrade / $previousMonthAvgStudentGrade * 100 - 100, 2) : null,
                 ];
 
                 // ---- Teachers ----
@@ -90,25 +108,42 @@ class DashboardController extends Controller
                     }
                     $lastWeekAbsences[$dayOfWeek] += $absence->to->hour - $absence->from->hour;
                 }
-                
-                $viewData = compact('totalCharges', 'avgStudentGrade', 'teachersCount', 'studentsCount', 'lastWeekAbsences');
+
+                // ---- Teachers Reports ----
+                $latestTeacherReports = Report::teacherReports()
+                                                ->orderBy('reports.created_at')
+                                                ->limit($latestReportsLimit)
+                                                // For getting only the first 80 char in the description
+                                                ->selectRaw("LEFT(description, 80) AS shortDescription")
+                                                ->withAggregate('user', User::NAME_COLUMN)
+                                                ->get();
+
+                // ---- Students Reports ----
+                $latestStudentsReports = Report::studentReports()
+                                                ->latest('reports.created_at')
+                                                ->limit($latestReportsLimit)
+                                                // For getting only the first 140 char in the description
+                                                ->selectRaw("LEFT(description, 140) AS shortDescription")
+                                                ->withAggregate('user', User::NAME_COLUMN)
+                                                ->get();
+
+                // ---- Top Classes ----
+                $topClasses = Classes::withAvgGrades($threeMonthAgo)->orderByDesc(Classes::AVG_GRADES)->limit($topClassesLimit)->get();
+
+                $viewData = compact('ratings', 'totalCharges', 'latestCharges', 'avgStudentGrade', 'teachersCount', 'studentsCount', 'lastWeekAbsences', 'latestTeacherReports', 'latestStudentsReports', 'topClasses');
                 
                 return view('dashboard.admin', $viewData);
-                break;
 
             case UserRole::TEACHER: // IF TEACHER
 
                 return view('dashboard.teacher');
-                break;
 
             case UserRole::STUDENT: // IF STUDENT
 
                 return view('dashboard.student');
-                break;
 
             default:
                 return redirect()->route('login');
-                break;
         }
     }
 }

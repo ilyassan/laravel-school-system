@@ -14,14 +14,18 @@ class ReportSeeder extends Seeder
      */
     public function run(): void
     {
-        $usersIds = User::where('role_id', '!=', UserRole::ADMIN)->limit(20)->pluck('id');
+        $studentIds = User::students()->limit(10)->pluck('id');
+        $teacherIds = User::teachers()->limit(10)->pluck('id');
+
+        $userIds = $studentIds->merge($teacherIds);
 
         $reports = [];
-        foreach ($usersIds as $userId) {
+        foreach ($userIds as $userId) {
             $reports[] = [
                 'user_id' => $userId,
                 'title' => fake()->title(),
                 'description' => fake()->realText(),
+                'created_at' => fake()->dateTimeBetween('-2 months', 'now'),
             ];
         }
 

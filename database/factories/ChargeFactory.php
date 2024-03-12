@@ -21,7 +21,7 @@ class ChargeFactory extends Factory
             'description' => fake()->paragraph(),
             'price' => fake()->numberBetween(1, 150) * 10,
             'quantity' => fake()->numberBetween(1, 10),
-            'created_at' => fake()->dateTimeBetween('-4 month', 'now'),
+            'created_at' => fake()->dateTimeBetween('-1 year', 'now'),
         ];
     }
 }

@@ -14,4 +14,6 @@ class Rating extends Model
         'rating',
         'comment',
     ];
+
+    public const RATING_COLUMN = 'rating';
 }
