@@ -42,12 +42,12 @@
 								<div class="pb-0 mt-0">
 									<div class="d-flex">
 										<div class="">
-											<h4 class="tx-20 font-weight-bold mb-1 text-white">{{$totalCharges->currentMonth}} DH</h4>
+											<h4 class="tx-20 font-weight-bold mb-1 text-white">{{$charges->total}} DH</h4>
 											<p class="mb-0 tx-12 text-white op-7">Compared to last month</p>
 										</div>
 										<span class="float-right my-auto mr-auto">
-											<i class="fas fa-arrow-circle-{{$totalCharges->variation_rate > 0 ? 'up': 'down'}} text-white"></i>
-											<span class="text-white op-7">{{$totalCharges->variation_rate}}%</span>
+											<i class="fas fa-arrow-circle-{{$charges->variation_rate > 0 ? 'up': 'down'}} text-white"></i>
+											<span class="text-white op-7">{{$charges->variation_rate}}%</span>
 										</span>
 									</div>
 								</div>
@@ -64,7 +64,7 @@
 								<div class="pb-0 mt-0">
 									<div class="d-flex">
 										<div class="">
-											<h4 class="tx-20 font-weight-bold mb-1 text-white">{{$avgStudentGrade->currentMonth}}/20</h4>
+											<h4 class="tx-20 font-weight-bold mb-1 text-white">{{$avgStudentGrade->total}}/20</h4>
 											<p class="mb-0 tx-12 text-white op-7">Compared to last month</p>
 										</div>
 										<span class="float-right my-auto mr-auto">
@@ -86,12 +86,12 @@
 								<div class="pb-0 mt-0">
 									<div class="d-flex">
 										<div class="">
-											<h4 class="tx-20 font-weight-bold mb-1 text-white">{{$studentsCount->currentYear}}</h4>
+											<h4 class="tx-20 font-weight-bold mb-1 text-white">{{$students->total}}</h4>
 											<p class="mb-0 tx-12 text-white op-7">Compared to last year</p>
 										</div>
 										<span class="float-right my-auto mr-auto">
-											<i class="fas fa-arrow-circle-{{$studentsCount->variation > 0 ? 'up': 'down'}} text-white"></i>
-											<span class="text-white op-7">{{$studentsCount->variation > 0 ? '+': '-'}}{{$studentsCount->variation}}</span>
+											<i class="fas fa-arrow-circle-{{$students->variation > 0 ? 'up': 'down'}} text-white"></i>
+											<span class="text-white op-7">{{$students->variation > 0 ? '+': '-'}}{{$students->variation}}</span>
 										</span>
 									</div>
 								</div>
@@ -108,12 +108,12 @@
 								<div class="pb-0 mt-0">
 									<div class="d-flex">
 										<div class="">
-											<h4 class="tx-20 font-weight-bold mb-1 text-white">{{$teachersCount->currentYear}}</h4>
+											<h4 class="tx-20 font-weight-bold mb-1 text-white">{{$teachers->total}}</h4>
 											<p class="mb-0 tx-12 text-white op-7">Compared to last year</p>
 										</div>
 										<span class="float-right my-auto mr-auto">
-											<i class="fas fa-arrow-circle-{{$teachersCount->variation > 0 ? 'up': 'down'}} text-white"></i>
-											<span class="text-white op-7">{{$teachersCount->variation > 0 ? '+': '-'}}{{$teachersCount->variation}}</span>
+											<i class="fas fa-arrow-circle-{{$teachers->variation > 0 ? 'up': 'down'}} text-white"></i>
+											<span class="text-white op-7">{{$teachers->variation > 0 ? '+': '-'}}{{$teachers->variation}}</span>
 										</span>
 									</div>
 								</div>
@@ -328,13 +328,13 @@
 		var piedata = [{
 			label: 'Boys',
 			data: [
-				[1, {!! json_encode($studentsCount->boys) !!}]
+				[1, {!! json_encode($students->boys) !!}]
 			],
 			color: '#36A2EB'
 		}, {
 			label: 'Girls',
 			data: [
-				[1, {!! json_encode($studentsCount->girls) !!}]
+				[1, {!! json_encode($students->girls) !!}]
 			],
 			color: '#FF6384'
 		}];

@@ -18,6 +18,8 @@ class User extends Authenticatable
 
     protected $guarded = [];
 
+    public const ROLE_COLUMN = "role_id"; 
+
     public const NAME_COLUMN = "name"; 
 
     public const GENDER_COLUMN = "gender"; 
@@ -31,19 +33,25 @@ class User extends Authenticatable
     // Get admins only
     public function scopeAdmins($query)
     {
-        return $query->where('role_id', UserRole::ADMIN);
+        return $query->where(self::ROLE_COLUMN, UserRole::ADMIN);
     }
 
     // Get teachers only
     public function scopeTeachers($query)
     {
-        return $query->where('role_id', UserRole::TEACHER);
+        return $query->where(self::ROLE_COLUMN, UserRole::TEACHER);
     }
 
     // Get students only
     public function scopeStudents($query)
     {
-        return $query->where('role_id', UserRole::STUDENT);
+        return $query->where(self::ROLE_COLUMN, UserRole::STUDENT);
+    }
+
+    // Get students and teachers
+    public function scopeStudentsAndTeachers($query)
+    {
+        return $query->whereIn(self::ROLE_COLUMN, [UserRole::STUDENT, UserRole::TEACHER]);
     }
 
 
