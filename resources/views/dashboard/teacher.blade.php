@@ -20,17 +20,17 @@
 						<div class="card overflow-hidden sales-card bg-success-gradient">
 							<div class="pl-3 pt-3 pr-3 pb-2 pt-0">
 								<div class="">
-									<h6 class="mb-3 tx-12 text-white">YOUR AVG STUDENTS GRADES</h6>
+									<h6 class="mb-2 tx-12 text-white">YOUR AVG STUDENTS GRADES</h6>
 								</div>
 								<div class="pb-0 mt-0">
 									<div class="d-flex">
 										<div class="">
-											<h4 class="tx-20 font-weight-bold mb-1 text-white">17.45/20</h4>
+											<h4 class="tx-20 font-weight-bold mb-1 text-white">{{$teacherStudentsAvgGrades->total}}/20</h4>
 											<p class="mb-0 tx-12 text-white op-7">Compared to last month</p>
 										</div>
 										<span class="float-right my-auto mr-auto">
-											<i class="fas fa-arrow-circle-up text-white"></i>
-											<span class="text-white op-7"> 9%</span>
+											<i class="fas fa-arrow-circle-{{$teacherStudentsAvgGrades->variation_rate > 0 ? 'up': 'down'}} text-white"></i>
+											<span class="text-white op-7">{{$teacherStudentsAvgGrades->variation_rate}}%</span>
 										</span>
 									</div>
 								</div>
@@ -41,17 +41,17 @@
 						<div class="card overflow-hidden sales-card bg-danger-gradient">
 							<div class="pl-3 pt-3 pr-3 pb-2 pt-0">
 								<div class="">
-									<h6 class="mb-3 tx-12 text-white">YOUR STUDENTS</h6>
+									<h6 class="mb-2 tx-12 text-white">YOUR STUDENTS</h6>
 								</div>
 								<div class="pb-0 mt-0">
 									<div class="d-flex">
 										<div class="">
-											<h4 class="tx-20 font-weight-bold mb-1 text-white">100</h4>
+											<h4 class="tx-20 font-weight-bold mb-1 text-white">{{number_format($teacherStudents->total)}}</h4>
 											<p class="mb-0 tx-12 text-white op-7">Compared to last year</p>
 										</div>
 										<span class="float-right my-auto mr-auto">
-											<i class="fas fa-arrow-circle-up text-white"></i>
-											<span class="text-white op-7"> +20</span>
+											<i class="fas fa-arrow-circle-{{$teacherStudents->variation > 0 ? 'up': 'down'}} text-white"></i>
+											<span class="text-white op-7">{{$teacherStudents->variation > 0 ? '+': '-'}}{{$teacherStudents->variation}}</span>
 										</span>
 									</div>
 								</div>
@@ -62,17 +62,17 @@
 						<div class="card overflow-hidden sales-card bg-warning-gradient">
 							<div class="pl-3 pt-3 pr-3 pb-2 pt-0">
 								<div class="">
-									<h6 class="mb-3 tx-12 text-white">YOUR CLASSES</h6>
+									<h6 class="mb-2 tx-12 text-white">YOUR CLASSES</h6>
 								</div>
 								<div class="pb-0 mt-0">
 									<div class="d-flex">
 										<div class="">
-											<h4 class="tx-20 font-weight-bold mb-1 text-white">5</h4>
+											<h4 class="tx-20 font-weight-bold mb-1 text-white">{{number_format($teacherClasses->total)}}</h4>
 											<p class="mb-0 tx-12 text-white op-7">Compared to last year</p>
 										</div>
 										<span class="float-right my-auto mr-auto">
-											<i class="fas fa-arrow-circle-up text-white"></i>
-											<span class="text-white op-7">+1</span>
+											<i class="fas fa-arrow-circle-{{$teacherClasses->variation > 0 ? 'up': 'down'}} text-white"></i>
+											<span class="text-white op-7">{{$teacherClasses->variation > 0 ? '+': '-'}}{{$teacherClasses->variation}}</span>
 										</span>
 									</div>
 								</div>
@@ -83,12 +83,12 @@
 						<div class="card overflow-hidden sales-card bg-primary-gradient">
 							<div class="pl-3 pt-3 pr-3 pb-2 pt-0">
 								<div class="">
-									<h6 class="mb-3 tx-12 text-white">SALARY</h6>
+									<h6 class="mb-2 tx-12 text-white">SALARY</h6>
 								</div>
 								<div class="pb-0 mt-0">
 									<div class="d-flex">
 										<div class="">
-											<h4 class="tx-20 font-weight-bold mb-1 text-white">10000$</h4>
+											<h4 class="tx-20 font-weight-bold mb-1 text-white">{{$salary}} DH</h4>
 											<p class="mb-0 tx-12 text-white op-7">Compared to last year</p>
 										</div>
 										<span class="float-right my-auto mr-auto">
@@ -140,26 +140,12 @@
 						<div class="card card-dashboard-eight pb-2">
 							<h6 class="card-title">Top 5 Students</h6><span class="d-block mg-b-10 text-muted tx-12">The top 5 students in your classes based on grades.</span>
 							<div class="list-group h-100 justify-content-around">
-								<div class="list-group-item border-top-0">
-									<i class="mdi mdi-account"></i>
-									<p class="text-capitalize">ilyass anida</p><span>BAC-3</span>
-								</div>
-								<div class="list-group-item border-top-0">
-									<i class="mdi mdi-account"></i>
-									<p class="text-capitalize">ahmed mahmoud</p><span>BAC-3</span>
-								</div>
-								<div class="list-group-item border-top-0">
-									<i class="mdi mdi-account"></i>
-									<p class="text-capitalize">yassin yassir</p><span>BAC-2</span>
-								</div>
-								<div class="list-group-item border-top-0">
-									<i class="mdi mdi-account"></i>
-									<p class="text-capitalize">sara mansour</p><span>BAC-5</span>
-								</div>
-								<div class="list-group-item border-top-0 border-bottom-0 mb-0">
-									<i class="mdi mdi-account"></i>
-									<p class="text-capitalize">elon elian</p><span>BAC-4</span>
-								</div>
+								@foreach ($topTeacherStudents as $student)					
+									<div class="list-group-item border-top-0 {{$loop->last ? 'border-bottom-0 mb-0' : ''}}">
+										<i class="mdi mdi-account"></i>
+										<p class="text-capitalize">{{$student->name}}</p><span>{{$student->class_name}}</span>
+									</div>
+								@endforeach
 							</div>
 						</div>
 					</div>
@@ -217,14 +203,19 @@
 		'use strict';
 
 		// Absence Chart
+		var teacherClassesWithAbsences = {!! json_encode($teacherClassesWithAbsences) !!};
+
+		var classesNames = teacherClassesWithAbsences.map(obj => obj.name);
+		var classesAbsences = teacherClassesWithAbsences.map(obj => obj.absences_sum);
+
 		var ctx1 = document.getElementById('absenceChart').getContext('2d');
 		new Chart(ctx1, {
 			type: 'bar',
 			data: {
-				labels: ['BAC-1', 'BAC-2', 'BAC-3', 'BAC-4', 'BAC-5'],
+				labels: classesNames,
 				datasets: [{
 					label: 'Hours',
-					data: [12, 39, 20, 10, 25],
+					data: classesAbsences,
 					backgroundColor: '#285cf7'
 				}]
 			},

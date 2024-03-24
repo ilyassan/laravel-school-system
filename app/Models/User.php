@@ -4,13 +4,10 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\UserRole;
-use App\Models\ClassTeacher;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use League\CommonMark\Environment\Environment;
 
 class User extends Authenticatable
 {
@@ -21,6 +18,8 @@ class User extends Authenticatable
     public const ROLE_COLUMN = "role_id"; 
 
     public const NAME_COLUMN = "name"; 
+
+    public const CLASS_COLUMN = "class_id"; 
 
     public const GENDER_COLUMN = "gender"; 
     

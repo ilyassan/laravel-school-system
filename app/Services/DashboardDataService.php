@@ -4,6 +4,8 @@ namespace App\Services;
 
 use Carbon\Carbon;
 use App\Enums\UserRole;
+use Illuminate\Support\Facades\DB;
+
 use App\Models\{User, Grade, Charge, Report, Absence, Classes, Rating};
 
 class DashboardDataService
@@ -23,8 +25,8 @@ class DashboardDataService
         $this->currentYear = now()->startOfYear();
     }
 
-    public function adminDashboardData(){
-        
+    public function adminDashboardData()
+    {
         $latestChargesLimit = 5;
         $latestReportsLimit= 3;
         $topClassesLimit= 5;
@@ -45,6 +47,21 @@ class DashboardDataService
         ];
     }
 
+    public function teacherDashboardData()
+    {
+        $topStudentsLimit = 5;
+        
+        $teacherClasses = auth()->user()->classes->pluck('id');
+        return [
+            'teacherClasses' => $this->getTeacherClasses($this->currentYear),
+            'teacherStudentsAvgGrades' => $this->getAvgStudentGrades($this->currentMonth, $this->previousMonth, auth()->id()),
+            'teacherStudents' => $this->getTeacherStudents($this->currentYear, $teacherClasses),
+            'salary' => auth()->user()->salary,
+            'teacherClassesWithAbsences' => $this->getClassesWithAbsences($this->lastWeek, $teacherClasses),
+            'topTeacherStudents' => $this->getTopStudents($teacherClasses, $topStudentsLimit),
+        ];
+    }
+
 
     public function getRatings()
     {
@@ -58,7 +75,8 @@ class DashboardDataService
 
     public function getCharges(Carbon $month, Carbon $monthComparedTo)
     {
-        $chargesCollection = $this->getCollectionOfTwoMonths(Charge::class, $month, $monthComparedTo, [Charge::CREATED_AT, Charge::PRICE_COLUMN, Charge::QUANTITY_COLUMN]);
+        $chargesCollection = $this->collectionOfTwoMonths(Charge::class, $month, $monthComparedTo)
+                            ->get([Charge::CREATED_AT, Charge::PRICE_COLUMN, Charge::QUANTITY_COLUMN]);
 
         $monthCharges = $this->filterByMonth($chargesCollection, $month, Charge::CREATED_AT)
                         ->sum(fn($charge)=>$charge->{Charge::PRICE_COLUMN} * $charge->{Charge::QUANTITY_COLUMN});
@@ -74,13 +92,24 @@ class DashboardDataService
         return Charge::latest()->limit($limit)->get();
     }
 
-    public function getAvgStudentGrades(Carbon $month, Carbon $monthComparedTo)
+    public function getAvgStudentGrades(Carbon $month, Carbon $monthComparedTo, $teacherId = null)
     {
-        $studentGradesCollection = $this->getCollectionOfTwoMonths(Grade::class, $month, $monthComparedTo, [Grade::CREATED_AT, Grade::GRADE_COLUMN]);
+        $query = $this->collectionOfTwoMonths(Grade::class, $month, $monthComparedTo);
         
-        $monthAvgStudentGrade = $this->filterByMonth($studentGradesCollection, $month, Grade::CREATED_AT)->avg(Grade::GRADE_COLUMN);
-        $monthComparedToAvgStudentGrade = $this->filterByMonth($studentGradesCollection, $monthComparedTo, Grade::CREATED_AT)->avg(Grade::GRADE_COLUMN);
-
+        // Grades of a teacher students
+        if(isset($teacherId)){
+            $query->where(Grade::TEACHER_ID_COLUMN, $teacherId);
+        }
+        
+        $studentGradesCollection = $query->get([Grade::CREATED_AT,Grade::GRADE_COLUMN]);
+        
+        
+        $monthAvgStudentGrade = $this->filterByMonth($studentGradesCollection, $month, Grade::CREATED_AT)
+        ->avg(Grade::GRADE_COLUMN);
+        
+        $monthComparedToAvgStudentGrade = $this->filterByMonth($studentGradesCollection, $monthComparedTo, Grade::CREATED_AT)
+        ->avg(Grade::GRADE_COLUMN);
+        
         return $this->formatData($monthAvgStudentGrade, $monthComparedToAvgStudentGrade);
     }
     
@@ -114,7 +143,8 @@ class DashboardDataService
         $lastWeekAbsencesCollection = Absence::whereBetween(Absence::FROM_COLUMN, [
             clone $week,
             clone $week->endOfWeek()->subDay(),
-        ])->get([Absence::FROM_COLUMN, Absence::TO_COLUMN]);
+        ])
+        ->get([Absence::FROM_COLUMN, Absence::TO_COLUMN]);
 
         $lastWeekAbsences = [];
         
@@ -135,10 +165,12 @@ class DashboardDataService
     {
         $relationship = strtolower(UserRole::nameForKey($role)). 'Reports';
 
-        return Report::$relationship()->latest('reports.created_at')->limit($reportsLimit)
-                    ->selectRaw("LEFT(description, $descriptionLimit) AS shortDescription")
-                    ->withAggregate('user', User::NAME_COLUMN)
-                    ->get();
+        return Report::$relationship()
+                ->latest('reports.created_at')
+                ->limit($reportsLimit)
+                ->selectRaw("LEFT(description, $descriptionLimit) AS shortDescription")
+                ->withAggregate('user', User::NAME_COLUMN)
+                ->get();
     }
 
     public function getTopClasses($limit)
@@ -146,22 +178,76 @@ class DashboardDataService
         return Classes::withAvgGrades($this->threeMonthAgo)->orderByDesc(Classes::AVG_GRADES)->limit($limit)->get();
     }
 
+    public function getTeacherClasses(Carbon $year)
+    {
+        $teacherClassesCollection = auth()->user()->classes;
+
+        $currentTeacherClasses = $teacherClassesCollection->count();
+        $previousTeacherClasses = $teacherClassesCollection->where(Classes::CREATED_AT, '<', $year->startOfYear())->count();
+
+        return $this->formatData($currentTeacherClasses, $previousTeacherClasses);
+    }
+
+    public function getTeacherStudents(Carbon $year, $classes)
+    {
+        $teacherStudentsCollection = User::students()->whereIn(User::CLASS_COLUMN, $classes)->get();
+        
+        $currentTeacherStudents = $teacherStudentsCollection->count();
+        $previousTeacherStudents = $teacherStudentsCollection->where(User::CREATED_AT, '<', $year->startOfYear())->count();
+
+        return $this->formatData($currentTeacherStudents, $previousTeacherStudents);
+    }
+
+    public function getClassesWithAbsences(Carbon $week, $classes)
+    {
+       return Classes::select('classes.*')
+            ->selectSub(function ($query) use ($week) {
+                $query->select(DB::raw(sprintf('SUM(TIMESTAMPDIFF(HOUR, `%s`, `%s`))', Absence::FROM_COLUMN, Absence::TO_COLUMN)))
+                    ->from('absences')
+                    ->join('users', 'users.id', '=', 'absences.student_id')
+                    ->whereColumn('classes.id', 'users.class_id')
+                    ->whereBetween(Absence::FROM_COLUMN, [$week, $week->copy()->endOfWeek()->subDay()]);
+            }, 'absences_sum')
+            ->whereIn('id', $classes)
+            ->get();
+    }
+
+    public function getTopStudents($classes = null, $limit = 1)
+    {
+        $query = User::students();
+
+        // Grades of a teacher students
+        if(isset($classes)){
+            $query->whereIn(User::CLASS_COLUMN, $classes);
+        }
+
+        return  $query
+                ->withAvg('grades', Grade::GRADE_COLUMN)
+                ->orderByDesc('grades_avg_grade')
+                ->limit($limit)
+                ->withAggregate('class', Classes::NAME_COLUMN)
+                ->get();
+    }
+
 
     // -- Auxiliary methods --
 
-    public function getCollectionOfTwoMonths($model, Carbon $firstMonth, Carbon $secondMonth , array $columnsToGet = ['*'])
+    public function collectionOfTwoMonths($model, Carbon $firstMonth, Carbon $secondMonth)
     {
-        return $model::whereMonth($model::CREATED_AT, $firstMonth)
-                    ->orWhereMonth($model::CREATED_AT, $secondMonth)
-                    ->get($columnsToGet);
+        return $model::where(function($query) use ($model, $firstMonth, $secondMonth) {
+            $query->whereMonth($model::CREATED_AT, $firstMonth)
+                ->orWhereMonth($model::CREATED_AT, $secondMonth);
+        });
     }
 
     public function filterByMonth($collection, Carbon $month, string $dateColumn)
     {
-        return $collection->whereBetween($dateColumn, [$month->startOfMonth()->toDateTime(), $month->endOfMonth()->toDateTime()]);
+        return $collection->whereBetween($dateColumn, 
+                [$month->startOfMonth()->toDateTime(),
+                $month->endOfMonth()->toDateTime()]);
     }
     
-    public function formatData($currentNumber, $previousNumber, array $extra = []): object
+    public function formatData($currentNumber = 0, $previousNumber = 0, array $extra = []): object
     {
         return (object) [
             'total' => number_format($currentNumber, 2),

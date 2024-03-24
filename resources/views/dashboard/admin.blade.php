@@ -35,7 +35,7 @@
 				<div class="row row-sm">
 					<div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
 						<div class="card overflow-hidden sales-card bg-warning-gradient">
-							<div class="pl-3 pt-3 pr-3 pb-2 pt-0">
+							<div class="pl-3 pt-3 pr-3 pb-2">
 								<div class="">
 									<h6 class="mb-3 tx-12 text-white">TOTAL CHARGES</h6>
 								</div>
@@ -57,7 +57,7 @@
 					</div>
 					<div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
 						<div class="card overflow-hidden sales-card bg-success-gradient">
-							<div class="pl-3 pt-3 pr-3 pb-2 pt-0">
+							<div class="pl-3 pt-3 pr-3 pb-2">
 								<div class="">
 									<h6 class="mb-3 tx-12 text-white">AVG STUDENT GRADE</h6>
 								</div>
@@ -79,7 +79,7 @@
 					</div>
 					<div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
 						<div class="card overflow-hidden sales-card bg-primary-gradient">
-							<div class="pl-3 pt-3 pr-3 pb-2 pt-0">
+							<div class="pl-3 pt-3 pr-3 pb-2">
 								<div class="">
 									<h6 class="mb-3 tx-12 text-white">TOTAL STUDENTS</h6>
 								</div>
@@ -101,7 +101,7 @@
 					</div>
 					<div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
 						<div class="card overflow-hidden sales-card bg-danger-gradient">
-							<div class="pl-3 pt-3 pr-3 pb-2 pt-0">
+							<div class="pl-3 pt-3 pr-3 pb-2">
 								<div class="">
 									<h6 class="mb-3 tx-12 text-white">TOTAL TEACHERS</h6>
 								</div>
@@ -269,7 +269,6 @@
 
 		// Absence Chart
 		var lastWeekAbsences = {!! json_encode($lastWeekAbsences) !!};
-		console.log(lastWeekAbsences)
 		var {1:mon, 2:tue, 3:wed, 4:thur, 5:fri, 6:sat} = lastWeekAbsences;
 
 		var ctx1 = document.getElementById('absenceChart').getContext('2d');

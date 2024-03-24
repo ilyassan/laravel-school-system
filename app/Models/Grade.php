@@ -17,4 +17,6 @@ class Grade extends Model
     ];
 
     public const GRADE_COLUMN = 'grade';
+
+    public const TEACHER_ID_COLUMN = 'teacher_id';
 }

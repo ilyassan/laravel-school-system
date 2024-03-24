@@ -31,7 +31,7 @@ class AbsenceSeeder extends Seeder
                     'teacher_id' => fake()->randomElement($teachers->pluck('id')),
                     'from' => $from,
                     'to' => $to,
-                    'created_at' => $to->addDays(rand(1, 2)),
+                    'created_at' => $to->copy()->addDays(rand(1, 2)),
                 ];
             }
         }

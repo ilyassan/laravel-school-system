@@ -20,14 +20,13 @@ class GradeSeeder extends Seeder
 
         foreach ($classes as $class) {
             foreach ($class->teachers as $teacher) {
-                $createdAt = Carbon::createFromTimestamp(mt_rand(strtotime('2023-09-01'), time()));
                 foreach ($class->students as $student) {
                     $grades[] = [
                         'student_id' => $student->id,
                         'teacher_id' => $teacher->id,
                         'subject_id' => $teacher->subject_id,
                         'grade' => number_format(rand(80, 200) / 10, 2), // Grade between 8 and 20
-                        'created_at' => $createdAt,
+                        'created_at' => fake()->dateTimeBetween('-2 years', 'now'),
                     ];
                 }
             }

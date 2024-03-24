@@ -14,7 +14,7 @@ class RatingSeeder extends Seeder
      */
     public function run(): void
     {
-        $usersIds = User::where('role_id', '!=', UserRole::ADMIN)->pluck('id');
+        $usersIds = User::studentsAndTeachers()->pluck('id');
 
         $ratings = [];
         foreach ($usersIds as $userId) {

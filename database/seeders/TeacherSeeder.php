@@ -24,8 +24,8 @@ class TeacherSeeder extends Seeder
             if ($index < $classesIds->count()) {
                 $classId = $classesIds[$index];
             }
-            $randomClassId = collect($classesIds)->filter(fn($id) => $id !== $classId)->random();
-            $teacher->classes()->attach([$classId, $randomClassId]);
+            $randomClassesId = $classesIds->filter(fn($id) => $id !== $classId)->shuffle()->unique()->take(3);
+            $teacher->classes()->attach([$classId, ...$randomClassesId]);
 
             // give teacher a subject
             $subjectId = $subjectsIds->random();

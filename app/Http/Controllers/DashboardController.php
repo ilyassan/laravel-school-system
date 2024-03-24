@@ -21,7 +21,8 @@ class DashboardController extends Controller
 
             case UserRole::TEACHER: // IF TEACHER
 
-                return view('dashboard.teacher');
+                $viewData = $service->teacherDashboardData();
+                return view('dashboard.teacher', $viewData);
 
             case UserRole::STUDENT: // IF STUDENT
 
