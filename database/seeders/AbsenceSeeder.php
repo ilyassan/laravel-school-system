@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Absence;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
 class AbsenceSeeder extends Seeder
@@ -22,7 +21,7 @@ class AbsenceSeeder extends Seeder
         
             for($i = 0; $i < 2; $i++){
                 // Generate random date and time within a reasonable range
-                $from = Carbon::now()->subDays(rand(1, 30))->setTime(fake()->randomElement([rand(8, 10), rand(2, 4)]), 0);
+                $from = now()->subDays(rand(1, 30))->setTime(fake()->randomElement([rand(8, 10), rand(2, 4)]), 0);
                 if($from->isSunday()) $from->addDay();
                 $to = $from->copy()->addHours(rand(1, 2));
             
