@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use App\Enums\UserRole;
 use Illuminate\Support\Facades\DB;
 
-use App\Models\{User, Grade, Charge, Report, Absence, Classes, Rating};
+use App\Models\{User, Grade, Charge, Report, Absence, Classes, Homework, Rating};
 
 class DashboardDataService
 {
@@ -50,6 +50,7 @@ class DashboardDataService
     public function teacherDashboardData()
     {
         $topStudentsLimit = 5;
+        $latestHomeworksLimit = 3;
         
         $teacherClasses = auth()->user()->classes->pluck('id');
         return [
@@ -59,6 +60,7 @@ class DashboardDataService
             'salary' => auth()->user()->salary,
             'teacherClassesWithAbsences' => $this->getClassesWithAbsences($this->lastWeek, $teacherClasses),
             'topTeacherStudents' => $this->getTopStudents($teacherClasses, $topStudentsLimit),
+            'latestHomeworks' => $this->getHomeworks(auth()->id(), $latestHomeworksLimit),
         ];
     }
 
@@ -173,7 +175,7 @@ class DashboardDataService
                 ->get();
     }
 
-    public function getTopClasses($limit)
+    public function getTopClasses($limit = 1)
     {
         return Classes::withAvgGrades($this->threeMonthAgo)->orderByDesc(Classes::AVG_GRADES)->limit($limit)->get();
     }
@@ -226,6 +228,20 @@ class DashboardDataService
                 ->orderByDesc('grades_avg_grade')
                 ->limit($limit)
                 ->withAggregate('class', Classes::NAME_COLUMN)
+                ->get();
+    }
+
+    public function getHomeworks($teacherId = null, $limit = 1)
+    {
+        $query = Homework::
+                withAggregate('class', Classes::NAME_COLUMN)
+                ->latest();
+        if(isset($teacherId)){
+            $query->where(Homework::TEACHER_COLUMN, $teacherId);
+        }
+
+        return $query
+                ->limit($limit)
                 ->get();
     }
 

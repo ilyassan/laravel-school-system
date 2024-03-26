@@ -36,6 +36,12 @@ class Classes extends Model
     {
         return $this->hasManyThrough(Absence::class, User::class, 'class_id', 'student_id');
     }
+
+    public function homeworks()
+    {
+        return $this->hasMany(Homework::class, 'class_id');
+    }
+
     public function scopeWithAvgGrades($query, $date = 0)
     {
         return $query->withAvg(["grades as ". self::AVG_GRADES => function (Builder $query) use ($date) {

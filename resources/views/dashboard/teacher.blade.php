@@ -167,24 +167,14 @@
 										</tr>
 									</thead>
 									<tbody>
-										<tr>
-											<td>28 Feb 2024</td>
-											<td>4 Mar 2024</td>
-											<td>research about the black hole</td>
-											<td>BAC-3</td>
-										</tr>
-										<tr>
-											<td>25 Feb 2024</td>
-											<td>29 Feb 2024</td>
-											<td>answering the question given in the exercices book</td>
-											<td>BAC-1</td>
-										</tr>
-										<tr>
-											<td>23 Feb 2024</td>
-											<td>26 Feb 2024</td>
-											<td>research about photons behavior</td>
-											<td>BAC-3</td>
-										</tr>
+										@foreach ($latestHomeworks as $homework)
+											<tr>
+												<td>{{$homework->created_at->format('d M Y')}}</td>
+												<td>{{$homework->end_date->format('d M Y')}}</td>
+												<td>{{$homework->title}}</td>
+												<td>{{$homework->class_name}}</td>
+											</tr>
+										@endforeach
 									</tbody>
 								</table>
 							</div>
