@@ -37,7 +37,7 @@ class DashboardDataService
             'ratings' => $this->getRatings(),
             'charges' => $this->getCharges($this->currentMonth, $this->previousMonth),
             'latestCharges' => $this->getLatestCharges($latestChargesLimit),
-            'avgStudentGrade' => $this->getAvgStudentGrades($this->currentMonth, $this->previousMonth),
+            'avgStudentGrade' => $this->getAvgStudentsGrades($this->currentMonth, $this->previousMonth),
             'teachers' => $this->getTeachers($this->currentYear),
             'students' => $this->getStudents($this->currentYear),
             'lastWeekAbsences' => $this->getAbsences($this->lastWeek),
@@ -55,12 +55,24 @@ class DashboardDataService
         $teacherClasses = auth()->user()->classes->pluck('id');
         return [
             'teacherClasses' => $this->getTeacherClasses($this->currentYear),
-            'teacherStudentsAvgGrades' => $this->getAvgStudentGrades($this->currentMonth, $this->previousMonth, auth()->id()),
+            'teacherStudentsAvgGrades' => $this->getAvgStudentsGrades($this->currentMonth, $this->previousMonth, auth()->id()),
             'teacherStudents' => $this->getTeacherStudents($this->currentYear, $teacherClasses),
             'salary' => auth()->user()->salary,
             'teacherClassesWithAbsences' => $this->getClassesWithAbsences($this->lastWeek, $teacherClasses),
             'topTeacherStudents' => $this->getTopStudents($teacherClasses, $topStudentsLimit),
             'latestHomeworks' => $this->getHomeworks(auth()->id(), $latestHomeworksLimit),
+        ];
+    }
+
+    public function studentDashboardData()
+    {
+        $latestGradesLimit = 5;
+
+        $otherClassStudentIds = auth()->user()->class->students->pluck('id')->except(auth()->id());
+        return [
+           'latestStudentGrades'  => $this->getLatestGrades(auth()->id(), $latestGradesLimit),
+           'avgStudentGradesEachMonth'  => $this->getAvgGradesEachMonth(auth()->id(), $this->currentYear, $this->currentYear->clone()->endOfYear()),
+           'avgClassGradesEachMonth'  => $this->getAvgGradesEachMonth($otherClassStudentIds, $this->currentYear, $this->currentYear->clone()->endOfYear()),
         ];
     }
 
@@ -94,13 +106,13 @@ class DashboardDataService
         return Charge::latest()->limit($limit)->get();
     }
 
-    public function getAvgStudentGrades(Carbon $month, Carbon $monthComparedTo, $teacherId = null)
+    public function getAvgStudentsGrades(Carbon $month, Carbon $monthComparedTo, $teacherId = null)
     {
         $query = $this->collectionOfTwoMonths(Grade::class, $month, $monthComparedTo);
         
         // Grades of a teacher students
         if(isset($teacherId)){
-            $query->where(Grade::TEACHER_ID_COLUMN, $teacherId);
+            $query->where(Grade::TEACHER_COLUMN, $teacherId);
         }
         
         $studentGradesCollection = $query->get([Grade::CREATED_AT,Grade::GRADE_COLUMN]);
@@ -245,6 +257,36 @@ class DashboardDataService
                 ->get();
     }
 
+    public function getLatestGrades($studentId = null, $limit = 1)
+    {
+        $query = Grade::with('teacher.subject');
+
+        if(isset($studentId)){
+            $query->where('student_id', $studentId);
+        }
+        
+        return $query
+            ->latest()
+            ->limit($limit)
+            ->get();
+    }
+
+    public function getAvgGradesEachMonth($id = null, Carbon $date, Carbon $toDate)
+    {
+        $query = Grade::query();
+
+        if(is_array($id)){
+            $query->whereIn(Grade::STUDENT_COLUMN, $id);
+        }else if(is_int($id)){
+            $query->where(Grade::STUDENT_COLUMN, $id);
+        }
+
+        return $query
+            ->whereBetween(Grade::CREATED_AT, [$date, $toDate])
+            ->get([Grade::GRADE_COLUMN, Grade::CREATED_AT])
+            ->groupBy(fn($grade)=> Carbon::parse($grade->created_at)->format('M'))
+            ->map(fn($monthGrades)=> number_format($monthGrades->avg(Grade::GRADE_COLUMN), 2));
+    }
 
     // -- Auxiliary methods --
 
@@ -252,15 +294,17 @@ class DashboardDataService
     {
         return $model::where(function($query) use ($model, $firstMonth, $secondMonth) {
             $query->whereMonth($model::CREATED_AT, $firstMonth)
-                ->orWhereMonth($model::CREATED_AT, $secondMonth);
+                  ->orWhereMonth($model::CREATED_AT, $secondMonth);
         });
     }
 
     public function filterByMonth($collection, Carbon $month, string $dateColumn)
     {
         return $collection->whereBetween($dateColumn, 
-                [$month->startOfMonth()->toDateTime(),
-                $month->endOfMonth()->toDateTime()]);
+                [
+                    $month->startOfMonth()->toDateTime(),
+                    $month->endOfMonth()->toDateTime()
+                ]);
     }
     
     public function formatData($currentNumber = 0, $previousNumber = 0, array $extra = []): object
@@ -268,7 +312,7 @@ class DashboardDataService
         return (object) [
             'total' => number_format($currentNumber, 2),
             'variation' => $currentNumber - $previousNumber,
-            'variation_rate' => $previousNumber !== 0 ? number_format($currentNumber / $previousNumber * 100 - 100, 2) : null,
+            'variation_rate' => $previousNumber !== 0 && isset($previousNumber) ? number_format($currentNumber / $previousNumber * 100 - 100, 2) : null,
             ...$extra
             ];
     }

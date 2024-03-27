@@ -51,36 +51,14 @@
 											</tr>
 										</thead>
 										<tbody>
-                                            <tr>
-                                                <td>10 May 2024</td>
-                                                <td>David Wilson</td>
-                                                <td>Geography</td>
-                                                <td>15.5/20</td>
-                                            </tr>
-                                            <tr>
-                                                <td>20 Apr 2024</td>
-                                                <td>Sarah Brown</td>
-                                                <td>History</td>
-                                                <td>15/20</td>
-                                            </tr>
-                                            <tr>
-                                                <td>03 Apr 2024</td>
-                                                <td>Michael Johnson</td>
-                                                <td>English</td>
-                                                <td>19/20</td>
-                                            </tr>
-                                            <tr>
-                                                <td>15 Mar 2024</td>
-                                                <td>Alice Smith</td>
-                                                <td>Science</td>
-                                                <td>16/20</td>
-                                            </tr>
-                                            <tr>
-                                                <td>28 Feb 2024</td>
-                                                <td>John Doe</td>
-                                                <td>Mathematics</td>
-                                                <td>20/20</td>
-                                            </tr>                                            
+                                            @foreach ($latestStudentGrades as $grade)
+                                                <tr>
+                                                    <td>{{$grade->created_at->format('d M Y')}}</td>
+                                                    <td>{{$grade->teacher->name}}</td>
+                                                    <td>{{$grade->teacher->subject->name}}</td>
+                                                    <td>{{$grade->grade}}/20</td>
+                                                </tr>                                          
+                                            @endforeach
                                         </tbody>                                        
 									</table>
 								</div>
@@ -175,20 +153,23 @@
     $(function() {
         'use strict';
 
-        // Student Notes Chart
+        // Student Grades Chart
+		var avgStudentGradesEachMonth = {!! json_encode($avgStudentGradesEachMonth) !!};
+		var avgClassGradesEachMonth = {!! json_encode($avgClassGradesEachMonth) !!};
+		
         var ctx8 = document.getElementById('gradesChart');
         new Chart(ctx8, {
             type: 'line',
             data: {
-                labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                labels: Object.keys(avgStudentGradesEachMonth),
                 datasets: [{
-                    data: [12, 15, 18, 15, 15, 12, 15, 17, 16],
+                    data: Object.values(avgStudentGradesEachMonth),
                     borderColor: '#007bff',
                     borderWidth: 1,
                     fill: false,
                     label: 'You',
                 }, {
-                    data: [10, 13, 12, 14, 13, 13, 14, 16, 14],
+                    data: Object.values(avgClassGradesEachMonth),
                     borderColor: '#f7557a',
                     borderWidth: 1,
                     fill: false,

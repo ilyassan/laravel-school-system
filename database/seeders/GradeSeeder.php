@@ -21,16 +21,22 @@ class GradeSeeder extends Seeder
         foreach ($classes as $class) {
             foreach ($class->teachers as $teacher) {
                 foreach ($class->students as $student) {
-                    $grades[] = [
-                        'student_id' => $student->id,
-                        'teacher_id' => $teacher->id,
-                        'subject_id' => $teacher->subject_id,
-                        'grade' => number_format(rand(80, 200) / 10, 2), // Grade between 8 and 20
-                        'created_at' => fake()->dateTimeBetween('-2 years', 'now'),
-                    ];
-                }
+                    for ($year = 0; $year < 2; $year++) {
+                        for ($month = 1; $month <= 12; $month++) {
+                            $createdAt = Carbon::now()->subYear()->day(rand(1,28))->addYears($year)->month($month);
+                            $grades[] = [
+                                'student_id' => $student->id,
+                                'teacher_id' => $teacher->id,
+                                'subject_id' => $teacher->subject_id,
+                                'grade' => number_format(rand(95, 200) / 10, 2), // Grade between 9.5 and 20
+                                'created_at' => $createdAt, // Set the creation date
+                            ];
+                        }
+                    }
             }
+            Grade::insert($grades);
+            $grades = [];
         }
-        Grade::insert($grades);
+    }
     }
 }

@@ -26,7 +26,8 @@ class DashboardController extends Controller
 
             case UserRole::STUDENT: // IF STUDENT
 
-                return view('dashboard.student');
+                $viewData = $service->studentDashboardData();
+                return view('dashboard.student', $viewData);
 
             default:
                 return redirect()->route('login');
