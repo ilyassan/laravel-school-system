@@ -52,27 +52,38 @@ class DashboardDataService
         $topStudentsLimit = 5;
         $latestHomeworksLimit = 3;
         
+        $teacherId = auth()->id();
         $teacherClasses = auth()->user()->classes->pluck('id');
+
         return [
             'teacherClasses' => $this->getTeacherClasses($this->currentYear),
-            'teacherStudentsAvgGrades' => $this->getAvgStudentsGrades($this->currentMonth, $this->previousMonth, auth()->id()),
+            'teacherStudentsAvgGrades' => $this->getAvgStudentsGrades($this->currentMonth, $this->previousMonth, $teacherId),
             'teacherStudents' => $this->getTeacherStudents($this->currentYear, $teacherClasses),
             'salary' => auth()->user()->salary,
             'teacherClassesWithAbsences' => $this->getClassesWithAbsences($this->lastWeek, $teacherClasses),
             'topTeacherStudents' => $this->getTopStudents($teacherClasses, $topStudentsLimit),
-            'latestHomeworks' => $this->getHomeworks(auth()->id(), $latestHomeworksLimit),
+            'latestHomeworks' => $this->getTeacherHomeworks($teacherId, $latestHomeworksLimit),
         ];
     }
 
     public function studentDashboardData()
     {
         $latestGradesLimit = 5;
+        $topStudentsLimit = 5;
+        $classHomeworksLimit = 5;
 
-        $otherClassStudentIds = auth()->user()->class->students->pluck('id')->except(auth()->id());
+        $studentId = auth()->id();
+        $classId = auth()->user()->class_id;
+
+        $startOfYear = $this->currentYear;
+        $endOfYear = $this->currentYear->clone()->endOfYear();
+
         return [
-           'latestStudentGrades'  => $this->getLatestGrades(auth()->id(), $latestGradesLimit),
-           'avgStudentGradesEachMonth'  => $this->getAvgGradesEachMonth(auth()->id(), $this->currentYear, $this->currentYear->clone()->endOfYear()),
-           'avgClassGradesEachMonth'  => $this->getAvgGradesEachMonth($otherClassStudentIds, $this->currentYear, $this->currentYear->clone()->endOfYear()),
+            'avgStudentGradesEachMonth'  => $this->getAvgGradesOfEachMonth($startOfYear, $endOfYear, $studentId),
+            'avgClassGradesEachMonth'  => $this->getAvgGradesOfEachMonth($startOfYear, $endOfYear, $studentId, $classId),
+            'latestStudentGrades'  => $this->getLatestGrades($latestGradesLimit, $studentId),
+            'topClassStudents' => $this->getTopStudents($classId, $topStudentsLimit),
+            'classHomeworks' => $this->getClassHomeworks($classId, $classHomeworksLimit),
         ];
     }
 
@@ -226,16 +237,19 @@ class DashboardDataService
             ->get();
     }
 
-    public function getTopStudents($classes = null, $limit = 1)
+    public function getTopStudents($classId, $limit)
     {
         $query = User::students();
 
         // Grades of a teacher students
-        if(isset($classes)){
-            $query->whereIn(User::CLASS_COLUMN, $classes);
+        if(is_array($classId)){
+            $query->whereIn(User::CLASS_COLUMN, $classId);
+        }else if(is_int($classId)){
+            $query->where(User::CLASS_COLUMN, $classId);
         }
 
         return  $query
+                ->select(['id', User::NAME_COLUMN])
                 ->withAvg('grades', Grade::GRADE_COLUMN)
                 ->orderByDesc('grades_avg_grade')
                 ->limit($limit)
@@ -243,26 +257,31 @@ class DashboardDataService
                 ->get();
     }
 
-    public function getHomeworks($teacherId = null, $limit = 1)
+    public function getTeacherHomeworks($teacherId, $limit = 1)
     {
-        $query = Homework::
-                withAggregate('class', Classes::NAME_COLUMN)
-                ->latest();
-        if(isset($teacherId)){
-            $query->where(Homework::TEACHER_COLUMN, $teacherId);
-        }
-
-        return $query
-                ->limit($limit)
-                ->get();
+        return Homework::withAggregate('class', Classes::NAME_COLUMN)
+            ->where(Homework::TEACHER_COLUMN, $teacherId)
+            ->latest()
+            ->limit($limit)
+            ->get();
     }
+    
+    public function getClassHomeworks($classId, $limit = 1)
+    {
+        return Homework::with('subject:subjects.name')
+            ->where(Homework::CLASS_COLUMN, $classId)
+            ->latest()
+            ->limit($limit)
+            ->get();
+    }
+    
 
-    public function getLatestGrades($studentId = null, $limit = 1)
+    public function getLatestGrades($limit = 1, $studentId = null)
     {
         $query = Grade::with('teacher.subject');
 
         if(isset($studentId)){
-            $query->where('student_id', $studentId);
+            $query->where(Grade::STUDENT_COLUMN, $studentId);
         }
         
         return $query
@@ -271,13 +290,15 @@ class DashboardDataService
             ->get();
     }
 
-    public function getAvgGradesEachMonth($id = null, Carbon $date, Carbon $toDate)
+    public function getAvgGradesOfEachMonth(Carbon $date, Carbon $toDate, $id, $classId = null)
     {
         $query = Grade::query();
 
-        if(is_array($id)){
-            $query->whereIn(Grade::STUDENT_COLUMN, $id);
-        }else if(is_int($id)){
+        if(isset($classId)){
+            $query->where(Grade::STUDENT_COLUMN, '!=', $id)->whereHas('student', function ($query) use ($classId){
+                $query->where(User::CLASS_COLUMN, $classId);
+            });
+        }else{
             $query->where(Grade::STUDENT_COLUMN, $id);
         }
 

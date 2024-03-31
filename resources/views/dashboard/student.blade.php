@@ -77,26 +77,12 @@
                                 The top 5 students in your class based on grades.
                             </span>
 							<div class="list-group h-100 justify-content-around">
-								<div class="list-group-item border-top-0">
-									<i class="mdi mdi-account"></i>
-									<p class="text-capitalize">ilyass anida</p><span>1</span>
-								</div>
-								<div class="list-group-item border-top-0">
-									<i class="mdi mdi-account"></i>
-									<p class="text-capitalize">ahmed mahmoud</p><span>2</span>
-								</div>
-								<div class="list-group-item border-top-0">
-									<i class="mdi mdi-account"></i>
-									<p class="text-capitalize">yassin yassir</p><span>3</span>
-								</div>
-								<div class="list-group-item border-top-0">
-									<i class="mdi mdi-account"></i>
-									<p class="text-capitalize">sara mansour</p><span>4</span>
-								</div>
-								<div class="list-group-item border-top-0 border-bottom-0 mb-0">
-									<i class="mdi mdi-account"></i>
-									<p class="text-capitalize">elon elian</p><span>5</span>
-								</div>
+								@foreach ($topClassStudents as $student)					
+									<div class="list-group-item border-top-0 {{$loop->last ? 'border-bottom-0 mb-0' : ''}}">
+										<i class="mdi mdi-account"></i>
+										<p class="text-capitalize">{{$student->name}}</p><span>{{$loop->index + 1}}</span>
+									</div>
+								@endforeach	
 							</div>
 						</div>
 					</div>
@@ -118,24 +104,14 @@
 										</tr>
 									</thead>
 									<tbody>
-                                        <tr>
-                                            <td>Science</td>
-                                            <td>28 Feb 2024</td>
-                                            <td>4 Mar 2024</td>
-                                            <td>Research about the humain brain</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Mathematics</td>
-                                            <td>25 Feb 2024</td>
-                                            <td>29 Feb 2024</td>
-                                            <td>Answering the questions given in the exercise book</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Physics</td>
-                                            <td>23 Feb 2024</td>
-                                            <td>26 Feb 2024</td>
-                                            <td>Research about photons behavior</td>
-                                        </tr>                                        
+                                        @foreach ($classHomeworks as $homework)
+											<tr>
+												<td>{{$homework->subject->name}}</td>
+												<td>{{$homework->created_at->format('d M Y')}}</td>
+												<td>{{$homework->end_date->format('d M Y')}}</td>
+												<td>{{$homework->title}}</td>
+											</tr> 
+										@endforeach                                   
 									</tbody>
 								</table>
 							</div>
@@ -161,7 +137,7 @@
         new Chart(ctx8, {
             type: 'line',
             data: {
-                labels: Object.keys(avgStudentGradesEachMonth),
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                 datasets: [{
                     data: Object.values(avgStudentGradesEachMonth),
                     borderColor: '#007bff',
