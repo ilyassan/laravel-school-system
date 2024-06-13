@@ -17,8 +17,18 @@ class StudentSeeder extends Seeder
         $classIds = Classes::pluck('id');
 
         // Create students for each class
-        foreach ($classIds as $classId) {
-            StudentFactory::new()->count(45)->create([
+        foreach ($classIds as $key => $classId) {
+
+            $count = 45;
+
+            if ($key === 0) {
+                StudentFactory::new()->create([
+                    'email' => 'student@gmail.com',
+                    'class_id' => $classId,
+                ]);
+                $count--;
+            }
+            StudentFactory::new()->count($count)->create([
                 'class_id' => $classId,
             ]);
         }

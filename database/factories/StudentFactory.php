@@ -20,7 +20,7 @@ class StudentFactory extends Factory
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'phone' => fake()->unique()->numerify('0#########'),
+            'phone' => fake()->unique()->numerify('06########'),
             'password' => Hash::make('password'),
             'gender' => fake()->randomElement(['M','F']),
             'role_id' => UserRole::STUDENT,
