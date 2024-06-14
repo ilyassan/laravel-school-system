@@ -142,12 +142,29 @@
                                 </div>
                             </div>
                         @endif
+                        <div class="card-footer text-left pl-0">
+                            <a href="{{route('profile.edit')}}" class="btn btn-primary waves-effect waves-light">Edit Profile</a>
+                        </div>
                     </form>
-                </div>
-                <div class="card-footer text-left">
-                    <a href="{{route('profile.edit')}}" class="btn btn-primary waves-effect waves-light">Edit Profile</a>
                 </div>
             </div>
         </div>
     </div>
 @endsection
+@if (Session::has('message'))
+    @section('js')
+        <script type="text/javascript">
+            swal({
+                title: 'Message',
+                text: '{{Session::get("message")}}',
+                icon: 'success',
+                buttons: {
+                    confirm: {
+                        text: 'OK',
+                        className: 'btn btn-primary'
+                    }
+                }
+            })
+        </script>
+    @endsection
+@endif
