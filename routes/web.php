@@ -26,6 +26,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/reset-password', [ProfileController::class, 'showResetPassword'])->name('profile.reset-password');
+    Route::patch('/profile/reset-password', [ProfileController::class, 'resetPassword'])->name('profile.reset-password');
     Route::delete('/profile/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 

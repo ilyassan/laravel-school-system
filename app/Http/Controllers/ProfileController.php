@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -35,9 +37,32 @@ class ProfileController extends Controller
         $validatedData = $request->validated();
         
         $user = auth()->user();
+        
         $user->update($validatedData);
 
         return Redirect::route('profile')->with('message', 'Your informations has been updated successfully!');
+    }
+
+    /**
+     * Reset the user's password.
+     */
+    public function showResetPassword(Request $request): View
+    {
+        return view('profile.reset-password');
+    }
+
+    /**
+     * Reset the user's password.
+     */
+    public function resetPassword(ResetPasswordRequest $request): RedirectResponse
+    {
+        $user = auth()->user();
+
+        $user->password = Hash::make($request->new_password);
+
+        $user->save();
+
+        return back()->with('message', 'Your password has been updated successfully!');
     }
 
     /**

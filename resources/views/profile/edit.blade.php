@@ -53,6 +53,7 @@
                         </div>
                         <div class="card-footer text-left pl-0">
                             <button type="submit" class="btn btn-primary waves-effect waves-light">Update Profile</button>
+                            <a href="{{route('profile.reset-password')}}" class="btn btn-primary waves-effect waves-light ml-5">Reset Password</a>
                         </div>
                     </form>
                     
