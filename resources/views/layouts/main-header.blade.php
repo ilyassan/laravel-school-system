@@ -182,7 +182,7 @@
 						<a class="dropdown-item" href="#"><i class="bx bx-slider-alt"></i> Account Settings</a>
 						<form action="{{route('logout')}}" method="POST">
 							@csrf
-							<button class="dropdown-item btn" type="submit"><i class="bx bx-log-out"></i> Sign Out</button>
+							<button class="dropdown-item btn" type="submit" onclick="confirmation(event)"><i class="bx bx-log-out"></i> Sign Out</button>
 						</form>
 					</div>
 				</div>
@@ -190,4 +190,26 @@
 		</div>
 	</div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script type="text/javascript">
+	
+	function confirmation(e){
+		e.preventDefault();
+		
+		swal({
+			title: 'Are you sure ?',
+			text: 'to back to the account you must login again.',
+			icon: 'warning',
+			buttons: true,
+			dangerMode: true,
+		})
+		.then((sure)=>{
+			if(sure){
+				e.target.parentElement.submit()
+			}
+		})
+	}
+
+</script>
 <!-- /main-header -->
