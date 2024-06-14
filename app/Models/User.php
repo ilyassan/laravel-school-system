@@ -29,6 +29,19 @@ class User extends Authenticatable
 
     /* ### Scope ### */
     
+    public function isAdmin(){
+        return auth()->user()->role_id === UserRole::ADMIN;
+    }
+
+    public function isTeacher(){
+        return auth()->user()->role_id === UserRole::TEACHER;
+    }
+
+    public function isStudent(){
+        return auth()->user()->role_id === UserRole::STUDENT;
+    }
+
+
     // Get admins only
     public function scopeAdmins($query)
     {

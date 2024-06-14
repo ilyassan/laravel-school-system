@@ -6,8 +6,25 @@
 				<div class="breadcrumb-header justify-content-between">
 					<div class="left-content">
 						<div>
-						  <h2 class="main-content-title tx-24 mg-b-1 mg-b-lg-1">Hi, welcome back!</h2>
+						  <h2 class="main-content-title tx-24 mg-b-1 mg-b-lg-1">Hi, {{auth()->user()->name}}</h2>
 						  <p class="mg-b-0">Teacher Dashboard</p>
+						</div>
+					</div>
+					<div class="main-dashboard-header-right">
+						<div>
+							<label class="tx-13">Ratings</label>
+							<div class="main-star">
+								@for ($i = 1; $i <= 5; $i++)
+										@if ($ratings->avg >= $i)
+											<i class="typcn typcn-star-full-outline active"></i> <!-- Full active star -->
+										@elseif($ratings->avg - $i >= -0.5)
+											<i class="typcn typcn-star-half-outline active"></i> <!-- Half active star -->
+										@else
+											<i class="typcn typcn-star-outline"></i> <!-- Inactive star -->
+										@endif
+								@endfor
+								<span>({{$ratings->count}})</span>
+							</div>
 						</div>
 					</div>
 				</div>

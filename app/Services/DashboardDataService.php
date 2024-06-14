@@ -56,6 +56,7 @@ class DashboardDataService
         $teacherClasses = auth()->user()->classes->pluck('id');
 
         return [
+            'ratings' => $this->getRatings(),
             'teacherClasses' => $this->getTeacherClasses($this->currentYear),
             'teacherStudentsAvgGrades' => $this->getAvgStudentsGrades($this->currentMonth, $this->previousMonth, $teacherId),
             'teacherStudents' => $this->getTeacherStudents($this->currentYear, $teacherClasses),
@@ -79,6 +80,7 @@ class DashboardDataService
         $endOfYear = $this->currentYear->clone()->endOfYear();
 
         return [
+            'ratings' => $this->getRatings(),
             'avgStudentGradesEachMonth'  => $this->getAvgGradesOfEachMonth($startOfYear, $endOfYear, $studentId),
             'avgClassGradesEachMonth'  => $this->getAvgGradesOfEachMonth($startOfYear, $endOfYear, $studentId, $classId),
             'latestStudentGrades'  => $this->getLatestGrades($latestGradesLimit, $studentId),
