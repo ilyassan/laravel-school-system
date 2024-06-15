@@ -6,7 +6,7 @@
 				<div class="breadcrumb-header justify-content-between">
 					<div class="left-content">
 						<div>
-						  <h2 class="main-content-title tx-24 mg-b-1 mg-b-lg-1">Hi,{{auth()->user()->name}}</h2>
+						  <h2 class="main-content-title tx-24 mg-b-1 mg-b-lg-1">Hi,{{auth()->user()->fullname}}</h2>
 						  <p class="mg-b-0">Student Dashboard</p>
 						</div>
 					</div>
@@ -97,7 +97,7 @@
 								@foreach ($topClassStudents as $student)					
 									<div class="list-group-item border-top-0 {{$loop->last ? 'border-bottom-0 mb-0' : ''}}">
 										<i class="mdi mdi-account"></i>
-										<p class="text-capitalize">{{$student->name === auth()->user()->name ? 'You': $student->name}}</p><span>{{$loop->index + 1}}</span>
+										<p class="text-capitalize">{{$student->id === auth()->id ? 'You': $student->fullname}}</p><span>{{$loop->index + 1}}</span>
 									</div>
 								@endforeach	
 							</div>

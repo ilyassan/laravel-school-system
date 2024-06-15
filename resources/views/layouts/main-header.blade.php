@@ -171,14 +171,14 @@
 							<div class="d-flex wd-100p">
 								<div class="main-img-user"><img alt="" src="{{URL::asset('assets/img/faces/6.jpg')}}" class=""></div>
 								<div class="ml-2 my-auto">
-									<h6>{{auth()->user()->name}}</h6><span>{{auth()->user()->email}}</span>
+									<h6>{{auth()->user()->fullname}}</h6><span>{{auth()->user()->fullname}}</span>
 								</div>
 							</div>
 						</div>
-						<a class="dropdown-item" href="{{ route('profile') }}"><i class="bx bx-user-circle"></i>Profile</a>
+						<a class="dropdown-item" href="{{ route('profile.index') }}"><i class="bx bx-user-circle"></i>Profile</a>
 						<a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="bx bx-slider-alt"></i>Edit Profile</a>
 						<a class="dropdown-item" href="#"><i class="bx bx-envelope"></i>Messages</a>
-						<a class="dropdown-item" href="{{ route('profile.reset-password') }}"><i class="bx bx-cog"></i>Reset Password</a>
+						<a class="dropdown-item" href="{{ route('profile.show-reset-password') }}"><i class="bx bx-cog"></i>Reset Password</a>
 						<form action="{{route('logout')}}" method="POST">
 							@csrf
 							<button class="dropdown-item btn" type="submit" onclick="confirmation(event)"><i class="bx bx-log-out"></i> Sign Out</button>

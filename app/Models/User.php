@@ -27,7 +27,9 @@ class User extends Authenticatable
 
     public const GENDER_FEMALE = "F"; 
 
-    /* ### Scope ### */
+
+    /* ### Check Role ### */
+
     
     public function isAdmin(){
         return $this->role_id == UserRole::ADMIN;
@@ -41,6 +43,7 @@ class User extends Authenticatable
         return $this->role_id == UserRole::STUDENT;
     }
 
+    /* ### Scope ### */
 
     // Get admins only
     public function scopeAdmins($query)
@@ -127,6 +130,12 @@ class User extends Authenticatable
         return $this->hasMany(Report::class, 'user_id');
     }
     
+    /* ### Attributes ### */
+
+    public function getFullnameAttribute()
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
 
     protected $hidden = [
         'password',

@@ -21,16 +21,13 @@
                 <div class="card-body">
                     <form class="form-horizontal">
                         <div class="mb-4 main-content-label">Name</div>
-                        @php
-                            $fullName = explode(' ', auth()->user()->name);
-                        @endphp
                         <div class="form-group ">
                             <div class="row">
                                 <div class="col-md-3 d-flex align-items-center">
                                     <label class="form-label m-0">First Name</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{array_shift($fullName)}}">
+                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{auth()->user()->first_name}}">
                                 </div>
                             </div>
                         </div>
@@ -40,7 +37,7 @@
                                     <label class="form-label m-0">Last Name</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ implode(' ', $fullName) }}">
+                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{auth()->user()->last_name}}">
                                 </div>
                             </div>
                         </div>
@@ -115,7 +112,7 @@
                                         <label class="form-label m-0">Classes</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{auth()->user()->classes->count()}}">
+                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{auth()->user()->classes()->count()}}">
                                     </div>
                                 </div>
                             </div>

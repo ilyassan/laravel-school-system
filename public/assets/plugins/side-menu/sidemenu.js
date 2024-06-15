@@ -3,8 +3,6 @@
 
     var slideMenu = $(".side-menu");
 
-    $(".app").addClass("sidenav-toggled");
-
     // Toggle Sidebar
     $(document).on("click", '[data-toggle="sidebar"]', function (event) {
         event.preventDefault();

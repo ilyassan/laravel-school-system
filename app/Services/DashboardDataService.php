@@ -92,11 +92,12 @@ class DashboardDataService
 
     public function getRatings()
     {
-        $ratingsCollection = Rating::all(Rating::RATING_COLUMN);
-
-        return  (object) [
-            'count' => number_format($ratingsCollection->count()),
-            'avg' => $ratingsCollection->avg(Rating::RATING_COLUMN)
+        $ratings = Rating::selectRaw('COUNT(*) as count, AVG(' . Rating::RATING_COLUMN . ') as avg')
+        ->first();
+        
+        return (object) [
+            'count' => number_format($ratings->count),
+            'avg' => $ratings->avg,
         ];
     }
 

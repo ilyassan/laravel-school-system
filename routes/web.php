@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GradesController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ThemeController;
 use Illuminate\Support\Facades\Route;
@@ -22,14 +23,16 @@ Route::get('/', function () {
 
 Route::get('/dashboard', DashboardController::class)->middleware('auth')->name('dashboard');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
-    Route::get('/profile/reset-password', [ProfileController::class, 'showResetPassword'])->name('profile.reset-password');
-    Route::patch('/profile/reset-password', [ProfileController::class, 'resetPassword'])->name('profile.reset-password');
-    Route::delete('/profile/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
+Route::middleware('auth')->prefix('profile')->name('profile.')->group(function () {
+    Route::get('/', [ProfileController::class, 'index'])->name('index');
+    Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
+    Route::patch('/update', [ProfileController::class, 'update'])->name('update');
+    Route::get('/reset-password', [ProfileController::class, 'showResetPassword'])->name('show-reset-password');
+    Route::patch('/reset-password', [ProfileController::class, 'resetPassword'])->name('reset-password');
 });
+
+Route::middleware('auth')->resource('grades', GradesController::class);
+
 
 require __DIR__.'/auth.php';
 

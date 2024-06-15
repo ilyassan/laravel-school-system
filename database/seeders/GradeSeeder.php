@@ -34,7 +34,6 @@ class GradeSeeder extends Seeder
                             $grades[] = [
                                 'student_id' => $student->id,
                                 'teacher_id' => $teacher->id,
-                                'subject_id' => $teacher->subject_id,
                                 'grade' => number_format(rand(95, 200) / 10, 2), // Grade between 9.5 and 20
                                 'created_at' => $createdAt, // Set the creation date
                             ];
