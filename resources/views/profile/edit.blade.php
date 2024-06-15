@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'Profile')
+@section('title', 'Edit Profile')
 
 @section('page-header')
 				<!-- breadcrumb -->
@@ -7,7 +7,6 @@
 					<div class="left-content">
 						<div>
 						  <h2 class="main-content-title tx-24 mg-b-1 mg-b-lg-1">Hi, Welcome Back!</h2>
-						  <p class="mg-b-0">Profile</p>
 						</div>
 					</div>
 				</div>

@@ -30,15 +30,15 @@ class User extends Authenticatable
     /* ### Scope ### */
     
     public function isAdmin(){
-        return auth()->user()->role_id === UserRole::ADMIN;
+        return $this->role_id == UserRole::ADMIN;
     }
 
     public function isTeacher(){
-        return auth()->user()->role_id === UserRole::TEACHER;
+        return $this->role_id == UserRole::TEACHER;
     }
 
     public function isStudent(){
-        return auth()->user()->role_id === UserRole::STUDENT;
+        return $this->role_id == UserRole::STUDENT;
     }
 
 

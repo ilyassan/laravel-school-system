@@ -36,6 +36,7 @@ class ProfileController extends Controller
     {
         $validatedData = $request->validated();
         
+        /** @var \App\Models\MyUserModel $user **/
         $user = auth()->user();
         
         $user->update($validatedData);
@@ -44,7 +45,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Reset the user's password.
+     * Reset user's password page.
      */
     public function showResetPassword(Request $request): View
     {
@@ -56,11 +57,12 @@ class ProfileController extends Controller
      */
     public function resetPassword(ResetPasswordRequest $request): RedirectResponse
     {
+        /** @var \App\Models\MyUserModel $user **/
         $user = auth()->user();
 
-        $user->password = Hash::make($request->new_password);
-
-        $user->save();
+        $user->update([
+            'password' => Hash::make($request->new_password),
+        ]);
 
         return back()->with('message', 'Your password has been updated successfully!');
     }
