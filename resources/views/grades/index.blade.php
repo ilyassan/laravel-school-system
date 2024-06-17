@@ -38,7 +38,7 @@
                             <div class="d-flex align-items-center" style="gap: 5px">
                                 <div class="dataTables_length col-sm-3 px-0" id="example1_length">
                                     <select name="per-page" class="custom-select custom-select-sm form-control form-control-sm">
-                                        <option>Per Page</option>
+                                        <option value={{null}}>Per Page</option>
                                         <option value="10" {{request()->get('per-page') == 10 ? 'selected' : ''}}>10</option>
                                         <option value="50" {{request()->get('per-page') == 50 ? 'selected' : ''}}>50</option>
                                         <option value="100" {{request()->get('per-page') == 100 ? 'selected' : ''}}>100</option>
@@ -47,7 +47,7 @@
         
                                 <div class="dataTables_length col-sm-3 px-0" id="example1_length">
                                     <select name="subject" class="custom-select custom-select-sm form-control form-control-sm">
-                                        <option value="">Select A Subject</option>
+                                        <option value={{null}}>Select A Subject</option>
                                         @foreach($subjects as $suject)
                                             <option value="{{$suject->id}}" {{request()->get('subject') == $suject->id ? 'selected' : ''}}>{{$suject->name}}</option>
                                         @endforeach
@@ -114,17 +114,31 @@
     </div>
 </div>
 @endsection
+ 
+
+
+@if ($invalidFilter)
+    @section('tag-js')
+        swal({
+        title: 'Invalid Filter',
+        text: '{{$invalidFilter[0]}}',
+        icon: 'warning',
+        button: 'Ok',
+        })
+        console.log(3)
+    @endsection
+@endif
 
 @section('js')
-<!-- Internal Data tables -->
-<script src="{{ URL::asset('assets/plugins/datatable/js/jquery.dataTables.js') }}"></script>
-<script src="{{ URL::asset('assets/plugins/datatable/js/dataTables.bootstrap4.js') }}"></script>
-<script src="{{ URL::asset('assets/plugins/datatable/js/dataTables.buttons.min.js') }}"></script>
-<script src="{{ URL::asset('assets/js/table-data.js') }}"></script>
+    <!-- Internal Data tables -->
+    <script src="{{ URL::asset('assets/plugins/datatable/js/jquery.dataTables.js') }}"></>
+    <script src="{{ URL::asset('assets/plugins/datatable/js/dataTables.bootstrap4.js') }}"></script>
+    <script src="{{ URL::asset('assets/plugins/datatable/js/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ URL::asset('assets/js/table-data.js') }}"></script>
 
-<script src="{{URL::asset('assets/plugins/jquery-ui/ui/widgets/datepicker.js')}}"></script>
-<script src="{{URL::asset('assets/plugins/jquery.maskedinput/jquery.maskedinput.js')}}"></script>
-<script src="{{URL::asset('assets/plugins/spectrum-colorpicker/spectrum.js')}}"></script>
-<script src="{{URL::asset('assets/plugins/select2/js/select2.min.js')}}"></script>
-<script src="{{URL::asset('assets/js/form-elements.js')}}"></script>
+    <script src="{{URL::asset('assets/plugins/jquery-ui/ui/widgets/datepicker.js')}}"></script>
+    <script src="{{URL::asset('assets/plugins/jquery.maskedinput/jquery.maskedinput.js')}}"></script>
+    <script src="{{URL::asset('assets/plugins/spectrum-colorpicker/spectrum.js')}}"></script>
+    <script src="{{URL::asset('assets/plugins/select2/js/select2.min.js')}}"></script>
+    <script src="{{URL::asset('assets/js/form-elements.js')}}"></script>
 @endsection

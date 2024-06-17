@@ -202,7 +202,7 @@
 									<tbody>
 										@foreach ($latestCharges as $charge)
 											<tr>
-												<td>{{$charge->created_at->format('m/d/Y'))}}</td>
+												<td>{{$charge->created_at->format('m/d/Y')}}</td>
 												<td class="tx-right tx-medium tx-inverse">{{$charge->title}}</td>
 												<td class="tx-right tx-medium tx-inverse">{{$charge->quantity}}</td>
 												<td class="tx-right tx-medium tx-danger">{{$charge->price * $charge->quantity}} DH</td>

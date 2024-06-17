@@ -53,7 +53,7 @@ class DashboardDataService
         $latestHomeworksLimit = 3;
         
         $teacherId = auth()->id();
-        $teacherClasses = auth()->user()->classes->pluck('id');
+        $teacherClasses = auth()->user()->classes()->pluck('id');
 
         return [
             'ratings' => $this->getRatings(),
