@@ -3,24 +3,37 @@
 namespace App\Http\Controllers;
 
 use App\Models\Grade;
+use App\Models\Subject;
+use App\Repositories\GradeRepository;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 
 class GradesController extends Controller
 {
+    private $gradeRepository;
+
+    public function __construct(GradeRepository $gradeRepository) {
+        $this->gradeRepository = $gradeRepository;
+    }
+    
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $grades = Grade::with([
+        $filters = $request->all();
+        
+        $filters['with'] = [
             'teacher:id,first_name,last_name,subject_id',
             'teacher.subject:id,name',
             'student:id,first_name,last_name,class_id',
             'student.class:id,name',
-        ])->latest()->paginate(10);
+        ];
 
-        return view('grades.index', compact('grades'));
+        $grades = $this->gradeRepository->getPaginate($filters);
+        $subjects = Subject::all();
+
+        return view('grades.index', compact('grades','subjects'));
     }
     
 

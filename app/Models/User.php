@@ -15,9 +15,13 @@ class User extends Authenticatable
 
     protected $guarded = [];
 
+    public const TABLE = "users"; 
+    public const PRIMARY_KEY_COLUMN_NAME = "id"; 
     public const ROLE_COLUMN = "role_id"; 
 
-    public const NAME_COLUMN = "name"; 
+    public const FIRST_NAME_COLUMN = "first_name"; 
+
+    public const LAST_NAME_COLUMN = "last_name"; 
 
     public const CLASS_COLUMN = "class_id"; 
 

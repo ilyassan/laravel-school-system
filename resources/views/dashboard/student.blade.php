@@ -70,7 +70,7 @@
 										<tbody>
                                             @foreach ($latestStudentGrades as $grade)
                                                 <tr>
-                                                    <td>{{$grade->created_at->format('d M Y')}}</td>
+                                                    <td>{{$grade->created_at->format('m/d/Y')}}</td>
                                                     <td>{{$grade->teacher->name}}</td>
                                                     <td>{{$grade->teacher->subject->name}}</td>
                                                     <td>{{$grade->grade}}/20</td>
@@ -124,8 +124,8 @@
                                         @foreach ($classHomeworks as $homework)
 											<tr>
 												<td>{{$homework->subject->name}}</td>
-												<td>{{$homework->created_at->format('d M Y')}}</td>
-												<td>{{$homework->end_date->format('d M Y')}}</td>
+												<td>{{$homework->created_at->format('m/d/Y')}}</td>
+												<td>{{$homework->end_date->format('m/d/Y')}}</td>
 												<td>{{$homework->title}}</td>
 											</tr> 
 										@endforeach                                   

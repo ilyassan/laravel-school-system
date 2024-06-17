@@ -197,7 +197,11 @@ class DashboardDataService
                 ->latest('reports.created_at')
                 ->limit($reportsLimit)
                 ->selectRaw("LEFT(description, $descriptionLimit) AS shortDescription")
-                ->withAggregate('user', User::NAME_COLUMN)
+                ->addSelect([
+                    'user_name' => User::select(DB::raw("CONCAT(". User::FIRST_NAME_COLUMN . ", ' ', " . User::LAST_NAME_COLUMN . ")"))
+                        ->whereColumn('users.id', 'reports.user_id')
+                        ->limit(1)
+                ])
                 ->get();
     }
 
@@ -252,7 +256,7 @@ class DashboardDataService
         }
 
         return  $query
-                ->select(['id', User::NAME_COLUMN])
+                ->select(['id', User::FIRST_NAME_COLUMN, User::LAST_NAME_COLUMN])
                 ->withAvg('grades', Grade::GRADE_COLUMN)
                 ->orderByDesc('grades_avg_grade')
                 ->limit($limit)

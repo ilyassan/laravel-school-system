@@ -9,6 +9,9 @@ class Subject extends Model
 {
     use HasFactory;
 
+    const TABLE = 'subjects';
+    const PRIMARY_KEY_COLUMN_NAME = "id";
+
     public function teachers()
     {
         return $this->hasMany(User::class, 'subject_id');

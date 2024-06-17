@@ -186,8 +186,8 @@
 									<tbody>
 										@foreach ($latestHomeworks as $homework)
 											<tr>
-												<td>{{$homework->created_at->format('d M Y')}}</td>
-												<td>{{$homework->end_date->format('d M Y')}}</td>
+												<td>{{$homework->created_at->format('m/d/Y')}}</td>
+												<td>{{$homework->end_date->format('m/d/Y')}}</td>
 												<td>{{$homework->title}}</td>
 												<td>{{$homework->class_name}}</td>
 											</tr>
