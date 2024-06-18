@@ -33,8 +33,8 @@ Route::middleware('auth')->prefix('profile')->name('profile.')->group(function (
 
 Route::middleware('auth')->resource('grades', GradesController::class);
 
+require __DIR__ . '/auth.php';
 
-require __DIR__.'/auth.php';
 
 // theme route
 Route::get('/{page}', [ThemeController::class, 'index']);

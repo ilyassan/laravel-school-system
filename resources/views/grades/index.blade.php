@@ -125,7 +125,6 @@
         icon: 'warning',
         button: 'Ok',
         })
-        console.log(3)
     @endsection
 @endif
 

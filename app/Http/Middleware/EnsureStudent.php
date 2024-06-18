@@ -19,11 +19,11 @@ class EnsureStudent
         $user = auth()->user();
 
         // Ensure the user is authenticated and is a student
-        if ($user && $user->isStudent()) {
+        if (auth()->check() && $user->isStudent()) {
             return $next($request);
         }
 
         // Redirect non-student users to the dashboard with an error message
-        return redirect('dashboard')->withErrors('You do not have admin access.');
+        return redirect('dashboard')->withErrors('You do not have access to this page.');
     }
 }

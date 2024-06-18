@@ -19,11 +19,11 @@ class EnsureAdmin
         $user = auth()->user();
 
         // Ensure the user is authenticated and is an admin
-        if ($user && $user->isAdmin()) {
+        if (auth()->check() && $user->isAdmin()) {
             return $next($request);
         }
 
         // Redirect non-admin users to the dashboard with an error message
-        return redirect('dashboard')->withErrors('You do not have admin access.');
+        return redirect('dashboard')->withErrors('You do not have access to this page.');
     }
 }

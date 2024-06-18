@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Grade;
 use App\Models\Subject;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use App\Repositories\GradeRepository;
+use App\Http\Requests\StoreGradeRequest;
 use Illuminate\Support\Facades\Validator;
 
 class GradesController extends BaseController
@@ -81,9 +83,15 @@ class GradesController extends BaseController
     /**
      * Store a newly created grade in storage.
      */
-    public function store(Request $request)
+    public function store(StoreGradeRequest $request)
     {
-        //
+        Grade::create([
+            'teacher_id' => $this->getAuthUser()->id,
+            'student_id' => $request->get('student-id'),
+            'grade' => $request->get('grade'),
+        ]);
+
+        return redirect()->route('grades.create')->with('success', 'The grade created successfully.')->withInput(['class-id' => $request->get('class-id')]);
     }
 
     /**

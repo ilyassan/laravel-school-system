@@ -36,7 +36,7 @@
                                     <label class="form-label m-0">Teacher</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" style="pointer-events: none" id="teacher" name="teacher" class="form-control bg-light" required value="{{ auth()->user()->fullname }}">
+                                    <input type="text" style="pointer-events: none" id="teacher" class="form-control bg-light" required value="{{ auth()->user()->fullname }}">
                                 </div>
                             </div>
                         </div>
@@ -46,7 +46,7 @@
                                     <label class="form-label m-0">Subject</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" style="pointer-events: none" id="subject" name="subject" class="form-control bg-light" required value="{{ auth()->user()->subject->name }}">
+                                    <input type="text" style="pointer-events: none" id="subject" class="form-control bg-light" required value="{{ auth()->user()->subject->name }}">
                                 </div>
                             </div>
                         </div>
@@ -56,10 +56,10 @@
                                     <label class="form-label m-0">Classes</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <select id="classesInput" class="form-control SlectBox" >
+                                    <select id="classesInput" name="class-id" class="form-control SlectBox" required>
                                             <option value="">Select The Class</option>
                                             @foreach ($classes as $class)
-                                                <option value={{$class->id}}>{{$class->name}}</option>
+                                                <option value={{$class->id}} {{old('class-id') == $class->id ? 'selected' : ''}}>{{$class->name}}</option>
                                             @endforeach
 									</select>
                                 </div>
@@ -71,11 +71,22 @@
                                     <label class="form-label m-0">Student</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <select id="studentSearchInput" class="form-control SlectBox">
+                                    <select id="studentSearchInput" name="student-id" class="form-control SlectBox" required>
                                     </select>
                                 </div>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-3 d-flex align-items-center">
+                                    <label class="form-label m-0">Grade</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <input type="number" name="grade" class="form-control" step="0.1" min="0" max="20" required>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="card-footer text-left pl-0">
                             <button type="submit" class="btn btn-primary waves-effect waves-light">Create Grade</button>
                         </div>
@@ -97,7 +108,7 @@
         $('#studentSearchInput').select2({
             placeholder: 'Select The student', // Placeholder text
             ajax: {
-                url: '{{route('students.search')}}', // Replace with your API endpoint
+                url: '{{route('students.search')}}',
                 dataType: 'json',
                 method: 'POST',
                 data: function (params) {
@@ -105,25 +116,40 @@
                         search: params.term || '',
                         class_id: $('#classesInput').val()
                       };
-                    console.log(query);
 
                     return query;
                 },
                 processResults: function (data) {
-                    console.log(data)
                     return {
                         results: data.students.map(function(user) {
                             return { id: user.id, text: user.first_name + ' ' + user.last_name };
                         })
                     };
                 },
-                cache: false
+                cache: true
             }
         });
-
-        $('#classesInput').on('change', function() {
-            // Trigger Select2 to fetch data based on the selected class
-            $('#studentSearchInput').val(null).trigger('change');
-        });
     });
+
+    @if ($errors->any())
+        swal({
+            title: 'Invalid Data',
+            text: '{{$errors->first()}}', // Use $errors->first() to get the first error message
+            icon: 'warning',
+            button: 'Ok'
+        });
+    @endif
+    @if (Session::has('success'))
+        swal({
+            title: 'Message',
+            text: '{{Session::get('success')}}',
+            icon: 'success',
+            buttons: {
+                confirm: {
+                    text: 'OK',
+                    className: 'btn btn-primary'
+                }
+            }
+        })
+    @endif
 @endsection

@@ -19,11 +19,11 @@ class EnsureTeacher
         $user = auth()->user();
 
         // Ensure the user is authenticated and is a teacher
-        if ($user && $user->isTeacher()) {
+        if (auth()->check() && $user->isTeacher()) {
             return $next($request);
         }
 
         // Redirect non-teacher users to the dashboard with an error message
-        return redirect('dashboard')->withErrors('You do not have admin access.');
+        return redirect('dashboard')->withErrors('You do not have access to this page.');
     }
 }
