@@ -2,11 +2,9 @@
 
 namespace App\Repositories;
 
-use App\Models\User;
 use App\Models\Grade;
 use App\Models\Subject;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class GradeRepository extends AbstractRepository
@@ -16,7 +14,7 @@ class GradeRepository extends AbstractRepository
         return Grade::class;
     }
 
-    
+
     public function getPaginate(array $filters): LengthAwarePaginator
     {
         $query = $this->model::query();
@@ -52,20 +50,20 @@ class GradeRepository extends AbstractRepository
     protected function applyKeywordSearch($query, $keyword)
     {
         if ($keyword) {
-            $query->where(function($q) use($keyword){
+            $query->where(function ($q) use ($keyword) {
                 // Filter by fullname
-                $q->whereHas('student', function ($q) use($keyword){
-                    $q->where(DB::raw(sprintf("CONCAT(%s.%s, ' ', %s.%s)", User::TABLE, User::FIRST_NAME_COLUMN, User::TABLE, User::LAST_NAME_COLUMN)), 'LIKE', '%'.$keyword.'%')
+                $q->whereHas('student', function ($q) use ($keyword) {
+                    $q->whereFullNameLike($keyword)
 
-                // Filter by class
-                    ->orWhereHas('class', function ($q) use ($keyword){
-                        $q->where('name', $keyword);
-                    });
+                        // Filter by class
+                        ->orWhereHas('class', function ($q) use ($keyword) {
+                            $q->where('name', $keyword);
+                        });
                 })
-                // Filter by fullname
-                ->orWhereHas('teacher', function ($q) use($keyword){
-                    $q->where(DB::raw(sprintf("CONCAT(%s.%s, ' ', %s.%s)", User::TABLE, User::FIRST_NAME_COLUMN, User::TABLE, User::LAST_NAME_COLUMN)), 'LIKE', '%'.$keyword.'%');
-                });
+                    // Filter by fullname
+                    ->orWhereHas('teacher', function ($q) use ($keyword) {
+                        $q->whereFullNameLike($keyword);
+                    });
             });
         }
     }

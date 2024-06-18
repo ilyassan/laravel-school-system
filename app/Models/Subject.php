@@ -11,6 +11,7 @@ class Subject extends Model
 
     const TABLE = 'subjects';
     const PRIMARY_KEY_COLUMN_NAME = "id";
+    const NAME_COLUMN = "name";
 
     public function teachers()
     {

@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\UserRole;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -15,35 +15,38 @@ class User extends Authenticatable
 
     protected $guarded = [];
 
-    public const TABLE = "users"; 
-    public const PRIMARY_KEY_COLUMN_NAME = "id"; 
-    public const ROLE_COLUMN = "role_id"; 
+    public const TABLE = "users";
+    public const PRIMARY_KEY_COLUMN_NAME = "id";
+    public const ROLE_COLUMN = "role_id";
 
-    public const FIRST_NAME_COLUMN = "first_name"; 
+    public const FIRST_NAME_COLUMN = "first_name";
 
-    public const LAST_NAME_COLUMN = "last_name"; 
+    public const LAST_NAME_COLUMN = "last_name";
 
-    public const CLASS_COLUMN = "class_id"; 
+    public const CLASS_COLUMN = "class_id";
 
-    public const GENDER_COLUMN = "gender"; 
-    
-    public const GENDER_MALE = "M"; 
+    public const GENDER_COLUMN = "gender";
 
-    public const GENDER_FEMALE = "F"; 
+    public const GENDER_MALE = "M";
+
+    public const GENDER_FEMALE = "F";
 
 
     /* ### Check Role ### */
 
-    
-    public function isAdmin(){
+
+    public function isAdmin()
+    {
         return $this->role_id == UserRole::ADMIN;
     }
 
-    public function isTeacher(){
+    public function isTeacher()
+    {
         return $this->role_id == UserRole::TEACHER;
     }
 
-    public function isStudent(){
+    public function isStudent()
+    {
         return $this->role_id == UserRole::STUDENT;
     }
 
@@ -71,6 +74,12 @@ class User extends Authenticatable
     public function scopeStudentsAndTeachers($query)
     {
         return $query->whereIn(self::ROLE_COLUMN, [UserRole::STUDENT, UserRole::TEACHER]);
+    }
+
+    // Search user by fullname
+    public function scopeWhereFullNameLike($query, $search)
+    {
+        return $query->where(DB::raw("CONCAT(" . self::TABLE . "." . self::FIRST_NAME_COLUMN . ", ' ', " . self::TABLE . "." . self::LAST_NAME_COLUMN . ")"), 'LIKE', '%' . $search . '%');
     }
 
 
@@ -133,7 +142,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Report::class, 'user_id');
     }
-    
+
     /* ### Attributes ### */
 
     public function getFullnameAttribute()

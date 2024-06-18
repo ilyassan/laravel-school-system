@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
-class ProfileController extends Controller
+class ProfileController extends BaseController
 {
     /**
      * Display the user's profile form.
@@ -36,8 +36,7 @@ class ProfileController extends Controller
     {
         $validatedData = $request->validated();
         
-        /** @var \App\Models\MyUserModel $user **/
-        $user = auth()->user();
+        $user = $this->getAuthUser();
         
         $user->update($validatedData);
 
@@ -57,8 +56,7 @@ class ProfileController extends Controller
      */
     public function resetPassword(ResetPasswordRequest $request): RedirectResponse
     {
-        /** @var \App\Models\MyUserModel $user **/
-        $user = auth()->user();
+        $user = $this->getAuthUser();
 
         $user->update([
             'password' => Hash::make($request->new_password),

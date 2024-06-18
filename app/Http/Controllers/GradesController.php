@@ -5,50 +5,52 @@ namespace App\Http\Controllers;
 use App\Models\Subject;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
-use App\Http\Requests\GradeRequest;
 use App\Repositories\GradeRepository;
 use Illuminate\Support\Facades\Validator;
 
-class GradesController extends Controller
+class GradesController extends BaseController
 {
     private $gradeRepository;
 
-    public function __construct(GradeRepository $gradeRepository) {
+    public function __construct(GradeRepository $gradeRepository)
+    {
         $this->gradeRepository = $gradeRepository;
     }
-    
+
     /**
      * Display a listing of the grade.
      */
     public function index(Request $request): View
     {
-        $subjects = Subject::all();
+        $subjects = Subject::get([Subject::PRIMARY_KEY_COLUMN_NAME, Subject::NAME_COLUMN]);
 
         // Check Valid Filters Inputs
-        $validator = Validator::make($request->all(),
-        [
-            'per-page'=> ['nullable','integer','max:100','min:10'],
-            'subject' => [
-                            'nullable',
-                            function ($attribute, $value, $fail) use ($subjects) {
-                                if(! in_array($value, $subjects->pluck('id')->toArray())){
-                                    return $fail('Selected Subject does not exist');
-                                }
-                             }
-            ],
-            'keyword',
-            'from-date' => ['nullable', 'date_format:m/d/Y'],
-            'to-date' => ['nullable', 'date_format:m/d/Y'],
-        ]);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'per-page' => ['nullable', 'integer', 'max:100', 'min:10'],
+                'subject' => [
+                    'nullable',
+                    function ($attribute, $value, $fail) use ($subjects) {
+                        if (!in_array($value, $subjects->pluck('id')->toArray())) {
+                            return $fail('Selected Subject does not exist');
+                        }
+                    }
+                ],
+                'keyword',
+                'from-date' => ['nullable', 'date_format:m/d/Y'],
+                'to-date' => ['nullable', 'date_format:m/d/Y'],
+            ]
+        );
 
-        if ($validator->fails()){
+        if ($validator->fails()) {
             $invalidFilters = array_keys($validator->errors()->messages());
             $filters = $request->except($invalidFilters);
             foreach ($invalidFilters as $invalid) {
                 $request[$invalid] = null;
             }
 
-        }else{
+        } else {
             $filters = $request->only(['per-page', 'subject', 'keyword', 'from-date', 'to-date']);
         }
 
@@ -62,16 +64,18 @@ class GradesController extends Controller
 
         $grades = $this->gradeRepository->getPaginate($filters);
 
-        return view('grades.index', compact('grades','subjects'))->with('invalidFilter', $validator->errors()->all());
+        return view('grades.index', compact('grades', 'subjects'))->with('invalidFilter', $validator->errors()->all());
     }
-    
+
 
     /**
      * Show the form for creating a new grade.
      */
     public function create()
     {
-        //
+        $classes = $this->getAuthUser()->classes;
+
+        return view('grades.create', compact('classes'));
     }
 
     /**

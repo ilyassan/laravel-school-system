@@ -6,11 +6,12 @@ use App\Enums\UserRole;
 use Illuminate\Http\Request;
 use App\Services\DashboardDataService;
 
-class DashboardController extends Controller
+class DashboardController extends BaseController
 {
-    public function __invoke(Request $request, DashboardDataService $service){
-        
-        $roleId = $request->user()->role_id;
+    public function __invoke(Request $request, DashboardDataService $service)
+    {
+
+        $roleId = $this->getAuthUser()->role_id;
 
         switch ($roleId) {
 
