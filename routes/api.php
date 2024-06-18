@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +18,26 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('/students-search', function (Request $request) {
+
+    $search = $request->get('search', '');
+    $classId = $request->get('class_id', '');
+
+    if (!$classId) {
+        return response()->json(['error' => 'Missing class parameter'], 400);
+    }
+
+    $queryBuilder = User::students();
+
+    $queryBuilder->where(User::CLASS_COLUMN, $classId);
+
+    if ($search) {
+        $queryBuilder->whereFullNameLike($search);
+    }
+
+    $users = $queryBuilder->get([User::PRIMARY_KEY_COLUMN_NAME, User::FIRST_NAME_COLUMN, User::LAST_NAME_COLUMN]);
+
+    return response()->json(["students" => $users]);
+
+})->name('students.search');
