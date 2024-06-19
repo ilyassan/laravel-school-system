@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\RedirectResponse;
+use App\Models\Subject;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreGradeRequest;
 use App\Services\GradeService;
+use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\StoreGradeRequest;
 
 class GradeController extends BaseController
 {
@@ -23,21 +24,14 @@ class GradeController extends BaseController
      */
     public function index(Request $request): View
     {
-        list($validator, $subjects) = $this->gradeService->validateFilters($request);
+        try {
+            $subjects = Subject::get([Subject::PRIMARY_KEY_COLUMN_NAME, Subject::NAME_COLUMN]);
+            $grades = $this->gradeService->getGrades($request->only(['per-page', 'subject', 'keyword', 'from-date', 'to-date']));
 
-        if ($validator->fails()) {
-            $invalidFilters = array_keys($validator->errors()->messages());
-            $filters = $request->except($invalidFilters);
-            foreach ($invalidFilters as $invalid) {
-                $request[$invalid] = null;
-            }
-        } else {
-            $filters = $request->only(['per-page', 'subject', 'keyword', 'from-date', 'to-date']);
+            return view('grades.index', compact('grades', 'subjects'));
+        } catch (\Throwable $th) {
+            abort(500);
         }
-
-        $grades = $this->gradeService->getGrades($request, $filters);
-
-        return view('grades.index', compact('grades', 'subjects'))->with('invalidFilter', $validator->errors()->all());
     }
 
 

@@ -3,10 +3,7 @@
 namespace App\Services;
 
 use App\Models\Grade;
-use App\Models\Subject;
 use App\Repositories\GradeRepository;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class GradeService
 {
@@ -17,42 +14,30 @@ class GradeService
         $this->gradeRepository = $gradeRepository;
     }
 
-    public function validateFilters(Request $request)
+    public function getGrades(array $filters)
     {
-        // Validate filter inputs
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
 
-        $subjects = Subject::get([Subject::PRIMARY_KEY_COLUMN_NAME, Subject::NAME_COLUMN]);
-
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'per-page' => ['nullable', 'integer', 'max:100', 'min:10'],
-                'subject' => [
-                    'nullable',
-                    function ($attribute, $value, $fail) use ($subjects) {
-                        if (!in_array($value, $subjects->pluck('id')->toArray())) {
-                            return $fail('Selected Subject does not exist');
-                        }
-                    }
-                ],
-                'keyword',
-                'from-date' => ['nullable', 'date_format:m/d/Y'],
-                'to-date' => ['nullable', 'date_format:m/d/Y'],
-            ]
-        );
-
-        return [$validator, $subjects];
-    }
-
-    public function getGrades(Request $request, array $filters)
-    {
         // Relations
-        $filters['with'] = [
-            'teacher:id,first_name,last_name,subject_id',
-            'teacher.subject:id,name',
-            'student:id,first_name,last_name,class_id',
-            'student.class:id,name',
-        ];
+        if ($user->isAdmin()) {
+            $filters['with'] = [
+                'teacher:id,first_name,last_name,subject_id',
+                'student:id,first_name,last_name,class_id',
+                'student.class:id,name',
+            ];
+        } elseif ($user->isTeacher()) {
+            $filters['with'] = [
+                'student:id,first_name,last_name,class_id',
+                'student.class:id,name',
+            ];
+            $filters['teacher_id'] = $user->id;
+        } elseif ($user->isStudent()) {
+            $filters['with'] = [
+                'teacher:id,first_name,last_name,subject_id',
+            ];
+            $filters['student_id'] = $user->id;
+        }
 
         return $this->gradeRepository->getPaginate($filters);
     }

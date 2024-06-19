@@ -86,9 +86,17 @@
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <button type="submit" class="btn btn-primary py-1">Filter</button>
+                        <div class="d-flex flex-1 justify-content-between">
+                            <div class="d-flex flex-column mr-4" style="gap: 10px">
+                                <button type="submit" class="btn btn-primary py-1">Filter</button>
+                                <a href="{{route('grades.index')}}" class="btn btn-primary py-1">Reset</a>
+                            </div>
+                            <div class="d-flex flex-column" style="gap: 10px">
+                                <button type="submit" class="btn btn-success py-1">Export to EXCEL</button>
+                                <button type="submit" class="btn btn-danger py-1">Export to PDF</button>
+                            </div>
                         </div>
+
                 </form>
                 <div class="table-responsive my-3">
                     <table class="table text-md-nowrap" id="example1">
@@ -104,17 +112,51 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($grades as $grade)
-                            <tr>
-                                <td>{{ $loop->index + 1 }}</td>
-                                <td>{{ $grade->teacher->fullname }}</td>
-                                <td>{{ $grade->teacher->subject->name }}</td>
-                                <td>{{ $grade->student->fullname }}</td>
-                                <td>{{ $grade->student->class->name }}</td>
-                                <td>{{ $grade->created_at->format('m/d/Y') }}</td>
-                                <td>{{ $grade->grade }}</td>
-                            </tr>
-                            @endforeach
+                            @if (auth()->user()->isAdmin())
+                                @foreach ($grades as $grade)
+                                    <tr>
+                                        <td>{{ $loop->index + 1 }}</td>
+                                        <td>{{ $grade->teacher->fullname }}</td>
+                                        <td>{{ $subjects->firstWhere('id', $grade->teacher->subject_id)->name}}</td>
+                                        <td>{{ $grade->student->fullname }}</td>
+                                        <td>{{ $grade->student->class->name }}</td>
+                                        <td>{{ $grade->created_at->format('m/d/Y') }}</td>
+                                        <td>{{ $grade->grade }}</td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                            @if (auth()->user()->isTeacher())
+                                @php
+                                    $teacher_subject = $subjects->firstWhere('id', auth()->user()->subject_id)->name;
+                                @endphp
+                                @foreach ($grades as $grade)
+                                    <tr>
+                                        <td>{{ $loop->index + 1 }}</td>
+                                        <td>{{ auth()->user()->fullname }}</td>
+                                        <td>{{ $teacher_subject}}</td>
+                                        <td>{{ $grade->student->fullname }}</td>
+                                        <td>{{ $grade->student->class->name }}</td>
+                                        <td>{{ $grade->created_at->format('m/d/Y') }}</td>
+                                        <td>{{ $grade->grade }}</td>
+                                    </tr>
+                                @endforeach
+                                @endif
+                                @if (auth()->user()->isStudent())
+                                    @php
+                                        $student_class = auth()->user()->class->name;
+                                    @endphp
+                                    @foreach ($grades as $grade)
+                                        <tr>
+                                        <td>{{ $loop->index + 1 }}</td>
+                                        <td>{{ $grade->teacher->fullname }}</td>
+                                        <td>{{ $subjects->firstWhere('id', $grade->teacher->subject_id)->name}}</td>
+                                        <td>{{ auth()->user()->fullname }}</td>
+                                        <td>{{ $student_class }}</td>
+                                        <td>{{ $grade->created_at->format('m/d/Y') }}</td>
+                                        <td>{{ $grade->grade }}</td>
+                                    </tr>
+                                    @endforeach
+                                @endif
                         </tbody>
                     </table>
                 </div>
@@ -124,19 +166,6 @@
     </div>
 </div>
 @endsection
- 
-
-
-@if ($invalidFilter)
-    @section('tag-js')
-        swal({
-        title: 'Invalid Filter',
-        text: '{{$invalidFilter[0]}}',
-        icon: 'warning',
-        button: 'Ok',
-        })
-    @endsection
-@endif
 
 @section('js')
     <!-- Internal Data tables -->

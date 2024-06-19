@@ -20,7 +20,6 @@ class GradeRepository extends AbstractRepository
     {
         $query = $this->model::query();
 
-        $this->checkRole($query);
         $this->applyFilters($query, $filters);
 
         $perPage = (int) Arr::get($filters, 'per-page', 10);
@@ -29,37 +28,20 @@ class GradeRepository extends AbstractRepository
         return $query->with($with)->latest()->paginate($perPage);
     }
 
-    protected function checkRole(Builder $query): void
-    {
-        /** @var \App\Models\User $user */
-        $user = auth()->user();
-
-        if ($user->isTeacher()) {
-            $query->where('teacher_id', $user->id);
-        } elseif ($user->isStudent()) {
-            $query->where('student_id', $user->id);
-        }
-    }
-
     protected function applyFilters(Builder $query, array $filters): void
     {
-        $this->applySubjectFilter($query, Arr::get($filters, 'subject'));
-        $this->applyKeywordSearch($query, Arr::get($filters, 'keyword'));
-        $this->applyDateFilters($query, Arr::get($filters, 'from-date'), Arr::get($filters, 'to-date'));
-    }
+        if ($teacherId = Arr::get($filters, 'teacher_id')) {
+            $query->where('teacher_id', $teacherId);
+        } elseif ($studentId = Arr::get($filters, 'student_id')) {
+            $query->where('student_id', $studentId);
+        }
 
-    protected function applySubjectFilter(Builder $query, ?int $subjectId): void
-    {
-        if ($subjectId) {
+        if ($subjectId = Arr::get($filters, 'subject')) {
             $query->whereHas('teacher.subject', function (Builder $q) use ($subjectId) {
                 $q->where(Subject::PRIMARY_KEY_COLUMN_NAME, $subjectId);
             });
         }
-    }
-
-    protected function applyKeywordSearch(Builder $query, ?string $keyword): void
-    {
-        if ($keyword) {
+        if ($keyword = Arr::get($filters, 'keyword')) {
             $query->where(function (Builder $q) use ($keyword) {
                 // Filter by fullname
                 $q->whereHas('student', function (Builder $q) use ($keyword) {
@@ -75,16 +57,12 @@ class GradeRepository extends AbstractRepository
                     });
             });
         }
-    }
-
-    protected function applyDateFilters(Builder $query, ?string $fromDate, ?string $toDate): void
-    {
-        if ($fromDate) {
-            $query->whereDate('created_at', '>=', Carbon::createFromFormat('m/d/Y', $fromDate)->format('Y-m-d'));
+        if ($fromDate = Arr::get($filters, 'from-date')) {
+            $query->whereDate('created_at', '>=', Carbon::parse($fromDate)->format('Y-m-d'));
         }
 
-        if ($toDate) {
-            $query->whereDate('created_at', '<=', Carbon::createFromFormat('m/d/Y', $toDate)->format('Y-m-d'));
+        if ($toDate = Arr::get($filters, 'to-date')) {
+            $query->whereDate('created_at', '<=', Carbon::parse($toDate)->format('Y-m-d'));
         }
     }
 }
