@@ -23,7 +23,7 @@ class EnsureAdmin
             return $next($request);
         }
 
-        // Redirect non-admin users to the dashboard with an error message
-        return redirect('dashboard')->withErrors('You do not have access to this page.');
+        // Redirect non-admin
+        return abort(404);
     }
 }

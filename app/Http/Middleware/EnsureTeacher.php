@@ -23,7 +23,7 @@ class EnsureTeacher
             return $next($request);
         }
 
-        // Redirect non-teacher users to the dashboard with an error message
-        return redirect('dashboard')->withErrors('You do not have access to this page.');
+        // Redirect non-teacher users
+        return abort(404);
     }
 }

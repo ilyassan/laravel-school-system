@@ -23,7 +23,7 @@ class EnsureStudent
             return $next($request);
         }
 
-        // Redirect non-student users to the dashboard with an error message
-        return redirect('dashboard')->withErrors('You do not have access to this page.');
+        // Redirect non-student users
+        return abort(404);
     }
 }

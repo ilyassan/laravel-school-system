@@ -160,7 +160,7 @@
 								@foreach ($topTeacherStudents as $student)					
 									<div class="list-group-item border-top-0 {{$loop->last ? 'border-bottom-0 mb-0' : ''}}">
 										<i class="mdi mdi-account"></i>
-										<p class="text-capitalize">{{$student->name}}</p><span>{{$student->class_name}}</span>
+										<p class="text-capitalize">{{$student->fullname}}</p><span>{{$student->class_name}}</span>
 									</div>
 								@endforeach
 							</div>

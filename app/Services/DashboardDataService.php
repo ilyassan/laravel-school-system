@@ -28,10 +28,10 @@ class DashboardDataService
     public function adminDashboardData()
     {
         $latestChargesLimit = 5;
-        $latestReportsLimit= 3;
-        $topClassesLimit= 5;
-        $teacherReportsDescriptionChars= 80;
-        $studentReportsDescriptionChars= 140;
+        $latestReportsLimit = 3;
+        $topClassesLimit = 5;
+        $teacherReportsDescriptionChars = 80;
+        $studentReportsDescriptionChars = 140;
 
         return [
             'ratings' => $this->getRatings(),
@@ -51,7 +51,7 @@ class DashboardDataService
     {
         $topStudentsLimit = 5;
         $latestHomeworksLimit = 3;
-        
+
         $teacherId = auth()->id();
         $teacherClasses = auth()->user()->classes()->pluck('id');
 
@@ -81,9 +81,9 @@ class DashboardDataService
 
         return [
             'ratings' => $this->getRatings(),
-            'avgStudentGradesEachMonth'  => $this->getAvgGradesOfEachMonth($startOfYear, $endOfYear, $studentId),
-            'avgClassGradesEachMonth'  => $this->getAvgGradesOfEachMonth($startOfYear, $endOfYear, $studentId, $classId),
-            'latestStudentGrades'  => $this->getLatestGrades($latestGradesLimit, $studentId),
+            'avgStudentGradesEachMonth' => $this->getAvgGradesOfEachMonth($startOfYear, $endOfYear, $studentId),
+            'avgClassGradesEachMonth' => $this->getAvgGradesOfEachMonth($startOfYear, $endOfYear, $studentId, $classId),
+            'latestStudentGrades' => $this->getLatestGrades($latestGradesLimit, $studentId),
             'topClassStudents' => $this->getTopStudents($classId, $topStudentsLimit),
             'classHomeworks' => $this->getClassHomeworks($classId, $classHomeworksLimit),
         ];
@@ -93,8 +93,8 @@ class DashboardDataService
     public function getRatings()
     {
         $ratings = Rating::selectRaw('COUNT(*) as count, AVG(' . Rating::RATING_COLUMN . ') as avg')
-        ->first();
-        
+            ->first();
+
         return (object) [
             'count' => number_format($ratings->count),
             'avg' => $ratings->avg,
@@ -104,14 +104,14 @@ class DashboardDataService
     public function getCharges(Carbon $month, Carbon $monthComparedTo)
     {
         $chargesCollection = $this->collectionOfTwoMonths(Charge::class, $month, $monthComparedTo)
-                            ->get([Charge::CREATED_AT, Charge::PRICE_COLUMN, Charge::QUANTITY_COLUMN]);
+            ->get([Charge::CREATED_AT, Charge::PRICE_COLUMN, Charge::QUANTITY_COLUMN]);
 
         $monthCharges = $this->filterByMonth($chargesCollection, $month, Charge::CREATED_AT)
-                        ->sum(fn($charge)=>$charge->{Charge::PRICE_COLUMN} * $charge->{Charge::QUANTITY_COLUMN});
+            ->sum(fn($charge) => $charge->{Charge::PRICE_COLUMN} * $charge->{Charge::QUANTITY_COLUMN});
 
         $monthComparedToCharges = $this->filterByMonth($chargesCollection, $monthComparedTo, Charge::CREATED_AT)
-                        ->sum(fn($charge)=>$charge->{Charge::PRICE_COLUMN} * $charge->{Charge::QUANTITY_COLUMN});
-    
+            ->sum(fn($charge) => $charge->{Charge::PRICE_COLUMN} * $charge->{Charge::QUANTITY_COLUMN});
+
         return $this->formatData($monthCharges, $monthComparedToCharges);
     }
 
@@ -123,24 +123,24 @@ class DashboardDataService
     public function getAvgStudentsGrades(Carbon $month, Carbon $monthComparedTo, $teacherId = null)
     {
         $query = $this->collectionOfTwoMonths(Grade::class, $month, $monthComparedTo);
-        
+
         // Grades of a teacher students
-        if(isset($teacherId)){
+        if (isset($teacherId)) {
             $query->where(Grade::TEACHER_COLUMN, $teacherId);
         }
-        
-        $studentGradesCollection = $query->get([Grade::CREATED_AT,Grade::GRADE_COLUMN]);
-        
-        
+
+        $studentGradesCollection = $query->get([Grade::CREATED_AT, Grade::GRADE_COLUMN]);
+
+
         $monthAvgStudentGrade = $this->filterByMonth($studentGradesCollection, $month, Grade::CREATED_AT)
-        ->avg(Grade::GRADE_COLUMN);
-        
+            ->avg(Grade::GRADE_COLUMN);
+
         $monthComparedToAvgStudentGrade = $this->filterByMonth($studentGradesCollection, $monthComparedTo, Grade::CREATED_AT)
-        ->avg(Grade::GRADE_COLUMN);
-        
+            ->avg(Grade::GRADE_COLUMN);
+
         return $this->formatData($monthAvgStudentGrade, $monthComparedToAvgStudentGrade);
     }
-    
+
     public function getTeachers(Carbon $year)
     {
         $teachersCollection = User::teachers()->get([User::CREATED_AT]);
@@ -159,7 +159,7 @@ class DashboardDataService
         $previousYearStudents = $studentCollection->where(User::CREATED_AT, '<', $year->startOfYear())->count();
         $maleStudents = $studentCollection->where(User::GENDER_COLUMN, User::GENDER_MALE)->count();
         $femaleStudents = $studentCollection->where(User::GENDER_COLUMN, User::GENDER_FEMALE)->count();
-        
+
         return $this->formatData($currentStudents, $previousYearStudents, [
             'boys' => $maleStudents,
             'girls' => $femaleStudents
@@ -172,10 +172,10 @@ class DashboardDataService
             clone $week,
             clone $week->endOfWeek()->subDay(),
         ])
-        ->get([Absence::FROM_COLUMN, Absence::TO_COLUMN]);
+            ->get([Absence::FROM_COLUMN, Absence::TO_COLUMN]);
 
         $lastWeekAbsences = [];
-        
+
         // Group the absences by the day of the week
         foreach ($lastWeekAbsencesCollection as $absence) {
             $dayOfWeek = $absence->from->dayOfWeek; // 1 (Monday) to 6 (Saturday)
@@ -191,18 +191,18 @@ class DashboardDataService
 
     public function getLatestReports($role, $reportsLimit, $descriptionLimit)
     {
-        $relationship = strtolower(UserRole::nameForKey($role)). 'Reports';
+        $relationship = strtolower(UserRole::nameForKey($role)) . 'Reports';
 
         return Report::$relationship()
-                ->latest('reports.created_at')
-                ->limit($reportsLimit)
-                ->selectRaw("LEFT(description, $descriptionLimit) AS shortDescription")
-                ->addSelect([
-                    'user_name' => User::select(DB::raw("CONCAT(". User::FIRST_NAME_COLUMN . ", ' ', " . User::LAST_NAME_COLUMN . ")"))
-                        ->whereColumn('users.id', 'reports.user_id')
-                        ->limit(1)
-                ])
-                ->get();
+            ->latest('reports.created_at')
+            ->limit($reportsLimit)
+            ->selectRaw("LEFT(description, $descriptionLimit) AS shortDescription")
+            ->addSelect([
+                'user_name' => User::select(DB::raw("CONCAT(" . User::FIRST_NAME_COLUMN . ", ' ', " . User::LAST_NAME_COLUMN . ")"))
+                    ->whereColumn('users.id', 'reports.user_id')
+                    ->limit(1)
+            ])
+            ->get();
     }
 
     public function getTopClasses($limit = 1)
@@ -223,7 +223,7 @@ class DashboardDataService
     public function getTeacherStudents(Carbon $year, $classes)
     {
         $teacherStudentsCollection = User::students()->whereIn(User::CLASS_COLUMN, $classes)->get();
-        
+
         $currentTeacherStudents = $teacherStudentsCollection->count();
         $previousTeacherStudents = $teacherStudentsCollection->where(User::CREATED_AT, '<', $year->startOfYear())->count();
 
@@ -232,7 +232,7 @@ class DashboardDataService
 
     public function getClassesWithAbsences(Carbon $week, $classes)
     {
-       return Classes::select('classes.*')
+        return Classes::select('classes.*')
             ->selectSub(function ($query) use ($week) {
                 $query->select(DB::raw(sprintf('SUM(TIMESTAMPDIFF(HOUR, `%s`, `%s`))', Absence::FROM_COLUMN, Absence::TO_COLUMN)))
                     ->from('absences')
@@ -249,19 +249,19 @@ class DashboardDataService
         $query = User::students();
 
         // Grades of a teacher students
-        if(is_array($classId)){
+        if (is_array($classId)) {
             $query->whereIn(User::CLASS_COLUMN, $classId);
-        }else if(is_int($classId)){
+        } else if (is_int($classId)) {
             $query->where(User::CLASS_COLUMN, $classId);
         }
 
-        return  $query
-                ->select(['id', User::FIRST_NAME_COLUMN, User::LAST_NAME_COLUMN])
-                ->withAvg('grades', Grade::GRADE_COLUMN)
-                ->orderByDesc('grades_avg_grade')
-                ->limit($limit)
-                ->withAggregate('class', Classes::NAME_COLUMN)
-                ->get();
+        return $query
+            ->select(['id', User::FIRST_NAME_COLUMN, User::LAST_NAME_COLUMN])
+            ->withAvg('grades', Grade::GRADE_COLUMN)
+            ->orderByDesc('grades_avg_grade')
+            ->limit($limit)
+            ->withAggregate('class', Classes::NAME_COLUMN)
+            ->get();
     }
 
     public function getTeacherHomeworks($teacherId, $limit = 1)
@@ -272,7 +272,7 @@ class DashboardDataService
             ->limit($limit)
             ->get();
     }
-    
+
     public function getClassHomeworks($classId, $limit = 1)
     {
         return Homework::with('subject:subjects.name')
@@ -281,16 +281,16 @@ class DashboardDataService
             ->limit($limit)
             ->get();
     }
-    
+
 
     public function getLatestGrades($limit = 1, $studentId = null)
     {
         $query = Grade::with('teacher.subject');
 
-        if(isset($studentId)){
+        if (isset($studentId)) {
             $query->where(Grade::STUDENT_COLUMN, $studentId);
         }
-        
+
         return $query
             ->latest()
             ->limit($limit)
@@ -301,40 +301,42 @@ class DashboardDataService
     {
         $query = Grade::query();
 
-        if(isset($classId)){
-            $query->where(Grade::STUDENT_COLUMN, '!=', $id)->whereHas('student', function ($query) use ($classId){
+        if (isset($classId)) {
+            $query->where(Grade::STUDENT_COLUMN, '!=', $id)->whereHas('student', function ($query) use ($classId) {
                 $query->where(User::CLASS_COLUMN, $classId);
             });
-        }else{
+        } else {
             $query->where(Grade::STUDENT_COLUMN, $id);
         }
 
         return $query
             ->whereBetween(Grade::CREATED_AT, [$date, $toDate])
             ->get([Grade::GRADE_COLUMN, Grade::CREATED_AT])
-            ->groupBy(fn($grade)=> Carbon::parse($grade->created_at)->format('M'))
-            ->map(fn($monthGrades)=> number_format($monthGrades->avg(Grade::GRADE_COLUMN), 2));
+            ->groupBy(fn($grade) => Carbon::parse($grade->created_at)->format('M'))
+            ->map(fn($monthGrades) => number_format($monthGrades->avg(Grade::GRADE_COLUMN), 2));
     }
 
     // -- Auxiliary methods --
 
     public function collectionOfTwoMonths($model, Carbon $firstMonth, Carbon $secondMonth)
     {
-        return $model::where(function($query) use ($model, $firstMonth, $secondMonth) {
+        return $model::where(function ($query) use ($model, $firstMonth, $secondMonth) {
             $query->whereMonth($model::CREATED_AT, $firstMonth)
-                  ->orWhereMonth($model::CREATED_AT, $secondMonth);
+                ->orWhereMonth($model::CREATED_AT, $secondMonth);
         });
     }
 
     public function filterByMonth($collection, Carbon $month, string $dateColumn)
     {
-        return $collection->whereBetween($dateColumn, 
-                [
-                    $month->startOfMonth()->toDateTime(),
-                    $month->endOfMonth()->toDateTime()
-                ]);
+        return $collection->whereBetween(
+            $dateColumn,
+            [
+                $month->startOfMonth()->toDateTime(),
+                $month->endOfMonth()->toDateTime()
+            ]
+        );
     }
-    
+
     public function formatData($currentNumber = 0, $previousNumber = 0, array $extra = []): object
     {
         return (object) [
@@ -342,7 +344,7 @@ class DashboardDataService
             'variation' => $currentNumber - $previousNumber,
             'variation_rate' => $previousNumber !== 0 && isset($previousNumber) ? number_format($currentNumber / $previousNumber * 100 - 100, 2) : null,
             ...$extra
-            ];
+        ];
     }
 
 }

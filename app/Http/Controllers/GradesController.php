@@ -17,6 +17,7 @@ class GradesController extends BaseController
     public function __construct(GradeRepository $gradeRepository)
     {
         $this->gradeRepository = $gradeRepository;
+        $this->middleware("teacher")->only(["create", "store", "edit", "update", "destroy"]);
     }
 
     /**

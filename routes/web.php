@@ -38,3 +38,5 @@ require __DIR__ . '/auth.php';
 
 // theme route
 Route::get('/{page}', [ThemeController::class, 'index']);
+
+Route::middleware('auth')->get('/{page}', fn() => view('404'));
