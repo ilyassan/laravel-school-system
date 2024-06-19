@@ -30,7 +30,17 @@
                     <h4 class="card-title mg-b-0">GRADES TABLE</h4>
                     <i class="mdi mdi-dots-horizontal text-gray"></i>
                 </div>
-                <p class="tx-12 tx-gray-500 mb-2">All The Grades Entered To The System By Teachers.</p>
+                <p class="tx-12 tx-gray-500 mb-2">
+                    @if (auth()->user()->isAdmin())
+                        All The Grades Entered To The System By Teachers.
+                    @endif
+                    @if (auth()->user()->isTeacher())
+                        All The Grades You Entered The System.
+                    @endif
+                    @if (auth()->user()->isStudent())
+                        All Your Grades Entered By Your Teacher.
+                    @endif
+                </p>
             </div>
             <div class="card-body">
                 <form class="d-flex align-items-center" style="gap: 30px">

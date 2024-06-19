@@ -97,7 +97,7 @@
 								@foreach ($topClassStudents as $student)					
 									<div class="list-group-item border-top-0 {{$loop->last ? 'border-bottom-0 mb-0' : ''}}">
 										<i class="mdi mdi-account"></i>
-										<p class="text-capitalize">{{$student->id === auth()->id ? 'You': $student->fullname}}</p><span>{{$loop->index + 1}}</span>
+										<p class="text-capitalize">{{$student->id === auth()->id() ? 'You': $student->fullname}}</p><span>{{$loop->index + 1}}</span>
 									</div>
 								@endforeach	
 							</div>
