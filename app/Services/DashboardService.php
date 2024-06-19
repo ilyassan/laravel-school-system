@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 use App\Models\{User, Grade, Charge, Report, Absence, Classes, Homework, Rating};
 
-class DashboardDataService
+class DashboardService
 {
     private $lastWeek;
     private $currentMonth;

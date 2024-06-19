@@ -26,14 +26,14 @@ class StoreGradeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "class-id" => ["required", "exists:classes,id"],
-            "student-id" => [
+            "class_id" => ["required", "exists:classes,id"],
+            "student_id" => [
                 "required",
                 function ($attribute, $value, $fail) {
                     $student = User::select([User::PRIMARY_KEY_COLUMN_NAME, User::CLASS_COLUMN])->find($value);
                     if (!$student) {
                         $fail("Selected student not found.");
-                    } elseif ($student->class_id != $this->input('class-id')) {
+                    } elseif ($student->class_id != $this->input('class_id')) {
                         $fail("Selected student not belong to the selected class.");
                     }
                 }

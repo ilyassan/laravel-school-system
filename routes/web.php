@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\GradesController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ThemeController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GradeController;
+use App\Http\Controllers\ThemeController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,7 +31,7 @@ Route::middleware('auth')->prefix('profile')->name('profile.')->group(function (
     Route::patch('/reset-password', [ProfileController::class, 'resetPassword'])->name('reset-password');
 });
 
-Route::middleware('auth')->resource('grades', GradesController::class);
+Route::middleware('auth')->resource('grades', GradeController::class);
 
 require __DIR__ . '/auth.php';
 

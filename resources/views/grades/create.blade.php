@@ -3,7 +3,7 @@
 @section('title', 'Create Grade')
 
 @section('css')
-<link href="{{URL::asset('assets/plugins/select2/css/select2.min.css')}}" rel="stylesheet">
+    <link href="{{URL::asset('assets/plugins/select2/css/select2.min.css')}}" rel="stylesheet">
 @endsection
 
 @section('page-header')
@@ -56,10 +56,10 @@
                                     <label class="form-label m-0">Classes</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <select id="classesInput" name="class-id" class="form-control SlectBox" required>
+                                    <select id="classesInput" name="class_id" class="form-control SlectBox" required>
                                             <option value="">Select The Class</option>
                                             @foreach ($classes as $class)
-                                                <option value={{$class->id}} {{old('class-id') == $class->id ? 'selected' : ''}}>{{$class->name}}</option>
+                                                <option value={{$class->id}} {{old('class_id') == $class->id ? 'selected' : ''}}>{{$class->name}}</option>
                                             @endforeach
 									</select>
                                 </div>
@@ -71,7 +71,7 @@
                                     <label class="form-label m-0">Student</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <select id="studentSearchInput" name="student-id" class="form-control SlectBox" required>
+                                    <select id="studentSearchInput" name="student_id" class="form-control SlectBox" required>
                                     </select>
                                 </div>
                             </div>
