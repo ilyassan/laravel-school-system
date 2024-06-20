@@ -2,12 +2,13 @@
 
 namespace App\Repositories;
 
+use Carbon\Carbon;
 use App\Models\Grade;
 use App\Models\Subject;
 use Illuminate\Support\Arr;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
-use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class GradeRepository extends AbstractRepository
 {
@@ -16,20 +17,26 @@ class GradeRepository extends AbstractRepository
         return Grade::class;
     }
 
-    public function getPaginate(array $filters): LengthAwarePaginator
+    public function getPaginate(array $filters = []): LengthAwarePaginator
+    {
+        $query = $this->getFilteredQuery($filters);
+
+        $perPage = (int) Arr::get($filters, 'per-page', 10);
+        $orderBy = Arr::get($filters, 'order-by', $this->model::CREATED_AT);
+        $sort = Arr::get($filters, 'sort', 'desc');
+        $colums = Arr::get($filters, 'colums', ['*']);
+
+        return $query->orderBy($orderBy, $sort)->paginate($perPage, $colums);
+    }
+
+    public function getFilteredQuery(array $filters): Builder
     {
         $query = $this->model::query();
 
-        $this->applyFilters($query, $filters);
+        if ($with = Arr::get($filters, 'with')) {
+            $query->with($with);
+        }
 
-        $perPage = (int) Arr::get($filters, 'per-page', 10);
-        $with = Arr::get($filters, 'with', []);
-
-        return $query->with($with)->latest()->paginate($perPage);
-    }
-
-    protected function applyFilters(Builder $query, array $filters): void
-    {
         if ($teacherId = Arr::get($filters, 'teacher_id')) {
             $query->where('teacher_id', $teacherId);
         } elseif ($studentId = Arr::get($filters, 'student_id')) {
@@ -64,5 +71,18 @@ class GradeRepository extends AbstractRepository
         if ($toDate = Arr::get($filters, 'to-date')) {
             $query->whereDate('created_at', '<=', Carbon::parse($toDate)->format('Y-m-d'));
         }
+
+        return $query;
+    }
+
+    public function getCollection(array $filters = []): Collection
+    {
+        $query = $this->getFilteredQuery($filters);
+
+        $orderBy = Arr::get($filters, 'order-by', $this->model::CREATED_AT);
+        $sort = Arr::get($filters, 'sort', 'desc');
+        $colums = Arr::get($filters, 'colums', ['*']);
+
+        return $query->orderBy($orderBy, $sort)->get($colums);
     }
 }

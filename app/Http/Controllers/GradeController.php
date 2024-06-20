@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Models\Subject;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
+use App\Exports\GradesExport;
 use App\Services\GradeService;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\StoreGradeRequest;
 
@@ -29,6 +32,37 @@ class GradeController extends BaseController
             $grades = $this->gradeService->getGrades($request->only(['per-page', 'subject', 'keyword', 'from-date', 'to-date']));
 
             return view('grades.index', compact('grades', 'subjects'));
+        } catch (\Throwable $th) {
+            abort(500);
+        }
+    }
+
+    public function export(Request $request)
+    {
+        // Chunk grades and store them temporary until all grades have been get, then delete them after combine them to one file and send it to user
+
+        try {
+            $filters = $request->only(['subject', 'keyword', 'from-date', 'to-date']);
+            $fileName = 'grades-export-all.xlsx';
+
+            $i = 0;
+            $tempFiles = [];
+
+            // Chunk grades and export them
+            $this->gradeService->getGradesQuery($filters)->latest()->chunk(1000, function ($grades) use (&$i, &$tempFiles) {
+                $relativeTempFilePath = 'temp/grades-export-chunk-' . ($i + 1) . '.xlsx';
+                Excel::store(new GradesExport($grades), $relativeTempFilePath, 'public');
+                $tempFiles[] = storage_path('app/public/') . $relativeTempFilePath;
+                $i++;
+            });
+
+            // Merge chunks into a single file
+            $combinedFilePath = storage_path('app/public/temp/') . $fileName;
+            GradesExport::mergeExcelFiles($tempFiles, $combinedFilePath);
+
+            // Download combined file
+            return response()->download($combinedFilePath, $fileName)->deleteFileAfterSend(true);
+
         } catch (\Throwable $th) {
             abort(500);
         }

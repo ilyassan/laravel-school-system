@@ -31,7 +31,10 @@ Route::middleware('auth')->prefix('profile')->name('profile.')->group(function (
     Route::patch('/reset-password', [ProfileController::class, 'resetPassword'])->name('reset-password');
 });
 
-Route::middleware('auth')->resource('grades', GradeController::class);
+Route::middleware('auth')->group(function () {
+    Route::get('/grades/export', [GradeController::class, 'export'])->name('grades.export');
+    Route::resource('grades', GradeController::class);
+});
 
 require __DIR__ . '/auth.php';
 

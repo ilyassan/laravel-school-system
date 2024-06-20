@@ -11,7 +11,7 @@ class DashboardController extends BaseController
     public function __invoke(Request $request, DashboardService $service)
     {
 
-        $roleId = $this->getAuthUser()->role_id;
+        $roleId = $this->getAuthUser()->getRoleId();
 
         switch ($roleId) {
 

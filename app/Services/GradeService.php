@@ -16,30 +16,49 @@ class GradeService
 
     public function getGrades(array $filters)
     {
+        $filters = $this->relationsBasedonRole($filters);
+        return $this->gradeRepository->getPaginate($filters);
+    }
+
+    public function relationsBasedonRole(array $arr)
+    {
         /** @var \App\Models\User $user */
         $user = auth()->user();
 
         // Relations
         if ($user->isAdmin()) {
-            $filters['with'] = [
+            $arr['with'] = [
                 'teacher:id,first_name,last_name,subject_id',
+                'teacher.subject:id,name',
                 'student:id,first_name,last_name,class_id',
                 'student.class:id,name',
             ];
         } elseif ($user->isTeacher()) {
-            $filters['with'] = [
+            $arr['with'] = [
                 'student:id,first_name,last_name,class_id',
+                'teacher.subject:id,name',
                 'student.class:id,name',
             ];
-            $filters['teacher_id'] = $user->id;
+            $arr['teacher_id'] = $user->id;
         } elseif ($user->isStudent()) {
-            $filters['with'] = [
+            $arr['with'] = [
                 'teacher:id,first_name,last_name,subject_id',
+                'teacher.subject:id,name',
             ];
-            $filters['student_id'] = $user->id;
+            $arr['student_id'] = $user->id;
         }
 
-        return $this->gradeRepository->getPaginate($filters);
+        return $arr;
+    }
+
+    public function countGrades(array $filters)
+    {
+        return $this->gradeRepository->getFilteredQuery($filters)->count();
+    }
+
+    public function getGradesQuery(array $filters)
+    {
+        return $this->gradeRepository->getFilteredQuery($filters);
     }
 
     public function createGrade(array $data)

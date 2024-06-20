@@ -32,22 +32,36 @@ class User extends Authenticatable
     public const GENDER_FEMALE = "F";
 
 
-    /* ### Check Role ### */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
+    protected $casts = [
+        'password' => 'hashed',
+    ];
+
+
+    public function getRoleId()
+    {
+        return $this->getAttributeValue(self::ROLE_COLUMN);
+    }
+
+    /* ### Check Role ### */
 
     public function isAdmin()
     {
-        return $this->role_id == UserRole::ADMIN;
+        return $this->getRoleId() == UserRole::ADMIN;
     }
 
     public function isTeacher()
     {
-        return $this->role_id == UserRole::TEACHER;
+        return $this->getRoleId() == UserRole::TEACHER;
     }
 
     public function isStudent()
     {
-        return $this->role_id == UserRole::STUDENT;
+        return $this->getRoleId() == UserRole::STUDENT;
     }
 
     /* ### Scope ### */
@@ -149,13 +163,4 @@ class User extends Authenticatable
     {
         return "{$this->first_name} {$this->last_name}";
     }
-
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    protected $casts = [
-        'password' => 'hashed',
-    ];
 }
