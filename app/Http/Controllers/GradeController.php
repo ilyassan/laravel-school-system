@@ -25,7 +25,7 @@ class GradeController extends BaseController
     /**
      * Display a listing of the grade.
      */
-    public function index(Request $request): View
+    public function index(Request $request)
     {
         try {
             $subjects = Subject::get([Subject::PRIMARY_KEY_COLUMN_NAME, Subject::NAME_COLUMN]);
@@ -33,38 +33,50 @@ class GradeController extends BaseController
 
             return view('grades.index', compact('grades', 'subjects'));
         } catch (\Throwable $th) {
-            abort(500);
+            dd($th);
         }
     }
 
     public function export(Request $request)
     {
         // Chunk grades and store them temporary until all grades have been get, then delete them after combine them to one file and send it to user
-
         try {
-            $filters = $request->only(['subject', 'keyword', 'from-date', 'to-date']);
-            $fileName = 'grades-export-all.xlsx';
+            $filters = $this->gradeService->relationsBasedonRole($request->only(['subject', 'keyword', 'from-date', 'to-date']));
 
-            $i = 0;
-            $tempFiles = [];
+            $chunkSize = 5000;
+            $limitGrades = 50000;
+
+            $gradesCount = $this->gradeService->getGradesQuery($filters)->count();
+
+            $query = $this->gradeService->getGradesQuery($filters)->latest();
+
+            if ($gradesCount > $limitGrades) {
+                // Using max id to apply the limit when chunking
+                $maxId = $this->gradeService->getGradesQuery($filters)->skip($limitGrades)->take(1)->value('id');
+                $query->where('id', '<', $maxId);
+            }
+
+            $fileName = 'grades.xlsx';
+            $tempFilePattern = '/temp/grades-export-chunk-';
+
+            $count = 0;
 
             // Chunk grades and export them
-            $this->gradeService->getGradesQuery($filters)->latest()->chunk(1000, function ($grades) use (&$i, &$tempFiles) {
-                $relativeTempFilePath = 'temp/grades-export-chunk-' . ($i + 1) . '.xlsx';
-                Excel::store(new GradesExport($grades), $relativeTempFilePath, 'public');
-                $tempFiles[] = storage_path('app/public/') . $relativeTempFilePath;
-                $i++;
+            $query->chunk($chunkSize, function ($grades) use (&$count, &$tempFilePattern) {
+                $count++;
+                Excel::store(new GradesExport($grades), $tempFilePattern . $count . '.xlsx', 'public');
             });
+
 
             // Merge chunks into a single file
             $combinedFilePath = storage_path('app/public/temp/') . $fileName;
-            GradesExport::mergeExcelFiles($tempFiles, $combinedFilePath);
+            GradesExport::mergeExcelFiles($count, $tempFilePattern, $combinedFilePath);
 
-            // Download combined file
+            // Download combined file and delete it after sending
             return response()->download($combinedFilePath, $fileName)->deleteFileAfterSend(true);
 
         } catch (\Throwable $th) {
-            abort(500);
+            dd($th);
         }
     }
 

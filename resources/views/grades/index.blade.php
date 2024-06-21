@@ -93,7 +93,6 @@
                             </div>
                             <div class="d-flex flex-column" style="gap: 10px">
                                 <button type="submit" formaction="{{ route('grades.export') }}" class="btn btn-success py-1">Export to EXCEL</button>
-                                <button type="submit" class="btn btn-danger py-1">Export to PDF</button>
                             </div>
                         </div>
 

@@ -3,11 +3,11 @@
 namespace App\Exports;
 
 use App\Enums\UserRole;
-use App\Repositories\GradeRepository;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
+use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
 
 class GradesExport implements FromCollection, WithHeadings
 {
@@ -18,8 +18,6 @@ class GradesExport implements FromCollection, WithHeadings
 
     public function __construct($coll)
     {
-        // $this->filters = $filters;
-        // $this->gradeRepository = app()->make(GradeRepository::class);
         $this->coll = $coll;
     }
 
@@ -99,34 +97,39 @@ class GradesExport implements FromCollection, WithHeadings
         ];
     }
 
-    static function mergeExcelFiles(array $filePaths, string $outputPath)
+
+    static function mergeExcelFiles(int $tempFilesCount, string $tempFileNamePattern, string $outputFilePath)
     {
-        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+        $writer = WriterEntityFactory::createXLSXWriter();
+        $writer->openToFile($outputFilePath);
 
-        $rowIndex = 1;
-        foreach ($filePaths as $index => $filePath) {
-            $tempSpreadsheet = IOFactory::load($filePath);
-            $tempSheet = $tempSpreadsheet->getActiveSheet();
-            $startRow = ($index === 0) ? 1 : 2; // Skip header row for all but the first file
+        $tempFilePath = storage_path('app/public') . $tempFileNamePattern;
 
-            foreach ($tempSheet->getRowIterator($startRow) as $row) {
-                $cellIterator = $row->getCellIterator();
-                $cellIterator->setIterateOnlyExistingCells(false);
+        // Iterate through each temporary file
+        for ($index = 1; $index <= $tempFilesCount; $index++) {
+            $filePath = $tempFilePath . $index . '.xlsx';
 
-                $colIndex = 1;
-                foreach ($cellIterator as $cell) {
-                    $sheet->setCellValue([$colIndex, $rowIndex], $cell->getValue());
-                    $colIndex++;
+            // Initialize Spout XLSX reader for current input file
+            $reader = ReaderEntityFactory::createXLSXReader();
+            $reader->open($filePath);
+
+            // Iterate through each sheet in the input file
+            foreach ($reader->getSheetIterator() as $sheet) {
+                // Iterate through each row in the sheet
+                foreach ($sheet->getRowIterator() as $row) {
+                    // Add row to the output file
+                    $writer->addRow($row);
                 }
-                $rowIndex++;
             }
+
+            // Close the reader for the current input file
+            $reader->close();
 
             // Delete the temporary file
             unlink($filePath);
         }
 
-        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $writer->save($outputPath);
+        // Close the writer to save the output file
+        $writer->close();
     }
 }
