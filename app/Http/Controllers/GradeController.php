@@ -43,6 +43,7 @@ class GradeController extends BaseController
         try {
             $filters = $this->gradeService->relationsBasedonRole($request->only(['subject', 'keyword', 'from-date', 'to-date']));
 
+            $userId = auth()->id();
             $chunkSize = 5000;
             $limitGrades = 50000;
 
@@ -57,19 +58,18 @@ class GradeController extends BaseController
             }
 
             $fileName = 'grades.xlsx';
-            $tempFilePattern = '/temp/grades-export-chunk-';
+            $tempFilePattern = '/temp/grades-export-chunk-' . $userId;
 
             $count = 0;
 
             // Chunk grades and export them
             $query->chunk($chunkSize, function ($grades) use (&$count, &$tempFilePattern) {
                 $count++;
-                Excel::store(new GradesExport($grades), $tempFilePattern . $count . '.xlsx', 'public');
+                Excel::store(new GradesExport($grades), $tempFilePattern . "-$count" . '.xlsx', 'public');
             });
 
-
             // Merge chunks into a single file
-            $combinedFilePath = storage_path('app/public/temp/') . $fileName;
+            $combinedFilePath = storage_path('app/public/temp/') . $userId . $fileName;
             GradesExport::mergeExcelFiles($count, $tempFilePattern, $combinedFilePath);
 
             // Download combined file and delete it after sending

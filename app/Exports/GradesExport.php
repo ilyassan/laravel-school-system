@@ -104,10 +104,9 @@ class GradesExport implements FromCollection, WithHeadings
         $writer->openToFile($outputFilePath);
 
         $tempFilePath = storage_path('app/public') . $tempFileNamePattern;
-
         // Iterate through each temporary file
         for ($index = 1; $index <= $tempFilesCount; $index++) {
-            $filePath = $tempFilePath . $index . '.xlsx';
+            $filePath = $tempFilePath . "-$index" . '.xlsx';
 
             // Initialize Spout XLSX reader for current input file
             $reader = ReaderEntityFactory::createXLSXReader();
