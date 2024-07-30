@@ -43,7 +43,7 @@
                 </p>
             </div>
             <div class="card-body">
-                <form class="d-flex align-items-center" style="gap: 30px">
+                <form id="filterForm" class="d-flex align-items-center" style="gap: 30px">
                         <div class="col-lg-7">
                             <div class="d-flex align-items-center" style="gap: 5px">
                                 <div class="dataTables_length col-sm-3 px-0" id="example1_length">
@@ -92,7 +92,7 @@
                                 <a href="{{route('grades.index')}}" class="btn btn-primary py-1">Reset</a>
                             </div>
                             <div class="d-flex flex-column" style="gap: 10px">
-                                <button type="submit" formaction="{{ route('grades.export') }}" class="btn btn-success py-1">Export to EXCEL</button>
+                                <button type="button" onclick="handleExport()" class="btn btn-success py-1">Export to EXCEL</button>
                             </div>
                         </div>
 
@@ -172,4 +172,29 @@
     <script src="{{URL::asset('assets/plugins/spectrum-colorpicker/spectrum.js')}}"></script>
     <script src="{{URL::asset('assets/plugins/select2/js/select2.min.js')}}"></script>
     <script src="{{URL::asset('assets/js/form-elements.js')}}"></script>
+
+    // Axios js
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 @endsection
+
+<script type="text/javascript">
+    async function handleExport(){
+        var form = document.getElementById('filterForm');
+        
+        var filtersData = new FormData(form);
+
+        // Convert FormData to a plain object
+        var filters = {};
+        filtersData.forEach((value, key) => {
+            filters[key] = value;
+        });
+
+        axios.post('{{route('export.grades')}}', filters)
+        .then(res => {
+            console.log(res.data);
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    }
+</script>

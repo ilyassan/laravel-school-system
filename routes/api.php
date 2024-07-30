@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GradeController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -15,8 +16,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:sanctum')->prefix('export')->name('export.')->group(function () {
+    Route::post('grades', [GradeController::class, 'export'])->name('grades');
 });
 
 Route::post('/students-search', function (Request $request) {

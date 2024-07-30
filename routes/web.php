@@ -32,7 +32,6 @@ Route::middleware('auth')->prefix('profile')->name('profile.')->group(function (
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/grades/export', [GradeController::class, 'export'])->name('grades.export');
     Route::resource('grades', GradeController::class);
 });
 

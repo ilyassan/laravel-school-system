@@ -20,6 +20,7 @@ class GradeService
         return $this->gradeRepository->getPaginate($filters);
     }
 
+    // To avoid getting data from db that already on the user session
     public function relationsBasedonRole(array $arr)
     {
         /** @var \App\Models\User $user */

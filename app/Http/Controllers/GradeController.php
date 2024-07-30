@@ -15,11 +15,13 @@ use App\Http\Requests\StoreGradeRequest;
 class GradeController extends BaseController
 {
     private $gradeService;
+    private $filterInputs;
 
     public function __construct(GradeService $gradeService)
     {
         $this->middleware("teacher")->only(["create", "store", "edit", "update", "destroy"]);
         $this->gradeService = $gradeService;
+        $this->filterInputs = ['per-page', 'subject', 'keyword', 'from-date', 'to-date'];
     }
 
     /**
@@ -29,7 +31,7 @@ class GradeController extends BaseController
     {
         try {
             $subjects = Subject::get([Subject::PRIMARY_KEY_COLUMN_NAME, Subject::NAME_COLUMN]);
-            $grades = $this->gradeService->getGrades($request->only(['per-page', 'subject', 'keyword', 'from-date', 'to-date']));
+            $grades = $this->gradeService->getGrades($request->only($this->filterInputs));
 
             return view('grades.index', compact('grades', 'subjects'));
         } catch (\Throwable $th) {
@@ -41,9 +43,9 @@ class GradeController extends BaseController
     {
         // Chunk grades and store them temporary until all grades have been get, then delete them after combine them to one file and send it to user
         try {
-            $filters = $this->gradeService->relationsBasedonRole($request->only(['subject', 'keyword', 'from-date', 'to-date']));
+            $filters = $this->gradeService->relationsBasedonRole($request->only($this->filterInputs));
 
-            $userId = auth()->id();
+            $timestamp = now()->timestamp;
             $chunkSize = 5000;
             $limitGrades = 50000;
 
@@ -57,8 +59,8 @@ class GradeController extends BaseController
                 $query->where('id', '<', $maxId);
             }
 
-            $fileName = 'grades.xlsx';
-            $tempFilePattern = '/temp/grades-export-chunk-' . $userId;
+            $fileName = $timestamp . '-' . 'grades.xlsx';
+            $tempFilePattern = '/temp/grades-export-chunk-' . $timestamp;
 
             $count = 0;
 
@@ -69,14 +71,15 @@ class GradeController extends BaseController
             });
 
             // Merge chunks into a single file
-            $combinedFilePath = storage_path('app/public/temp/') . $userId . $fileName;
+            $combinedFilePath = storage_path('app/public/temp/') . $fileName;
             GradesExport::mergeExcelFiles($count, $tempFilePattern, $combinedFilePath);
 
             // Download combined file and delete it after sending
-            return response()->download($combinedFilePath, $fileName)->deleteFileAfterSend(true);
+            // download($combinedFilePath, $fileName)->deleteFileAfterSend(true)
+            return response()->json(['file_url' => $fileName]);
 
         } catch (\Throwable $th) {
-            dd($th);
+            return response()->json(['error' => $th->getMessage()], 500);
         }
     }
 

@@ -11,9 +11,6 @@ use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
 
 class GradesExport implements FromCollection, WithHeadings
 {
-
-    // protected $filters;
-    // protected $gradeRepository;
     protected $coll;
 
     public function __construct($coll)
