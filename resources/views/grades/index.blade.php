@@ -166,35 +166,70 @@
     <script src="{{ URL::asset('assets/plugins/datatable/js/dataTables.bootstrap4.js') }}"></script>
     <script src="{{ URL::asset('assets/plugins/datatable/js/dataTables.buttons.min.js') }}"></script>
     <script src="{{ URL::asset('assets/js/table-data.js') }}"></script>
-
+    
     <script src="{{URL::asset('assets/plugins/jquery-ui/ui/widgets/datepicker.js')}}"></script>
     <script src="{{URL::asset('assets/plugins/jquery.maskedinput/jquery.maskedinput.js')}}"></script>
     <script src="{{URL::asset('assets/plugins/spectrum-colorpicker/spectrum.js')}}"></script>
     <script src="{{URL::asset('assets/plugins/select2/js/select2.min.js')}}"></script>
     <script src="{{URL::asset('assets/js/form-elements.js')}}"></script>
-
-    // Axios js
+    
+    <!-- Internal Data tables -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 @endsection
 
 <script type="text/javascript">
-    async function handleExport(){
-        var form = document.getElementById('filterForm');
-        
-        var filtersData = new FormData(form);
+    let exportId = null
+    async function handleExport() {
+        exportId = `${Date.now()}`; // Generate and store a unique export ID
 
-        // Convert FormData to a plain object
-        var filters = {};
-        filtersData.forEach((value, key) => {
-            filters[key] = value;
-        });
+        try {
+            const form = document.getElementById('filterForm');
+            const filtersData = new FormData(form);
+            const filters = {};
+            filtersData.forEach((value, key) => {
+                filters[key] = value;
+            });
 
-        axios.post('{{route('export.grades')}}', filters)
-        .then(res => {
-            console.log(res.data);
-        })
-        .catch(err => {
-            console.log(err);
-        });
+            // Add exportId to filters
+            filters.export_id = exportId;
+
+            // Make the initial request to start the export
+            await axios.post('{{ route('export.grades') }}', filters);
+
+            // Show progress Swal after initial request completes
+            const progressSwal = Swal.fire({
+                title: 'Processing...',
+                text: 'Please wait',
+                showCancelButton: true,
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.getCancelButton().addEventListener('click', () => cancleExport());
+                },
+            });
+            // Listen for WebSocket notifications
+            // Echo.channel('exports')
+            //     .listen('ExportCompleted', (event) => {
+            //         if (event.exportId === exportId) {
+            //             progressSwal.close();
+            //             Swal.fire('Export Complete', 'Your export is ready. You can download it now.', 'success');
+            //         }
+            //     });
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error', 'Something went wrong!', 'error');
+        }
+    }
+
+    async function cancleExport(){
+        try {
+            await axios.post('{{ route('export.cancel') }}', { export_id: exportId });
+            Swal.fire('Cancelled', 'The export process has been cancelled.', 'info');
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error', 'Failed to cancel the export.', 'error');
+        }
     }
 </script>
+
+

@@ -3,6 +3,8 @@
 namespace App\Exports;
 
 use App\Enums\UserRole;
+use App\Enums\ExportStatus;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Collection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -12,10 +14,12 @@ use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
 class GradesExport implements FromCollection, WithHeadings
 {
     protected $coll;
+    protected $user;
 
-    public function __construct($coll)
+    public function __construct($coll, $user)
     {
         $this->coll = $coll;
+        $this->user = $user;
     }
 
     /**
@@ -25,21 +29,18 @@ class GradesExport implements FromCollection, WithHeadings
     {
         $collection = $this->coll;
 
-        /** @var \App\Models\User $user */
-        $user = auth()->user();
-
-        switch ($user->getRoleId()) {
+        switch ($this->user->id) {
             case UserRole::ADMIN:
                 return $collection->map(
                     fn($grade) => $this->adminRowData($grade)
                 );
             case UserRole::TEACHER:
                 return $collection->map(
-                    fn($grade) => $this->teacherRowData($grade, $user)
+                    fn($grade) => $this->teacherRowData($grade, $this->user)
                 );
             case UserRole::STUDENT:
                 return $collection->map(
-                    fn($grade) => $this->studentRowData($grade, $user)
+                    fn($grade) => $this->studentRowData($grade, $this->user)
                 );
             default:
                 return new Collection();
@@ -94,9 +95,10 @@ class GradesExport implements FromCollection, WithHeadings
         ];
     }
 
-
-    static function mergeExcelFiles(int $tempFilesCount, string $tempFileNamePattern, string $outputFilePath)
+    public static function mergeExcelFiles(int $tempFilesCount, string $tempFileNamePattern, string $outputFilePath, string $exportStatusId)
     {
+        set_time_limit(50); // 50 seconds is maximum execution time
+
         $writer = WriterEntityFactory::createXLSXWriter();
         $writer->openToFile($outputFilePath);
 
@@ -104,6 +106,11 @@ class GradesExport implements FromCollection, WithHeadings
         // Iterate through each temporary file
         for ($index = 1; $index <= $tempFilesCount; $index++) {
             $filePath = $tempFilePath . "-$index" . '.xlsx';
+
+            if (self::isExportCancelled($exportStatusId)) {
+                self::deleteAllFiles($tempFilePath, $tempFilesCount, $outputFilePath);
+                return; // Exit
+            }
 
             // Initialize Spout XLSX reader for current input file
             $reader = ReaderEntityFactory::createXLSXReader();
@@ -127,5 +134,25 @@ class GradesExport implements FromCollection, WithHeadings
 
         // Close the writer to save the output file
         $writer->close();
+    }
+
+    protected static function isExportCancelled(string $exportStatusId)
+    {
+        return Cache::get($exportStatusId)['status'] === ExportStatus::CANCELLED;
+    }
+
+    protected static function deleteAllFiles(string $tempFilePath, int $tempFilesCount, string $mergedFilePath = null)
+    {
+        for ($index = 1; $index <= $tempFilesCount; $index++) {
+            $filePath = $tempFilePath . "-$index" . '.xlsx';
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+        }
+
+        // Also delete the merged file if it exists
+        if ($mergedFilePath && file_exists($mergedFilePath)) {
+            unlink($mergedFilePath);
+        }
     }
 }

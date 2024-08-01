@@ -2,26 +2,30 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Jobs\TestJob;
 use App\Models\Subject;
 use Illuminate\View\View;
+use App\Enums\ExportStatus;
 use Illuminate\Http\Request;
-use App\Exports\GradesExport;
+use App\Jobs\ExportGradesJob;
 use App\Services\GradeService;
-use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Cache;
 use App\Http\Requests\StoreGradeRequest;
 
 class GradeController extends BaseController
 {
     private $gradeService;
     private $filterInputs;
+    private $exportStatus;
 
     public function __construct(GradeService $gradeService)
     {
         $this->middleware("teacher")->only(["create", "store", "edit", "update", "destroy"]);
         $this->gradeService = $gradeService;
         $this->filterInputs = ['per-page', 'subject', 'keyword', 'from-date', 'to-date'];
+        $this->exportStatus = 'export-status-';
     }
 
     /**
@@ -41,46 +45,31 @@ class GradeController extends BaseController
 
     public function export(Request $request)
     {
-        // Chunk grades and store them temporary until all grades have been get, then delete them after combine them to one file and send it to user
-        try {
-            $filters = $this->gradeService->relationsBasedonRole($request->only($this->filterInputs));
+        $exportId = $request->export_id;
 
-            $timestamp = now()->timestamp;
-            $chunkSize = 5000;
-            $limitGrades = 50000;
+        // Store export ID in cache with "in-progress" status
+        Cache::put($this->exportStatus . $exportId, ['status' => ExportStatus::IN_PROGRESS], now()->addMinutes(3));
 
-            $gradesCount = $this->gradeService->getGradesQuery($filters)->count();
+        $filters = $this->gradeService->relationsBasedonRole($request->only($this->filterInputs));
 
-            $query = $this->gradeService->getGradesQuery($filters)->latest();
+        // Dispatch the export job
+        ExportGradesJob::dispatch($filters, $this->exportStatus, $exportId, $this->getAuthUser());
 
-            if ($gradesCount > $limitGrades) {
-                // Using max id to apply the limit when chunking
-                $maxId = $this->gradeService->getGradesQuery($filters)->skip($limitGrades)->take(1)->value('id');
-                $query->where('id', '<', $maxId);
-            }
+        return response()->json(['message' => 'Export has been queued.']);
+    }
 
-            $fileName = $timestamp . '-' . 'grades.xlsx';
-            $tempFilePattern = '/temp/grades-export-chunk-' . $timestamp;
+    public function cancelExport(Request $request)
+    {
+        $request->validate([
+            'export_id' => 'required|string',
+        ]);
 
-            $count = 0;
+        $exportId = $request->input('export_id');
 
-            // Chunk grades and export them
-            $query->chunk($chunkSize, function ($grades) use (&$count, &$tempFilePattern) {
-                $count++;
-                Excel::store(new GradesExport($grades), $tempFilePattern . "-$count" . '.xlsx', 'public');
-            });
+        // Set the export status to canceled in cache
+        Cache::put($this->exportStatus . $exportId, ['status' => ExportStatus::CANCELLED], now()->addMinutes(3));
 
-            // Merge chunks into a single file
-            $combinedFilePath = storage_path('app/public/temp/') . $fileName;
-            GradesExport::mergeExcelFiles($count, $tempFilePattern, $combinedFilePath);
-
-            // Download combined file and delete it after sending
-            // download($combinedFilePath, $fileName)->deleteFileAfterSend(true)
-            return response()->json(['file_url' => $fileName]);
-
-        } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()], 500);
-        }
+        return response()->json(['message' => 'Export canceled']);
     }
 
 

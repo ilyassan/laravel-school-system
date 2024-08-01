@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->prefix('export')->name('export.')->group(function () {
     Route::post('grades', [GradeController::class, 'export'])->name('grades');
+    Route::post('cancel', [GradeController::class, 'cancelExport'])->name('cancel');
 });
 
 Route::post('/students-search', function (Request $request) {
