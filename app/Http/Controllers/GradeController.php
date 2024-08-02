@@ -92,7 +92,7 @@ class GradeController extends BaseController
 
         Cache::forget($exportStatusId);
 
-        $filePath = GradesExport::getFolderPath() . $fileName;
+        $filePath = GradesExport::getDownloadFolderPath() . $fileName;
 
         if (!file_exists($filePath)) {
             return abort(404);

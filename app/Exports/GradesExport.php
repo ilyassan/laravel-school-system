@@ -12,11 +12,11 @@ use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
 use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
 use Illuminate\Support\Facades\Log;
 
-class GradesExport implements FromCollection, WithHeadings
+class GradesExport extends BaseExport implements FromCollection, WithHeadings
 {
-    static public $folder = 'temp';
     protected $coll;
     protected $user;
+    protected static $downloadFileName = 'grades.xlsx';
 
     public function __construct($coll, $user)
     {
@@ -24,9 +24,9 @@ class GradesExport implements FromCollection, WithHeadings
         $this->user = $user;
     }
 
-    static public function getFolderPath()
+    public static function getUniqueDownloadFileName($uniqueId)
     {
-        return storage_path('app/public/' . self::$folder . '/');
+        return $uniqueId . '-' . self::$downloadFileName;
     }
 
     /**
@@ -107,7 +107,7 @@ class GradesExport implements FromCollection, WithHeadings
         $writer = WriterEntityFactory::createXLSXWriter();
         $writer->openToFile($outputFilePath);
 
-        $tempFilePath = self::getFolderPath() . $tempFileNamePattern;
+        $tempFilePath = self::getTempFolderPath() . $tempFileNamePattern;
 
         $isFirstFile = true;
 

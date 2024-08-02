@@ -2,14 +2,15 @@
 
 namespace App\Jobs;
 
-use App\Enums\ExportStatus;
-use App\Events\ExportProcessCompleted;
-use App\Exports\GradesExport;
 use App\Models\Grade;
+use App\Enums\ExportStatus;
+use App\Exports\GradesExport;
 use Illuminate\Bus\Queueable;
 use App\Services\GradeService;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Cache;
+use App\Events\ExportProcessCompleted;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -61,12 +62,13 @@ class ExportGradesJob implements ShouldQueue
                 return false;
             }
             $count++;
-            Excel::store(new GradesExport($grades, $this->user), GradesExport::$folder . '/' . $tempFilePattern . "-$count" . '.xlsx', 'public');
+            Excel::store(new GradesExport($grades, $this->user), GradesExport::$tempFolder . '/' . $tempFilePattern . "-$count" . '.xlsx', 'public');
         });
 
-        $fileName = $this->exportId . '-' . 'grades.xlsx';
-        $combinedFilePath = GradesExport::getFolderPath() . $fileName;
+        $fileName = GradesExport::getUniqueDownloadFileName($this->exportId);
+        $combinedFilePath = GradesExport::getDownloadFolderPath() . $fileName;
 
+        Log::info('test');
         GradesExport::mergeExcelFiles($count, $tempFilePattern, $combinedFilePath, $this->exportStatus . $this->exportId);
 
         $cacheStatus = Cache::get($this->exportStatus . $this->exportId)['status'];
