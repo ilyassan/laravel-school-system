@@ -68,7 +68,6 @@ class ExportGradesJob implements ShouldQueue
         $fileName = GradesExport::getUniqueDownloadFileName($this->exportId);
         $combinedFilePath = GradesExport::getDownloadFolderPath() . $fileName;
 
-        Log::info('test');
         GradesExport::mergeExcelFiles($count, $tempFilePattern, $combinedFilePath, $this->exportStatus . $this->exportId);
 
         $cacheStatus = Cache::get($this->exportStatus . $this->exportId)['status'];

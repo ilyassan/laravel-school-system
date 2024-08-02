@@ -99,17 +99,7 @@ class GradeController extends BaseController
         }
 
         try {
-            $response = response()->download($filePath, 'grades.xlsx');
-
-            dispatch(function () use ($filePath) {
-                sleep(10);
-                if (file_exists($filePath)) {
-                    unlink($filePath); // Delete the file
-                }
-            });
-
-            return $response;
-
+            return response()->download($filePath, 'grades.xlsx');
         } catch (\Throwable $th) {
             return abort(500);
         }
