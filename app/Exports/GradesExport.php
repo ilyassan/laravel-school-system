@@ -10,9 +10,11 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
 use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
+use Illuminate\Support\Facades\Log;
 
 class GradesExport implements FromCollection, WithHeadings
 {
+    static public $folder = 'temp';
     protected $coll;
     protected $user;
 
@@ -20,6 +22,11 @@ class GradesExport implements FromCollection, WithHeadings
     {
         $this->coll = $coll;
         $this->user = $user;
+    }
+
+    static public function getFolderPath()
+    {
+        return storage_path('app/public/' . self::$folder . '/');
     }
 
     /**
@@ -97,12 +104,13 @@ class GradesExport implements FromCollection, WithHeadings
 
     public static function mergeExcelFiles(int $tempFilesCount, string $tempFileNamePattern, string $outputFilePath, string $exportStatusId)
     {
-        set_time_limit(50); // 50 seconds is maximum execution time
-
         $writer = WriterEntityFactory::createXLSXWriter();
         $writer->openToFile($outputFilePath);
 
-        $tempFilePath = storage_path('app/public') . $tempFileNamePattern;
+        $tempFilePath = self::getFolderPath() . $tempFileNamePattern;
+
+        $isFirstFile = true;
+
         // Iterate through each temporary file
         for ($index = 1; $index <= $tempFilesCount; $index++) {
             $filePath = $tempFilePath . "-$index" . '.xlsx';
@@ -112,16 +120,33 @@ class GradesExport implements FromCollection, WithHeadings
                 return; // Exit
             }
 
+            if (!file_exists($filePath)) {
+                Log::info("Temp file not found: $filePath");
+                continue;
+            }
+
             // Initialize Spout XLSX reader for current input file
             $reader = ReaderEntityFactory::createXLSXReader();
             $reader->open($filePath);
 
             // Iterate through each sheet in the input file
             foreach ($reader->getSheetIterator() as $sheet) {
+                $isFirstRow = true;
                 // Iterate through each row in the sheet
                 foreach ($sheet->getRowIterator() as $row) {
-                    // Add row to the output file
-                    $writer->addRow($row);
+                    // Skip the header row for all but the first file
+                    if ($isFirstFile && $isFirstRow) {
+                        // Write the first row of the first file
+                        $writer->addRow($row);
+                        $isFirstRow = false;
+                        $isFirstFile = false;
+                    } elseif (!$isFirstFile && $isFirstRow) {
+                        // Skip the header row for subsequent files
+                        $isFirstRow = false;
+                    } else {
+                        // Write all other rows
+                        $writer->addRow($row);
+                    }
                 }
             }
 
@@ -129,7 +154,9 @@ class GradesExport implements FromCollection, WithHeadings
             $reader->close();
 
             // Delete the temporary file
-            unlink($filePath);
+            if (!unlink($filePath)) {
+                Log::info("Failed to delete temp file: $filePath");
+            }
         }
 
         // Close the writer to save the output file

@@ -11,6 +11,7 @@
         "guzzlehttp/guzzle": "^7.2",
         "icehouse-ventures/laravel-chartjs": "^1.0",
         "laravel/framework": "^10.10",
+        "laravel/reverb": "^1.0",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "maatwebsite/excel": "^3.1",

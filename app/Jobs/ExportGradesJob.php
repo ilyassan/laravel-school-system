@@ -3,10 +3,11 @@
 namespace App\Jobs;
 
 use App\Enums\ExportStatus;
+use App\Events\ExportProcessCompleted;
 use App\Exports\GradesExport;
+use App\Models\Grade;
 use Illuminate\Bus\Queueable;
 use App\Services\GradeService;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Queue\SerializesModels;
@@ -22,6 +23,8 @@ class ExportGradesJob implements ShouldQueue
     protected $exportId;
     protected $user;
     protected $exportStatus;
+    protected $gradesLimit;
+    protected $chunkSize;
 
     public function __construct($filters, $exportStatus, $exportId, $user)
     {
@@ -29,7 +32,8 @@ class ExportGradesJob implements ShouldQueue
         $this->exportStatus = $exportStatus;
         $this->exportId = $exportId;
         $this->user = $user;
-
+        $this->gradesLimit = 100000;
+        $this->chunkSize = 5000;
     }
 
     /**
@@ -37,36 +41,41 @@ class ExportGradesJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $tempFilePattern = '/temp/grades-export-chunk-' . $this->exportId;
-        $chunkSize = 6000;
-        $limitGrades = 40000;
+        $tempFilePattern = 'grades-export-chunk-' . $this->exportId;
 
-        $gradesCount = app(GradeService::class)->getGradesQuery($this->filters)->count();
-        $query = app(GradeService::class)->getGradesQuery($this->filters)->latest();
+        $gradeService = app(GradeService::class);
+        $gradesQuery = $gradeService->getGradesQuery($this->filters)->latest();
+        $gradesCount = $gradeService->countGrades($this->filters);
 
-        if ($gradesCount > $limitGrades) {
-            $maxId = app(GradeService::class)->getGradesQuery($this->filters)->skip($limitGrades)->take(1)->value('id');
-            $query->where('id', '<', $maxId);
+        $query = clone $gradesQuery;
+
+        if ($gradesCount > $this->gradesLimit) {
+            // To implement limit for the query chunking
+            $lastTimestamp = $gradesQuery->skip($this->gradesLimit)->take(1)->value('created_at');
+            $query->where(Grade::CREATED_AT, '>', $lastTimestamp);
         }
 
         $count = 0;
-        $query->chunk($chunkSize, function ($grades) use (&$count, &$tempFilePattern, &$exportStatus) {
+        $query->chunk($this->chunkSize, function ($grades) use (&$count, &$tempFilePattern) {
             if (Cache::get($this->exportStatus . $this->exportId)['status'] === ExportStatus::CANCELLED) {
                 return false;
             }
             $count++;
-            Excel::store(new GradesExport($grades, $this->user), $tempFilePattern . "-$count" . '.xlsx', 'public');
+            Excel::store(new GradesExport($grades, $this->user), GradesExport::$folder . '/' . $tempFilePattern . "-$count" . '.xlsx', 'public');
         });
 
         $fileName = $this->exportId . '-' . 'grades.xlsx';
-        $combinedFilePath = storage_path('app/public/temp/') . $fileName;
+        $combinedFilePath = GradesExport::getFolderPath() . $fileName;
+
         GradesExport::mergeExcelFiles($count, $tempFilePattern, $combinedFilePath, $this->exportStatus . $this->exportId);
 
-        // Clear cache entry after completion
-        Cache::forget($this->exportStatus . $this->exportId);
-
-        //broadcasting filename when it finish // nothing if it cancelled
-        //delete files automaticly after 10 minutes
-        // return response()->json(['file_name' => $fileName]);
+        $cacheStatus = Cache::get($this->exportStatus . $this->exportId)['status'];
+        if ($cacheStatus === ExportStatus::CANCELLED) {
+            Cache::forget($this->exportStatus . $this->exportId);
+        } else if ($cacheStatus === ExportStatus::IN_PROGRESS) {
+            Cache::put($this->exportStatus . $this->exportId, ['status' => ExportStatus::COMPLETED], now()->addMinutes(10));
+            broadcast(new ExportProcessCompleted($this->exportId, $fileName));
+        }
     }
+
 }

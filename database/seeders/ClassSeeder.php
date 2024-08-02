@@ -15,7 +15,7 @@ class ClassSeeder extends Seeder
     {
         // Insert default classes
 
-        $numberOfClasses = 12;
+        $numberOfClasses = 9;
         $classes = [];
 
         for ($i = 1; $i <= $numberOfClasses; $i++) {

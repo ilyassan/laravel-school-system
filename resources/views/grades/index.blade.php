@@ -4,6 +4,7 @@
 
 @section('css')
 <!-- Internal Data table css -->
+@vite('resources/js/app.js')
 <link href="{{ URL::asset('assets/plugins/datatable/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
 <link href="{{ URL::asset('assets/plugins/datatable/css/jquery.dataTables.min.css') }}" rel="stylesheet">
 @endsection
@@ -158,6 +159,13 @@
         </div>
     </div>
 </div>
+<form id="downloadForm" action='{{ route('grades.download') }}' method="POST" style="display: none;">
+    @method('POST')
+    @csrf
+    <input type="hidden" name="export_id" id="exportIdInput">
+    <input type="hidden" name="file_name" id="fileName">
+    <button type="submit">Download</button>
+</form>
 @endsection
 
 @section('js')
@@ -179,6 +187,7 @@
 
 <script type="text/javascript">
     let exportId = null
+    
     async function handleExport() {
         exportId = `${Date.now()}`; // Generate and store a unique export ID
 
@@ -207,14 +216,32 @@
                     Swal.getCancelButton().addEventListener('click', () => cancleExport());
                 },
             });
-            // Listen for WebSocket notifications
-            // Echo.channel('exports')
-            //     .listen('ExportCompleted', (event) => {
-            //         if (event.exportId === exportId) {
-            //             progressSwal.close();
-            //             Swal.fire('Export Complete', 'Your export is ready. You can download it now.', 'success');
-            //         }
-            //     });
+            // Listen for WebSocket
+            if(window.Echo){
+                window.Echo.channel(`export.${exportId}`)
+                    .listen('.ExportCompleted', (event) => {
+                        if (event.exportId === exportId) {
+                            progressSwal.close();
+                            Swal.fire({
+                                title: 'File is Ready',
+                                text: 'Your export file is ready. Click the button below to download it.',
+                                icon: 'success',
+                                showCancelButton: false,
+                                confirmButtonText: 'Download',
+                                customClass: {
+                                confirmButton: 'btn btn-success' // Apply the custom class
+                                },
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Submit the hidden form to download the file
+                                    document.getElementById('exportIdInput').value = event.exportId;
+                                    document.getElementById('fileName').value = event.fileName;
+                                    document.getElementById('downloadForm').submit();
+                                }
+                            });
+                        }
+                    });
+            }
         } catch (error) {
             console.error(error);
             Swal.fire('Error', 'Something went wrong!', 'error');

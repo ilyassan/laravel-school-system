@@ -19,16 +19,14 @@ class SubjectSeeder extends Seeder
             'Economics',
             'Mathematics',
             'Information Technology',
-            'History',
             'Biology',
-            'Chemistry',
             'Physics',
         ];
 
         $subjects = [];
         foreach ($subjectsName as $subjectName) {
             $subjects[] = ['name' => $subjectName];
-        } 
+        }
 
         Subject::insert($subjects);
     }

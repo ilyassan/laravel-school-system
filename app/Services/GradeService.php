@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Grade;
 use App\Repositories\GradeRepository;
+use Illuminate\Database\Eloquent\Builder;
 
 class GradeService
 {
@@ -57,7 +58,7 @@ class GradeService
         return $this->gradeRepository->getFilteredQuery($filters)->count();
     }
 
-    public function getGradesQuery(array $filters)
+    public function getGradesQuery(array $filters): Builder
     {
         return $this->gradeRepository->getFilteredQuery($filters);
     }

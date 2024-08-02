@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\TestJob;
 use App\Models\Subject;
 use Illuminate\View\View;
 use App\Enums\ExportStatus;
 use Illuminate\Http\Request;
+use App\Exports\GradesExport;
 use App\Jobs\ExportGradesJob;
 use App\Services\GradeService;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Requests\StoreGradeRequest;
@@ -71,6 +70,51 @@ class GradeController extends BaseController
 
         return response()->json(['message' => 'Export canceled']);
     }
+
+    public function download(Request $request)
+    {
+        $request->validate([
+            'export_id' => 'required|string',
+            'file_name' => 'required|string',
+        ]);
+
+        $exportId = $request->input('export_id');
+        $fileName = $request->input('file_name');
+
+        $exportStatusId = $this->exportStatus . $exportId;
+        $status = Cache::get($exportStatusId);
+
+        if ($status && $status['status'] !== ExportStatus::COMPLETED) {
+            Cache::forget($exportStatusId);
+            return redirect()->route('grades.index');
+        }
+        // Export status is completed
+
+        Cache::forget($exportStatusId);
+
+        $filePath = GradesExport::getFolderPath() . $fileName;
+
+        if (!file_exists($filePath)) {
+            return abort(404);
+        }
+
+        try {
+            $response = response()->download($filePath, 'grades.xlsx');
+
+            dispatch(function () use ($filePath) {
+                sleep(10);
+                if (file_exists($filePath)) {
+                    unlink($filePath); // Delete the file
+                }
+            });
+
+            return $response;
+
+        } catch (\Throwable $th) {
+            return abort(500);
+        }
+    }
+
 
 
     /**

@@ -19,7 +19,7 @@ class StudentSeeder extends Seeder
         // Create students for each class
         foreach ($classIds as $key => $classId) {
 
-            $count = 45;
+            $count = 40;
 
             if ($key === 0) {
                 StudentFactory::new()->create([

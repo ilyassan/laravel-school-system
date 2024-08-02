@@ -19,6 +19,8 @@ class GradeSeeder extends Seeder
         $batchSize = 100; // Set the batch size to control memory usage
         $years = 2;
 
+        $timestamp = now()->subYears($years)->startOfYear();
+
         foreach ($classes as $class) {
             foreach ($class->teachers as $teacher) {
                 foreach ($class->students as $student) {
@@ -27,15 +29,17 @@ class GradeSeeder extends Seeder
                     for ($year = 0; $year < $years; $year++) {
                         $maxMonth = $year < $years - 1 ? 12 : Carbon::now()->month;
 
-                        for ($month = 1; $month <= $maxMonth ; $month++) {
-
+                        for ($month = 1; $month <= $maxMonth; $month++) {
                             $day = ($month == Carbon::now()->month && $year == $years - 1) ? rand(1, Carbon::now()->day) : rand(1, 28);
-                            $createdAt = Carbon::now()->subYear()->day($day)->addYears($year)->month($month);
+
+                            $timestamp = $timestamp->addSeconds(rand(30, 60));
+
+                            $createdAt = $timestamp->copy()->year($timestamp->year + $year)->month($month)->day($day);
                             $grades[] = [
                                 'student_id' => $student->id,
                                 'teacher_id' => $teacher->id,
                                 'grade' => number_format(rand(95, 200) / 10, 2), // Grade between 9.5 and 20
-                                'created_at' => $createdAt, // Set the creation date
+                                'created_at' => $createdAt,
                             ];
 
                             // Insert grades in batches
