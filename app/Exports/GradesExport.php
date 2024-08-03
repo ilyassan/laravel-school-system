@@ -36,7 +36,7 @@ class GradesExport extends BaseExport implements FromCollection, WithHeadings
     {
         $collection = $this->coll;
 
-        switch ($this->user->id) {
+        switch ($this->user->getRoleId()) {
             case UserRole::ADMIN:
                 return $collection->map(
                     fn($grade) => $this->adminRowData($grade)
