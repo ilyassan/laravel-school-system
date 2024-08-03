@@ -191,23 +191,28 @@
 </div>
 
 
-@section('tag-js')
+
+<script type="text/javascript">
 	function confirmation(e){
 		e.preventDefault();
 		
-		swal({
-			title: 'Are you sure ?',
-			text: 'to back to the account you must login again.',
+		Swal.fire({
+			title: 'Are you sure?',
+			text: 'To go back to the account, you must log in again.',
 			icon: 'warning',
-			buttons: true,
-			dangerMode: true,
-		})
-		.then((sure)=>{
-			if(sure){
-				e.target.parentElement.submit()
+			showCancelButton: true,
+			confirmButtonText: "I'm sure",
+			cancelButtonText: 'No, cancel',
+			customClass: {
+				confirmButton: 'btn btn-danger btn-lg',
+				icon: 'text-danger border-danger',
+			},
+		}).then((result) => {
+			if (result.isConfirmed) {
+				e.target.parentElement.submit();
 			}
-		})
+		});
 	}
-@endsection
+</script>
 
 <!-- /main-header -->

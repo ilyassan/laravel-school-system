@@ -149,19 +149,16 @@
     </div>
 @endsection
 @if (Session::has('message'))
-    @section('js')
-        <script type="text/javascript">
-            swal({
-                title: 'Message',
-                text: '{{Session::get("message")}}',
-                icon: 'success',
-                buttons: {
-                    confirm: {
-                        text: 'OK',
-                        className: 'btn btn-primary'
-                    }
-                }
-            })
-        </script>
+    @section('tag-js')
+        Swal.fire({
+            title: 'Message',
+            text: '{{ Session::get("message") }}',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            customClass: {
+                confirmButton: 'btn btn-primary'
+            }
+        });
     @endsection
+    {{ Session::get("message") }}
 @endif

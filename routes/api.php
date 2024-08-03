@@ -21,7 +21,7 @@ Route::middleware('auth:sanctum')->prefix('export')->name('export.')->group(func
     Route::post('cancel', [GradeController::class, 'cancelExport'])->name('cancel');
 });
 
-Route::post('/students-search', function (Request $request) {
+Route::middleware(['auth:sanctum', 'teacher'])->post('/students-search', function (Request $request) {
 
     $search = $request->get('search', '');
     $classId = $request->get('class_id', '');

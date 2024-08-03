@@ -1,0 +1,4 @@
+php artisan serve
+php artisan queue:listen redis
+php artisan reverb:start
+php artisan schedule:work

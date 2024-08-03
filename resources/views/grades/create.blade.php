@@ -4,6 +4,7 @@
 
 @section('css')
     <link href="{{URL::asset('assets/plugins/select2/css/select2.min.css')}}" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
 
 @section('page-header')
@@ -103,19 +104,25 @@
 
 @section('tag-js')
     $(document).ready(function() {
-        // Initialize Select2 for student search input
+        // Set up CSRF token for all AJAX requests
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
 
+        // Initialize Select2 for student search input
         $('#studentSearchInput').select2({
             placeholder: 'Select The student', // Placeholder text
             ajax: {
-                url: '{{route('students.search')}}',
+                url: '{{ route('students.search') }}',
                 dataType: 'json',
                 method: 'POST',
                 data: function (params) {
                     var query = {
                         search: params.term || '',
                         class_id: $('#classesInput').val()
-                      };
+                    };
 
                     return query;
                 },
@@ -130,26 +137,27 @@
             }
         });
     });
-
     @if ($errors->any())
-        swal({
-            title: 'Invalid Data',
-            text: '{{$errors->first()}}', // Use $errors->first() to get the first error message
-            icon: 'warning',
-            button: 'Ok'
-        });
-    @endif
-    @if (Session::has('success'))
-        swal({
-            title: 'Message',
-            text: '{{Session::get('success')}}',
-            icon: 'success',
-            buttons: {
-                confirm: {
-                    text: 'OK',
-                    className: 'btn btn-primary'
-                }
-            }
-        })
-    @endif
+    Swal.fire({
+        title: 'Invalid Data',
+        text: '{{ $errors->first() }}', // Use $errors->first() to get the first error message
+        icon: 'warning',
+        confirmButtonText: 'Ok',
+        customClass: {
+            confirmButton: 'btn btn-primary'
+        }
+    });
+@endif
+@if (Session::has('success'))
+    Swal.fire({
+        title: 'Message',
+        text: '{{ Session::get('success') }}',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        customClass: {
+            confirmButton: 'btn btn-primary'
+        }
+    });
+    {{Session::forget('success')}}
+@endif
 @endsection
