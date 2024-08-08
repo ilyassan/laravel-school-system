@@ -3,10 +3,10 @@
 @section('title', 'Grades Table')
 
 @section('css')
-<!-- Internal Data table css -->
-@vite('resources/js/app.js')
-<link href="{{ URL::asset('assets/plugins/datatable/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
-<link href="{{ URL::asset('assets/plugins/datatable/css/jquery.dataTables.min.css') }}" rel="stylesheet">
+    <!-- Internal Data table css -->
+    @vite('resources/js/app.js')
+    <link href="{{ URL::asset('assets/plugins/datatable/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" />
+    <link href="{{ URL::asset('assets/plugins/datatable/css/jquery.dataTables.min.css') }}" rel="stylesheet">
 @endsection
 
 @section('page-header')
