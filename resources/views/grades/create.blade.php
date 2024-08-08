@@ -148,16 +148,16 @@
         }
     });
 @endif
-@if (Session::has('success'))
+@if (Session::has('message'))
     Swal.fire({
         title: 'Message',
-        text: '{{ Session::get('success') }}',
+        text: '{{ Session::get('message') }}',
         icon: 'success',
         confirmButtonText: 'OK',
         customClass: {
             confirmButton: 'btn btn-primary'
         }
     });
-    {{Session::forget('success')}}
+    {{Session::forget('message')}}
 @endif
 @endsection

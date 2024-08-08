@@ -64,7 +64,7 @@ class GradeController extends BaseController
             ]
         );
 
-        return redirect()->back()->with('success', 'The grade created successfully.')->withInput(['class_id' => $request->get('class_id')]);
+        return redirect()->back()->with('message', 'The grade created successfully.')->withInput(['class_id' => $request->get('class_id')]);
     }
 
     /**
@@ -82,7 +82,9 @@ class GradeController extends BaseController
      */
     public function edit(string $id)
     {
-        //
+        $grade = $this->gradeService->getGrade($id);
+
+        return view('grades.edit', compact('grade'));
     }
 
     /**
@@ -90,7 +92,13 @@ class GradeController extends BaseController
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validatedData = $request->validate([
+            'grade' => ['required', 'numeric', 'min:0', 'max:20'],
+        ]);
+
+        $this->gradeService->updateGrade($validatedData, $id);
+
+        return redirect()->route('grades.show', $id)->with('message', 'The grade has been updated successfully.');
     }
 
     /**

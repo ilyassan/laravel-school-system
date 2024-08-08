@@ -114,7 +114,7 @@
                         <tbody>
                             @if (auth()->user()->isAdmin())
                                 @foreach ($grades as $grade)
-                                    <tr>
+                                    <tr onclick="window.location='{{ route('grades.show', $grade->id) }}'" style="cursor: pointer">
                                         <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ $grade->teacher->fullname }}</td>
                                         <td>{{ $grade->teacher->subject->name}}</td>
@@ -127,7 +127,7 @@
                             @endif
                             @if (auth()->user()->isTeacher())
                                 @foreach ($grades as $grade)
-                                    <tr>
+                                    <tr onclick="window.location='{{ route('grades.show', $grade->id) }}'" style="cursor: pointer">
                                         <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ auth()->user()->fullname }}</td>
                                         <td>{{ auth()->user()->subject->name}}</td>
@@ -140,7 +140,7 @@
                             @endif
                             @if (auth()->user()->isStudent())
                                 @foreach ($grades as $grade)
-                                    <tr>
+                                    <tr onclick="window.location='{{ route('grades.show', $grade->id) }}'" style="cursor: pointer">
                                         <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ $grade->teacher->fullname }}</td>
                                         <td>{{ $grade->teacher->subject->name}}</td>

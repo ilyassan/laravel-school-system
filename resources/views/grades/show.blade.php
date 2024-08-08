@@ -98,18 +98,18 @@
                                     <label class="form-label m-0">Created At</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ $grade->created_at->format('m/d/Y') }}">
+                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ (new DateTime($grade->created_at))->format('m/d/Y \A\t H:i:s') }}">
                                 </div>
                             </div>
                         </div>
-                        @if ($grade->updated_at)
+                        @if ($grade->updated_at != $grade->created_at && isset($grade->updated_at))
                             <div class="form-group ">
                                 <div class="row">
                                     <div class="col-md-3 d-flex align-items-center">
                                         <label class="form-label m-0">Updated At</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ $grade->updated_at->format('m/d/Y')}}">
+                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ (new DateTime($grade->updated_at))->format('m/d/Y \A\t H:i:s')}}">
                                     </div>
                                 </div>
                             </div>
@@ -123,3 +123,17 @@
         </div>
     </div>
 @endsection
+@if (Session::has('message'))
+    @section('tag-js')
+        Swal.fire({
+            title: 'Message',
+            text: '{{ Session::get("message") }}',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            customClass: {
+                confirmButton: 'btn btn-primary'
+            }
+        });
+    @endsection
+    {{ Session::forget("message") }}
+@endif

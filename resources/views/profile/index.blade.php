@@ -160,5 +160,5 @@
             }
         });
     @endsection
-    {{ Session::get("message") }}
+    {{ Session::forget("message") }}
 @endif

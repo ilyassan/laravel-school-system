@@ -75,7 +75,7 @@ class GradeRepository extends AbstractRepository
         return $query;
     }
 
-    public function getSingleGradeQuery($with): Builder
+    public function getSingleGradeQuery(string $id, array $with = null): Builder
     {
         $query = $this->model::query();
 
@@ -83,7 +83,7 @@ class GradeRepository extends AbstractRepository
             $query->with($with);
         }
 
-        return $query;
+        return $query->where(Grade::PRIMARY_KEY, $id);
     }
 
     public function getCollection(array $filters = []): Collection

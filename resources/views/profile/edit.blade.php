@@ -62,7 +62,7 @@
     </div>
 @endsection
 @section('js')
-    <script>
+    <script type="text/javascript">
         $(function(){
             var $emailInput = $('#email');
 

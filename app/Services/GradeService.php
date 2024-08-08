@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Grade;
 use App\Repositories\GradeRepository;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class GradeService
 {
@@ -15,7 +16,7 @@ class GradeService
         $this->gradeRepository = $gradeRepository;
     }
 
-    public function getGrades(array $filters)
+    public function getGrades(array $filters): LengthAwarePaginator
     {
         $filters = $this->relationsBasedonRole($filters);
         return $this->gradeRepository->getPaginate($filters);
@@ -25,11 +26,16 @@ class GradeService
     {
         $with = ['student:id,first_name,last_name,class_id', 'student.class', 'teacher:id,first_name,last_name,subject_id', 'teacher.subject'];
 
-        return $this->gradeRepository->getSingleGradeQuery($with)->find($id);
+        return $this->gradeRepository->getSingleGradeQuery($id, $with)->first();
+    }
+
+    public function updateGrade(array $newData, string $id)
+    {
+        return $this->gradeRepository->getSingleGradeQuery($id)->update($newData);
     }
 
     // To avoid getting data from db that already on the user session
-    public function relationsBasedonRole(array $arr)
+    public function relationsBasedonRole(array $arr): array
     {
         /** @var \App\Models\User $user */
         $user = auth()->user();

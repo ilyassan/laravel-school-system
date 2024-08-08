@@ -15,10 +15,12 @@ class Grade extends Model
         'grade',
     ];
 
+    public const PRIMARY_KEY = 'id';
+
     public const GRADE_COLUMN = 'grade';
 
     public const TEACHER_COLUMN = 'teacher_id';
-    
+
     public const STUDENT_COLUMN = 'student_id';
 
     public function student()
