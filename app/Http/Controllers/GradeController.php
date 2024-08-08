@@ -42,6 +42,69 @@ class GradeController extends BaseController
         }
     }
 
+    /**
+     * Show the form for creating a new grade.
+     */
+    public function create(): View
+    {
+        $classes = $this->getAuthUser()->classes;
+
+        return view('grades.create', compact('classes'));
+    }
+
+    /**
+     * Store a newly created grade in storage.
+     */
+    public function store(StoreGradeRequest $request): RedirectResponse
+    {
+        $this->gradeService->createGrade(
+            [
+                'teacher_id' => $this->getAuthUser()->id,
+                ...$request->validated()
+            ]
+        );
+
+        return redirect()->back()->with('success', 'The grade created successfully.')->withInput(['class_id' => $request->get('class_id')]);
+    }
+
+    /**
+     * Display the specified grade.
+     */
+    public function show(string $id)
+    {
+        $grade = $this->gradeService->getGrade($id);
+
+        return view('grades.show', compact('grade'));
+    }
+
+    /**
+     * Show the form for editing the specified grade.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified grade in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified grade from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
+    }
+
+    /**
+     * Export process methods.
+     */
+
     public function export(Request $request)
     {
         $exportId = $request->export_id;
@@ -103,64 +166,5 @@ class GradeController extends BaseController
         } catch (\Throwable $th) {
             return abort(500);
         }
-    }
-
-
-
-    /**
-     * Show the form for creating a new grade.
-     */
-    public function create(): View
-    {
-        $classes = $this->getAuthUser()->classes;
-
-        return view('grades.create', compact('classes'));
-    }
-
-    /**
-     * Store a newly created grade in storage.
-     */
-    public function store(StoreGradeRequest $request): RedirectResponse
-    {
-        $this->gradeService->createGrade(
-            [
-                'teacher_id' => $this->getAuthUser()->id,
-                ...$request->validated()
-            ]
-        );
-
-        return redirect()->back()->with('success', 'The grade created successfully.')->withInput(['class_id' => $request->get('class_id')]);
-    }
-
-    /**
-     * Display the specified grade.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified grade.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified grade in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified grade from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

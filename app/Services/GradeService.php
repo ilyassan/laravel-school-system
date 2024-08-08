@@ -21,6 +21,13 @@ class GradeService
         return $this->gradeRepository->getPaginate($filters);
     }
 
+    public function getGrade(string $id): Grade
+    {
+        $with = ['student:id,first_name,last_name,class_id', 'student.class', 'teacher:id,first_name,last_name,subject_id', 'teacher.subject'];
+
+        return $this->gradeRepository->getSingleGradeQuery($with)->find($id);
+    }
+
     // To avoid getting data from db that already on the user session
     public function relationsBasedonRole(array $arr)
     {
@@ -31,21 +38,21 @@ class GradeService
         if ($user->isAdmin()) {
             $arr['with'] = [
                 'teacher:id,first_name,last_name,subject_id',
-                'teacher.subject:id,name',
+                'teacher.subject',
                 'student:id,first_name,last_name,class_id',
                 'student.class:id,name',
             ];
         } elseif ($user->isTeacher()) {
             $arr['with'] = [
                 'student:id,first_name,last_name,class_id',
-                'teacher.subject:id,name',
+                'teacher.subject',
                 'student.class:id,name',
             ];
             $arr['teacher_id'] = $user->id;
         } elseif ($user->isStudent()) {
             $arr['with'] = [
                 'teacher:id,first_name,last_name,subject_id',
-                'teacher.subject:id,name',
+                'teacher.subject',
             ];
             $arr['student_id'] = $user->id;
         }

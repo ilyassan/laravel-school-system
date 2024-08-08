@@ -31,11 +31,11 @@ Route::middleware('auth')->prefix('profile')->name('profile.')->group(function (
     Route::patch('/reset-password', [ProfileController::class, 'resetPassword'])->name('reset-password');
 });
 
-Route::middleware('auth')->prefix('grades')->name('grades.')->group(function () {
-    Route::resource('/', GradeController::class);
+Route::middleware('auth')->group(function () {
+    Route::resource('grades', GradeController::class);
 
     // Custom route for file download
-    Route::post('/download', [GradeController::class, 'download'])->name('download');
+    Route::post('grades/download', [GradeController::class, 'download'])->name('grades.download');
 });
 
 require __DIR__ . '/auth.php';
