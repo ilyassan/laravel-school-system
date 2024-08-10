@@ -22,7 +22,7 @@ class GradeService
         return $this->gradeRepository->getPaginate($filters);
     }
 
-    public function getGrade(string $id): Grade
+    public function getGrade(string $id)
     {
         $with = ['student:id,first_name,last_name,class_id', 'student.class', 'teacher:id,first_name,last_name,subject_id', 'teacher.subject'];
 

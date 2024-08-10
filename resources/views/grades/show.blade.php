@@ -114,9 +114,11 @@
                                 </div>
                             </div>
                         @endif
-                        <div class="card-footer text-left pl-0">
-                            <a href="{{route('grades.edit', $grade->id)}}" class="btn btn-primary waves-effect waves-light">Edit Grade</a>
-                        </div>
+                        @if (auth()->user()->isTeacher())
+                            <div class="card-footer text-left pl-0">
+                                <a href="{{route('grades.edit', $grade->id)}}" class="btn btn-primary waves-effect waves-light">Edit Grade</a>
+                            </div>
+                        @endif
                     </form>
                 </div>
             </div>

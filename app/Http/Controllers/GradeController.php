@@ -12,6 +12,7 @@ use App\Services\GradeService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Requests\StoreGradeRequest;
+use Throwable;
 
 class GradeController extends BaseController
 {
@@ -37,8 +38,8 @@ class GradeController extends BaseController
             $grades = $this->gradeService->getGrades($request->only($this->filterInputs));
 
             return view('grades.index', compact('grades', 'subjects'));
-        } catch (\Throwable $th) {
-            dd($th);
+        } catch (Throwable $th) {
+            abort(500);
         }
     }
 
@@ -74,6 +75,10 @@ class GradeController extends BaseController
     {
         $grade = $this->gradeService->getGrade($id);
 
+        if (!$grade) {
+            return abort(404, 'The grade not found');
+        }
+
         return view('grades.show', compact('grade'));
     }
 
@@ -83,6 +88,10 @@ class GradeController extends BaseController
     public function edit(string $id)
     {
         $grade = $this->gradeService->getGrade($id);
+
+        if (!$grade) {
+            return abort(404, 'The grade not found');
+        }
 
         return view('grades.edit', compact('grade'));
     }
@@ -96,7 +105,9 @@ class GradeController extends BaseController
             'grade' => ['required', 'numeric', 'min:0', 'max:20'],
         ]);
 
-        $this->gradeService->updateGrade($validatedData, $id);
+        if (!$this->gradeService->updateGrade($validatedData, $id)) {
+            return abort(404, 'The grade not found');
+        }
 
         return redirect()->route('grades.show', $id)->with('message', 'The grade has been updated successfully.');
     }
