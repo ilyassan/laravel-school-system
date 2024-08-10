@@ -16,6 +16,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
+use function Symfony\Component\String\b;
+
 class ExportGradesJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -42,6 +44,9 @@ class ExportGradesJob implements ShouldQueue
      */
     public function handle(): void
     {
+        GradesExport::ensureTempsFolderExists();
+        GradesExport::ensureDownloadsFolderExists();
+
         $tempFilePattern = 'grades-export-chunk-' . $this->exportId;
 
         $gradeService = app(GradeService::class);
