@@ -125,11 +125,12 @@
         </div>
     </div>
 @endsection
-@if (Session::has('message'))
+
+@if (Session::has('success'))
     @section('tag-js')
         Swal.fire({
             title: 'Message',
-            text: '{{ Session::get("message") }}',
+            text: '{{ Session::get("success") }}',
             icon: 'success',
             confirmButtonText: 'OK',
             customClass: {
@@ -137,5 +138,20 @@
             }
         });
     @endsection
-    {{ Session::forget("message") }}
+    {{ Session::forget("success") }}
+@endif
+
+@if (Session::has('warning'))
+    @section('tag-js')
+        Swal.fire({
+            title: 'Warning',
+            text: '{{ Session::get("warning") }}',
+            icon: 'warning',
+            confirmButtonText: 'OK',
+            customClass: {
+                confirmButton: 'btn btn-primary'
+            }
+        });
+    @endsection
+    {{ Session::forget("warning") }}
 @endif

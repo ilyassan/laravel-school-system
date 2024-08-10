@@ -23,7 +23,7 @@ class EnsureStudent
             return $next($request);
         }
 
-        // Redirect non-student users
-        return abort(404);
+        // non-student
+        return abort(403);
     }
 }

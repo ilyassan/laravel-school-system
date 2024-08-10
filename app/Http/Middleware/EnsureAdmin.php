@@ -23,7 +23,7 @@ class EnsureAdmin
             return $next($request);
         }
 
-        // Redirect non-admin
-        return abort(404);
+        // non-admin
+        return abort(403);
     }
 }

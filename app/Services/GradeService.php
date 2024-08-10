@@ -22,11 +22,16 @@ class GradeService
         return $this->gradeRepository->getPaginate($filters);
     }
 
-    public function getGrade(string $id)
+    public function getFullGrade(string $id)
     {
         $with = ['student:id,first_name,last_name,class_id', 'student.class', 'teacher:id,first_name,last_name,subject_id', 'teacher.subject'];
 
         return $this->gradeRepository->getSingleGradeQuery($id, $with)->first();
+    }
+
+    public function getGrade(string $id)
+    {
+        return $this->gradeRepository->getSingleGradeQuery($id)->first();
     }
 
     public function updateGrade(array $newData, string $id)

@@ -148,11 +148,11 @@
         </div>
     </div>
 @endsection
-@if (Session::has('message'))
+@if (Session::has('success'))
     @section('tag-js')
         Swal.fire({
             title: 'Message',
-            text: '{{ Session::get("message") }}',
+            text: '{{ Session::get("success") }}',
             icon: 'success',
             confirmButtonText: 'OK',
             customClass: {
@@ -160,5 +160,5 @@
             }
         });
     @endsection
-    {{ Session::forget("message") }}
+    {{ Session::forget("success") }}
 @endif

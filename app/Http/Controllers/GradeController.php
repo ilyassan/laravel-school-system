@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Throwable;
 use App\Models\Subject;
 use Illuminate\View\View;
 use App\Enums\ExportStatus;
@@ -12,13 +13,13 @@ use App\Services\GradeService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Requests\StoreGradeRequest;
-use Throwable;
 
 class GradeController extends BaseController
 {
     private $gradeService;
     private $filterInputs;
     private $exportStatus;
+    private $maxDaysForGradeToBeUpdated;
 
     public function __construct(GradeService $gradeService)
     {
@@ -26,6 +27,7 @@ class GradeController extends BaseController
         $this->gradeService = $gradeService;
         $this->filterInputs = ['per-page', 'subject', 'keyword', 'from-date', 'to-date'];
         $this->exportStatus = 'export-status-';
+        $this->maxDaysForGradeToBeUpdated = 30;
     }
 
     /**
@@ -65,7 +67,7 @@ class GradeController extends BaseController
             ]
         );
 
-        return redirect()->back()->with('message', 'The grade created successfully.')->withInput(['class_id' => $request->get('class_id')]);
+        return redirect()->back()->with('success', 'The grade created successfully.')->withInput(['class_id' => $request->get('class_id')]);
     }
 
     /**
@@ -73,11 +75,11 @@ class GradeController extends BaseController
      */
     public function show(string $id)
     {
-        $grade = $this->gradeService->getGrade($id);
+        $grade = $this->gradeService->getFullGrade($id);
 
-        if (!$grade) {
-            return abort(404, 'The grade not found');
-        }
+        $res = $this->authorizeGrade($grade);
+        if ($res)
+            return $res;
 
         return view('grades.show', compact('grade'));
     }
@@ -89,9 +91,9 @@ class GradeController extends BaseController
     {
         $grade = $this->gradeService->getGrade($id);
 
-        if (!$grade) {
-            return abort(404, 'The grade not found');
-        }
+        $res = $this->authorizeGrade($grade);
+        if ($res)
+            return $res;
 
         return view('grades.edit', compact('grade'));
     }
@@ -105,11 +107,19 @@ class GradeController extends BaseController
             'grade' => ['required', 'numeric', 'min:0', 'max:20'],
         ]);
 
-        if (!$this->gradeService->updateGrade($validatedData, $id)) {
-            return abort(404, 'The grade not found');
+        $grade = $this->gradeService->getGrade($id);
+
+        $res = $this->authorizeGrade($grade);
+        if ($res)
+            return $res;
+
+        if ($grade->created_at < now()->subDays($this->maxDaysForGradeToBeUpdated)) {
+            return redirect()->route('grades.show', $grade->id)->with('warning', "You cannot update this grade because it is older than " . $this->maxDaysForGradeToBeUpdated . " days.");
         }
 
-        return redirect()->route('grades.show', $id)->with('message', 'The grade has been updated successfully.');
+        $this->gradeService->updateGrade($validatedData, $id);
+
+        return redirect()->route('grades.show', $id)->with('success', 'The grade has been updated successfully.');
     }
 
     /**
@@ -118,6 +128,22 @@ class GradeController extends BaseController
     public function destroy(string $id)
     {
         //
+    }
+
+    /**
+     * Check if the grade exists and if it belongs to the teacher user.
+     */
+    private function authorizeGrade($grade)
+    {
+        if (!$grade) {
+            return abort(404, 'The grade not found');
+        }
+
+        if ($grade->teacher_id !== $this->getAuthUser()->id) {
+            return abort(403, "You dont't have the permission to access this grade");
+        }
+
+        return null;
     }
 
     /**

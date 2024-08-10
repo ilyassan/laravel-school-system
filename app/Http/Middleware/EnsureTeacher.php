@@ -23,7 +23,7 @@ class EnsureTeacher
             return $next($request);
         }
 
-        // Redirect non-teacher users
-        return abort(404);
+        // non-teacher
+        return abort(403);
     }
 }

@@ -29,7 +29,7 @@
                                     <label class="form-label m-0">Grade</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" id="grade" name="grade" class="form-control" value="{{ $grade->grade }}" required>
+                                    <input type="text" id="grade" name="grade" class="form-control" value="{{ $grade->grade }}" step="0.1" min="0" max="20" required>
                                 </div>
                             </div>
                         </div>
@@ -65,4 +65,18 @@
             }
         });
     </script>
+@endsection
+
+@section('tag-js')
+    @if ($errors->any())
+    Swal.fire({
+        title: 'Invalid Data',
+        text: '{{ $errors->first() }}', // Use $errors->first() to get the first error message
+        icon: 'warning',
+        confirmButtonText: 'Ok',
+        customClass: {
+            confirmButton: 'btn btn-primary'
+        }
+    });
+    @endif
 @endsection

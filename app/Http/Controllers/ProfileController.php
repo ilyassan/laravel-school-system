@@ -39,7 +39,7 @@ class ProfileController extends BaseController
 
         $user->update($validatedData);
 
-        return redirect()->route('profile.index')->with('message', 'Your informations has been updated successfully!');
+        return redirect()->route('profile.index')->with('success', 'Your informations has been updated successfully!');
     }
 
     /**
@@ -61,7 +61,7 @@ class ProfileController extends BaseController
             'password' => Hash::make($request->new_password),
         ]);
 
-        return back()->with('message', 'Your password has been updated successfully!');
+        return back()->with('success', 'Your password has been updated successfully!');
     }
 
     /**

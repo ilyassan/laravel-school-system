@@ -1,5 +1,5 @@
 @extends('layouts.master2')
-@section('title', 'Internal Server Error')
+@section('title', 'Not Authorized')
 
 @section('css')
 <!--- Internal Fontawesome css-->
@@ -16,9 +16,9 @@
 @section('content')
 		<!-- Main-error-wrapper -->
 		<div class="main-error-wrapper  page page-h ">
-			<img src="{{URL::asset('assets/img/media/500.png')}}" class="error-page" alt="error">
-			<h2>Oopps. Internal Server Error.</h2>
-			<a class="btn btn-outline-danger" href="{{ route('dashboard') }}">Back To Dashboard</a>
+			<img src="{{URL::asset('assets/img/media/401.png')}}" class="error-page" alt="error">
+			<h2>You are Unauthorized to access this page.</h2>
+			<a class="btn btn-outline-danger" href="{{ route('login') }}">Login</a>
 		</div>
 		<!-- /Main-error-wrapper -->
 @endsection

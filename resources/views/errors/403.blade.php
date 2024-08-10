@@ -1,5 +1,5 @@
 @extends('layouts.master2')
-@section('title', 'Internal Server Error')
+@section('title', 'Forbidden')
 
 @section('css')
 <!--- Internal Fontawesome css-->
@@ -16,8 +16,12 @@
 @section('content')
 		<!-- Main-error-wrapper -->
 		<div class="main-error-wrapper  page page-h ">
-			<img src="{{URL::asset('assets/img/media/500.png')}}" class="error-page" alt="error">
-			<h2>Oopps. Internal Server Error.</h2>
+			<img src="{{URL::asset('assets/img/media/403.png')}}" class="error-page" alt="error">
+			@if (isset($exception) && $exception->getMessage())
+                <h2>{{$exception->getMessage()}}.</h2>
+            @else
+                <h2>You dont't have the permission to access this page.</h2>
+            @endif
 			<a class="btn btn-outline-danger" href="{{ route('dashboard') }}">Back To Dashboard</a>
 		</div>
 		<!-- /Main-error-wrapper -->
