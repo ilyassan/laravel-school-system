@@ -109,10 +109,17 @@
                             <div class="form-group ">
                                 <div class="row">
                                     <div class="col-md-3 d-flex align-items-center">
-                                        <label class="form-label m-0">Classes</label>
+                                        <label class="form-label m-0">Classes ({{auth()->user()->classes->count()}})</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{auth()->user()->classes()->count()}}">
+                                        @php
+                                            $classes = "";
+                                            foreach (auth()->user()->classes as $class) {
+                                                $classes .= "$class->name, ";
+                                            }
+                                            $classes = rtrim($classes, ', ');
+                                        @endphp
+                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ $classes }}">
                                     </div>
                                 </div>
                             </div>

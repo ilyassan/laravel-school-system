@@ -170,7 +170,7 @@
 										@foreach ($latestTeacherReports as $report)
 											<div class="team">
 												<a href="#" class="chip">
-													<span class="avatar cover-image" data-image-src="{{URL::asset('assets/img/faces/4.jpg')}}"></span>
+													<span class="avatar cover-image" data-image-src="{{URL::asset('assets/img/faces/1.webp')}}"></span>
 													{{$report->user_name}}
 												</a>
 												<i class="fas fa-envelope text-primary" aria-hidden="true"></i>
@@ -230,7 +230,7 @@
 										@foreach ($latestStudentsReports as $report)
 											<div class="team">
 												<a href="#" class="chip">
-													<span class="avatar cover-image" data-image-src="{{URL::asset('assets/img/faces/4.jpg')}}"></span>
+													<span class="avatar cover-image" data-image-src="{{URL::asset('assets/img/faces/1.webp')}}"></span>
 													{{$report->user_name}}
 												</a>
 												<i class="fas fa-envelope text-primary" aria-hidden="true"></i>
