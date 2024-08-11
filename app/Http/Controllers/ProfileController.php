@@ -2,20 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use App\Http\Requests\ResetPasswordRequest;
-use Illuminate\Http\RedirectResponse;
+use App\Helpers\Helper;
+use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Requests\ResetPasswordRequest;
+use Illuminate\Support\Arr;
 
 class ProfileController extends BaseController
 {
     /**
      * Display the user's profile form.
      */
-    public function index(Request $request): View
+    public function index(): View
     {
         return view('profile.index');
     }
@@ -23,7 +26,7 @@ class ProfileController extends BaseController
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
+    public function edit(): View
     {
         return view('profile.edit');
     }
@@ -37,6 +40,22 @@ class ProfileController extends BaseController
 
         $user = $this->getAuthUser();
 
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            if ($image->isValid()) {
+                $imagePath = $image->store(Helper::profile_images_path());
+                $validatedData['image_path'] = basename($imagePath);
+
+                // Delete old image if exists
+                if ($user->image_path) {
+                    Storage::delete(Helper::profile_images_path() . $user->image_path);
+                }
+            } else {
+                return back()->withErrors(['image' => 'The uploaded image is not valid.']);
+            }
+        }
+        $validatedData = Arr::except($validatedData, ['image']);
+
         $user->update($validatedData);
 
         return redirect()->route('profile.index')->with('success', 'Your informations has been updated successfully!');
@@ -45,7 +64,25 @@ class ProfileController extends BaseController
     /**
      * Reset user's password page.
      */
-    public function showResetPassword(Request $request): View
+    public function resetImage(): RedirectResponse
+    {
+        $user = $this->getAuthUser();
+
+        // Delete old image if exists
+        if ($user->image_path) {
+            Storage::delete(Helper::profile_images_path() . $user->image_path);
+        }
+
+        $user->update(['image_path' => NULL]);
+
+        return redirect()->route('profile.index')->with('success', 'Your informations has been updated successfully!');
+    }
+
+
+    /**
+     * Reset user's password page.
+     */
+    public function showResetPassword(): View
     {
         return view('profile.reset-password');
     }

@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Enums\UserRole;
+use App\Helpers\Helper;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -162,5 +164,10 @@ class User extends Authenticatable
     public function getFullnameAttribute()
     {
         return "{$this->first_name} {$this->last_name}";
+    }
+
+    public function getImageAttribute()
+    {
+        return $this->image_path ? Storage::url(Helper::profile_images_folder() . $this->image_path) : asset('assets/img/faces/1.webp');
     }
 }

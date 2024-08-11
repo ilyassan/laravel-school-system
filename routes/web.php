@@ -29,6 +29,7 @@ Route::middleware('auth')->prefix('profile')->name('profile.')->group(function (
     Route::patch('/update', [ProfileController::class, 'update'])->name('update');
     Route::get('/reset-password', [ProfileController::class, 'showResetPassword'])->name('show-reset-password');
     Route::patch('/reset-password', [ProfileController::class, 'resetPassword'])->name('reset-password');
+    Route::get('/reset-image', [ProfileController::class, 'resetImage'])->name('reset-image');
 });
 
 Route::middleware('auth')->group(function () {
