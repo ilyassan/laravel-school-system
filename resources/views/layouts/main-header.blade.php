@@ -169,7 +169,11 @@
 					<div class="dropdown-menu">
 						<div class="main-header-profile bg-primary p-3">
 							<div class="d-flex wd-100p">
-								<div class="main-img-user"><img alt="" src="{{ auth()->user()->image }}" class=""></div>
+								<div class="main-img-user">
+									<a href="{{ route('profile.edit') }}">
+										<img alt="" src="{{ auth()->user()->image }}" class="">
+									</a>
+								</div>
 								<div class="ml-2 my-auto">
 									<h6>{{auth()->user()->fullname}}</h6><span>{{auth()->user()->fullname}}</span>
 								</div>
