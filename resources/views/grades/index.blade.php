@@ -57,7 +57,7 @@
                                 </div>
         
                                 <div class="dataTables_length col-sm-3 px-0" id="example1_length">
-                                    <select name="subject" class="custom-select custom-select-sm form-control form-control-sm">
+                                    <select name="subject" class="custom-select custom-select-sm form-control form-control-sm pr-1">
                                         <option value={{null}}>Select A Subject</option>
                                         @foreach($subjects as $suject)
                                             <option value="{{$suject->id}}" {{request()->get('subject') == $suject->id ? 'selected' : ''}}>{{$suject->name}}</option>
@@ -204,7 +204,11 @@
 @endsection
 
 @section('js')
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="{{URL::asset('assets/plugins/jquery-ui/ui/widgets/datepicker.js')}}"></script>
+    <script src="{{URL::asset('assets/plugins/jquery.maskedinput/jquery.maskedinput.js')}}"></script>
+    <script src="{{URL::asset('assets/plugins/spectrum-colorpicker/spectrum.js')}}"></script>
+    <script src="{{URL::asset('assets/plugins/select2/js/select2.min.js')}}"></script>
+    <script src="{{URL::asset('assets/js/form-elements.js')}}"></script>
 @endsection
 
 <script type="text/javascript">
