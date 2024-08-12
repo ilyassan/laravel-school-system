@@ -83,10 +83,6 @@ class GradeController extends BaseController
     {
         $grade = $this->gradeService->getFullGrade($id);
 
-        $res = $this->authorizeGrade($grade);
-        if ($res)
-            return $res;
-
         return view('grades.show', compact('grade'));
     }
 
