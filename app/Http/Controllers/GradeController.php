@@ -18,6 +18,7 @@ class GradeController extends BaseController
 {
     private $gradeService;
     private $filterInputs;
+    private $sortGrades;
     private $exportStatus;
     private $maxDaysForGradeToBeUpdated;
 
@@ -26,6 +27,7 @@ class GradeController extends BaseController
         $this->middleware("teacher")->only(["create", "store", "edit", "update", "destroy"]);
         $this->gradeService = $gradeService;
         $this->filterInputs = ['per-page', 'subject', 'keyword', 'from-date', 'to-date'];
+        $this->sortGrades = ['order-by', 'sort'];
         $this->exportStatus = 'export-status-';
         $this->maxDaysForGradeToBeUpdated = 30;
     }
@@ -37,7 +39,11 @@ class GradeController extends BaseController
     {
         try {
             $subjects = Subject::get([Subject::PRIMARY_KEY_COLUMN_NAME, Subject::NAME_COLUMN]);
-            $grades = $this->gradeService->getGrades($request->only($this->filterInputs));
+
+            $filters = $request->only($this->filterInputs);
+            $sorting = $request->only($this->sortGrades);
+
+            $grades = $this->gradeService->getGrades($filters, $sorting);
 
             return view('grades.index', compact('grades', 'subjects'));
         } catch (Throwable $th) {

@@ -2,7 +2,9 @@
 
 namespace App\Repositories;
 
+use App\Models\Classes;
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Grade;
 use App\Models\Subject;
 use Illuminate\Support\Arr;
@@ -17,16 +19,20 @@ class GradeRepository extends AbstractRepository
         return Grade::class;
     }
 
-    public function getPaginate(array $filters = []): LengthAwarePaginator
+    public function getPaginate(array $filters = [], array $sorting = []): LengthAwarePaginator
     {
         $query = $this->getFilteredQuery($filters);
 
         $perPage = (int) Arr::get($filters, 'per-page', 10);
-        $orderBy = Arr::get($filters, 'order-by', $this->model::CREATED_AT);
-        $sort = Arr::get($filters, 'sort', 'desc');
+
+        $orderBy = Arr::get($sorting, 'order-by', $this->model::CREATED_AT);
+        $sort = Arr::get($sorting, 'sort', 'desc');
+
+        $query = $this->sortGrades($query, $orderBy, $sort);
+
         $colums = Arr::get($filters, 'colums', ['*']);
 
-        return $query->orderBy($orderBy, $sort)->paginate($perPage, $colums);
+        return $query->paginate($perPage, $colums);
     }
 
     public function getFilteredQuery(array $filters): Builder
@@ -73,6 +79,34 @@ class GradeRepository extends AbstractRepository
         }
 
         return $query;
+    }
+
+    public function sortGrades($query, $orderBy, $sort)
+    {
+        $orderQuery = null;
+
+        switch ($orderBy) {
+            case 'teacher':
+                $orderQuery = User::select('first_name')->whereColumn('users.id', 'grades.teacher_id');
+                break;
+            case 'subject':
+                $orderQuery = Subject::select('subjects.name')->join('users', 'users.subject_id', '=', 'subjects.id')->whereColumn('users.id', 'grades.teacher_id');
+                break;
+            case 'student':
+                $orderQuery = User::select('first_name')->whereColumn('users.id', 'grades.student_id');
+                break;
+            case 'class':
+                $orderQuery = Classes::select('classes.name')->join('users', 'users.class_id', '=', 'classes.id')->whereColumn('users.id', 'grades.student_id');
+                break;
+            case 'grade':
+                $orderQuery = Grade::GRADE_COLUMN;
+                break;
+            default:
+                $orderQuery = Grade::CREATED_AT;
+                break;
+        }
+
+        return $query->orderBy($orderQuery, $sort);
     }
 
     public function getSingleGradeQuery(string $id, array $with = null): Builder

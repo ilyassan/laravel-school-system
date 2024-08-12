@@ -20,7 +20,7 @@
 			@if (isset($exception) && $exception->getMessage())
                 <h2>{{$exception->getMessage()}}.</h2>
             @else
-                <h2>You dont't have the permission to access this page.</h2>
+                <h2>You don't have the permission to access this page.</h2>
             @endif
 			<a class="btn btn-outline-danger" href="{{ route('dashboard') }}">Back To Dashboard</a>
 		</div>

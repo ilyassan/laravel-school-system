@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Grade;
+use Illuminate\Support\Arr;
 use App\Repositories\GradeRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -16,10 +17,10 @@ class GradeService
         $this->gradeRepository = $gradeRepository;
     }
 
-    public function getGrades(array $filters): LengthAwarePaginator
+    public function getGrades(array $filters, array $sorting): LengthAwarePaginator
     {
         $filters = $this->relationsBasedonRole($filters);
-        return $this->gradeRepository->getPaginate($filters);
+        return $this->gradeRepository->getPaginate($filters, $sorting);
     }
 
     public function getFullGrade(string $id)

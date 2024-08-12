@@ -44,7 +44,7 @@
                 </p>
             </div>
             <div class="card-body">
-                <form id="filterForm" class="d-flex align-items-center" style="gap: 30px">
+                <form id="filterForm" class="d-flex align-items-center mb-4" style="gap: 30px">
                         <div class="col-lg-7">
                             <div class="d-flex align-items-center" style="gap: 5px">
                                 <div class="dataTables_length col-sm-3 px-0" id="example1_length">
@@ -99,25 +99,60 @@
 
                 </form>
                 <div class="table-responsive my-3">
-                    <table class="table text-md-nowrap" id="example1">
+                    <table class="table table-striped table-bordered">
                         <thead>
                             <tr>
                                 <th class="wd-5p border-bottom-0">#</th>
-                                <th class="wd-20p border-bottom-0">Teacher</th>
-                                <th class="wd-20p border-bottom-0">Subject</th>
-                                <th class="wd-20p border-bottom-0">Student</th>
-                                <th class="wd-5p border-bottom-0">Class</th>
-                                <th class="wd-20p border-bottom-0">Entered date</th>
-                                <th class="wd-10p border-bottom-0">Grade</th>
-                            </tr>
+                                <th class="wd-20p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="teacher">
+                                    Teacher
+                                    @if (request()->get('order-by') == 'teacher')
+                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
+                                    @endif
+                                </th>
+                                <th class="wd-15p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="subject">
+                                    Subject
+                                    @if (request()->get('order-by') == 'subject')
+                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
+                                    @endif
+                                </th>
+                                <th class="wd-20p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="student">
+                                    Student
+                                    @if (request()->get('order-by') == 'student')
+                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
+                                    @endif
+                                </th>
+                                <th class="wd-15p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="class">
+                                    Class
+                                    @if (request()->get('order-by') == 'class')
+                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
+                                    @endif
+                                </th>
+                                <th class="wd-15p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="entered_date">
+                                    Entered Date
+                                    @if (request()->get('order-by') == 'entered_date')
+                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
+                                    @endif
+                                </th>
+                                <th class="wd-10p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="grade">
+                                    Grade
+                                    @if (request()->get('order-by') == 'grade')
+                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
+                                    @endif
+                                </th>
+                            </tr>                      
                         </thead>
                         <tbody>
+                            @if ($grades->count() == 0)
+                                <tr>
+                                    <td colspan="7" class="text-center">No Grades To Show</td>
+                                </tr>
+                            @endif
                             @if (auth()->user()->isAdmin())
                                 @foreach ($grades as $grade)
                                     <tr onclick="window.location='{{ route('grades.show', $grade->id) }}'" style="cursor: pointer">
                                         <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ $grade->teacher->fullname }}</td>
-                                        <td>{{ $grade->teacher->subject->name}}</td>
+                                        <td>{{ $grade->teacher->subject->name }}</td>
                                         <td>{{ $grade->student->fullname }}</td>
                                         <td>{{ $grade->student->class->name }}</td>
                                         <td>{{ $grade->created_at->format('m/d/Y') }}</td>
@@ -130,7 +165,7 @@
                                     <tr onclick="window.location='{{ route('grades.show', $grade->id) }}'" style="cursor: pointer">
                                         <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ auth()->user()->fullname }}</td>
-                                        <td>{{ auth()->user()->subject->name}}</td>
+                                        <td>{{ auth()->user()->subject->name }}</td>
                                         <td>{{ $grade->student->fullname }}</td>
                                         <td>{{ $grade->student->class->name }}</td>
                                         <td>{{ $grade->created_at->format('m/d/Y') }}</td>
@@ -143,13 +178,13 @@
                                     <tr onclick="window.location='{{ route('grades.show', $grade->id) }}'" style="cursor: pointer">
                                         <td>{{ $loop->index + 1 }}</td>
                                         <td>{{ $grade->teacher->fullname }}</td>
-                                        <td>{{ $grade->teacher->subject->name}}</td>
+                                        <td>{{ $grade->teacher->subject->name }}</td>
                                         <td>{{ auth()->user()->fullname }}</td>
                                         <td>{{ auth()->user()->class->name }}</td>
                                         <td>{{ $grade->created_at->format('m/d/Y') }}</td>
                                         <td>{{ $grade->grade }}</td>
                                     </tr>
-                                    @endforeach
+                                @endforeach
                             @endif
                         </tbody>
                     </table>
@@ -170,10 +205,7 @@
 
 @section('js')
     <!-- Internal Data tables -->
-    <script src="{{ URL::asset('assets/plugins/datatable/js/jquery.dataTables.js') }}"></>
     <script src="{{ URL::asset('assets/plugins/datatable/js/dataTables.bootstrap4.js') }}"></script>
-    <script src="{{ URL::asset('assets/plugins/datatable/js/dataTables.buttons.min.js') }}"></script>
-    <script src="{{ URL::asset('assets/js/table-data.js') }}"></script>
     
     <script src="{{URL::asset('assets/plugins/jquery-ui/ui/widgets/datepicker.js')}}"></script>
     <script src="{{URL::asset('assets/plugins/jquery.maskedinput/jquery.maskedinput.js')}}"></script>
@@ -257,6 +289,27 @@
             Swal.fire('Error', 'Failed to cancel the export.', 'error');
         }
     }
-</script>
+
+    function sort(e) {
+        const field = e.target.getAttribute('data-value');
+
+        // Get current sort field and order from query parameters
+        const currentSortField = "{{ request()->get('order-by') }}";
+        const currentSortOrder = "{{ request()->get('sort') }}";
+
+        // Determine the new sort order
+        const sortOrder = (currentSortField === field && currentSortOrder === 'asc') ? 'desc' : 'asc';
+
+        // Construct the new URL with updated sorting parameters
+        const params = new URLSearchParams(window.location.search);
+        params.set('order-by', field);
+        params.set('sort', sortOrder);
+
+        const href = "{{ route('grades.index') }}" + '?' + params.toString();
+
+        // Redirect to the new URL
+        window.location = href;
+    }
+    </script>
 
 
