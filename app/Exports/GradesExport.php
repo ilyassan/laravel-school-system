@@ -16,7 +16,8 @@ class GradesExport extends BaseExport implements FromCollection, WithHeadings
 {
     protected $coll;
     protected $user;
-    protected static $downloadFileName = 'grades.xlsx';
+    public static $downloadFileName = 'grades.xlsx';
+    public static $chunkSize = 10000;
 
     public function __construct($coll, $user)
     {

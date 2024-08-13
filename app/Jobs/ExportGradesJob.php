@@ -27,8 +27,6 @@ class ExportGradesJob implements ShouldQueue
     protected $exportId;
     protected $user;
     protected $exportStatus;
-    protected $gradesLimit;
-    protected $chunkSize;
 
     public function __construct($filters, $sorting, $exportStatus, $exportId, $user)
     {
@@ -37,8 +35,6 @@ class ExportGradesJob implements ShouldQueue
         $this->exportStatus = $exportStatus;
         $this->exportId = $exportId;
         $this->user = $user;
-        $this->gradesLimit = 100000;
-        $this->chunkSize = 5000;
     }
 
     /**
@@ -55,8 +51,6 @@ class ExportGradesJob implements ShouldQueue
         $gradeRepo = app(GradeRepository::class);
 
         $gradesQuery = $gradeService->getGradesQuery($this->filters);
-        $gradesCount = $gradeService->countGrades($this->filters);
-
         $query = clone $gradesQuery;
 
         // Sorting Grades
@@ -64,15 +58,9 @@ class ExportGradesJob implements ShouldQueue
 
         $query->orderBy($sortingColumnQuery, $sortDirection);
 
-        if ($gradesCount > $this->gradesLimit) {
-            // To implement limit for the query chunking
-            $lastTimestamp = $gradesQuery->skip($this->gradesLimit)->take(1)->value(Grade::CREATED_AT);
-            $query->where(Grade::CREATED_AT, '>', $lastTimestamp);
-        }
-
         // Chunking
         $count = 0;
-        $query->chunk($this->chunkSize, function ($grades) use (&$count, &$tempFilePattern) {
+        $query->chunk(GradesExport::$chunkSize, function ($grades) use (&$count, &$tempFilePattern) {
             if (Cache::get($this->exportStatus . $this->exportId)['status'] === ExportStatus::CANCELLED) {
                 return false;
             }

@@ -50,7 +50,7 @@
                                 <div class="dataTables_length col-sm-3 px-0" id="example1_length">
                                     <select name="per-page" class="custom-select custom-select-sm form-control form-control-sm">
                                         <option value={{null}}>Per Page</option>
-                                        <option value="10" {{request()->get('per-page') == 10 ? 'selected' : ''}}>10</option>
+                                        <option value="10" {{request()->get('per-page') == 10 || ! request()->get('per-page') ? 'selected' : ''}}>10</option>
                                         <option value="50" {{request()->get('per-page') == 50 ? 'selected' : ''}}>50</option>
                                         <option value="100" {{request()->get('per-page') == 100 ? 'selected' : ''}}>100</option>
                                     </select>
