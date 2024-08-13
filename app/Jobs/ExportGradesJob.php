@@ -4,34 +4,36 @@ namespace App\Jobs;
 
 use App\Models\Grade;
 use App\Enums\ExportStatus;
+use Illuminate\Support\Arr;
 use App\Exports\GradesExport;
 use Illuminate\Bus\Queueable;
 use App\Services\GradeService;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Repositories\GradeRepository;
 use Illuminate\Support\Facades\Cache;
 use App\Events\ExportProcessCompleted;
+
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-
-use function Symfony\Component\String\b;
 
 class ExportGradesJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $filters;
+    protected $sorting;
     protected $exportId;
     protected $user;
     protected $exportStatus;
     protected $gradesLimit;
     protected $chunkSize;
 
-    public function __construct($filters, $exportStatus, $exportId, $user)
+    public function __construct($filters, $sorting, $exportStatus, $exportId, $user)
     {
         $this->filters = $filters;
+        $this->sorting = $sorting;
         $this->exportStatus = $exportStatus;
         $this->exportId = $exportId;
         $this->user = $user;
@@ -50,17 +52,25 @@ class ExportGradesJob implements ShouldQueue
         $tempFilePattern = 'grades-export-chunk-' . $this->exportId;
 
         $gradeService = app(GradeService::class);
-        $gradesQuery = $gradeService->getGradesQuery($this->filters)->latest();
+        $gradeRepo = app(GradeRepository::class);
+
+        $gradesQuery = $gradeService->getGradesQuery($this->filters);
         $gradesCount = $gradeService->countGrades($this->filters);
 
         $query = clone $gradesQuery;
 
+        // Sorting Grades
+        list($sortingColumnQuery, $sortDirection) = $gradeRepo->sortGradesQuery($this->sorting);
+
+        $query->orderBy($sortingColumnQuery, $sortDirection);
+
         if ($gradesCount > $this->gradesLimit) {
             // To implement limit for the query chunking
-            $lastTimestamp = $gradesQuery->skip($this->gradesLimit)->take(1)->value('created_at');
+            $lastTimestamp = $gradesQuery->skip($this->gradesLimit)->take(1)->value(Grade::CREATED_AT);
             $query->where(Grade::CREATED_AT, '>', $lastTimestamp);
         }
 
+        // Chunking
         $count = 0;
         $query->chunk($this->chunkSize, function ($grades) use (&$count, &$tempFilePattern) {
             if (Cache::get($this->exportStatus . $this->exportId)['status'] === ExportStatus::CANCELLED) {

@@ -127,15 +127,15 @@
                                         <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
                                     @endif
                                 </th>
-                                <th class="wd-15p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="entered_date">
-                                    Entered Date
-                                    @if (request()->get('order-by') == 'entered_date')
-                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
-                                    @endif
-                                </th>
                                 <th class="wd-10p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="grade">
                                     Grade
                                     @if (request()->get('order-by') == 'grade')
+                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
+                                    @endif
+                                </th>
+                                <th class="wd-15p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="entered_date">
+                                    Entered Date
+                                    @if (request()->get('order-by') == 'entered_date')
                                         <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
                                     @endif
                                 </th>
@@ -155,8 +155,8 @@
                                         <td>{{ $grade->teacher->subject->name }}</td>
                                         <td>{{ $grade->student->fullname }}</td>
                                         <td>{{ $grade->student->class->name }}</td>
-                                        <td>{{ $grade->created_at->format('m/d/Y') }}</td>
                                         <td>{{ $grade->grade }}</td>
+                                        <td>{{ $grade->created_at->format('m/d/Y') }}</td>
                                     </tr>
                                 @endforeach
                             @endif
@@ -168,8 +168,8 @@
                                         <td>{{ auth()->user()->subject->name }}</td>
                                         <td>{{ $grade->student->fullname }}</td>
                                         <td>{{ $grade->student->class->name }}</td>
-                                        <td>{{ $grade->created_at->format('m/d/Y') }}</td>
                                         <td>{{ $grade->grade }}</td>
+                                        <td>{{ $grade->created_at->format('m/d/Y') }}</td>
                                     </tr>
                                 @endforeach
                             @endif
@@ -181,8 +181,8 @@
                                         <td>{{ $grade->teacher->subject->name }}</td>
                                         <td>{{ auth()->user()->fullname }}</td>
                                         <td>{{ auth()->user()->class->name }}</td>
-                                        <td>{{ $grade->created_at->format('m/d/Y') }}</td>
                                         <td>{{ $grade->grade }}</td>
+                                        <td>{{ $grade->created_at->format('m/d/Y') }}</td>
                                     </tr>
                                 @endforeach
                             @endif
@@ -225,11 +225,20 @@
                 filters[key] = value;
             });
 
+            const params = new URLSearchParams(window.location.search);
+            const sorting = {
+                'order-by': params.get('order-by'),
+                'sort': params.get('sort')
+            };
+
             // Add exportId to filters
             filters.export_id = exportId;
 
             // Make the initial request to start the export
-            await axios.post('{{ route('export.grades') }}', filters);
+            await axios.post('{{ route('export.grades') }}', {
+                ...filters,
+                ...sorting,
+            });
 
             // Show progress Swal after initial request completes
             const progressSwal = Swal.fire({
@@ -242,6 +251,7 @@
                     Swal.getCancelButton().addEventListener('click', () => cancleExport());
                 },
             });
+
             // Listen for WebSocket
             if(window.Echo){
                 window.Echo.channel(`export.${exportId}`)
@@ -287,15 +297,16 @@
     function sort(e) {
         const field = e.target.getAttribute('data-value');
 
+        const params = new URLSearchParams(window.location.search);
+
         // Get current sort field and order from query parameters
-        const currentSortField = "{{ request()->get('order-by') }}";
-        const currentSortOrder = "{{ request()->get('sort') }}";
+        const currentSortField = params.get('order-by');
+        const currentSortOrder = params.get('sort');
 
         // Determine the new sort order
         const sortOrder = (currentSortField === field && currentSortOrder === 'asc') ? 'desc' : 'asc';
 
         // Construct the new URL with updated sorting parameters
-        const params = new URLSearchParams(window.location.search);
         params.set('order-by', field);
         params.set('sort', sortOrder);
 

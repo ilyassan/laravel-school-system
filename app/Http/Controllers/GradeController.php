@@ -160,9 +160,10 @@ class GradeController extends BaseController
         Cache::put($this->exportStatus . $exportId, ['status' => ExportStatus::IN_PROGRESS], now()->addMinutes(3));
 
         $filters = $this->gradeService->relationsBasedonRole($request->only($this->filterInputs));
+        $sorting = $request->only($this->sortGrades);
 
         // Dispatch the export job
-        ExportGradesJob::dispatch($filters, $this->exportStatus, $exportId, $this->getAuthUser());
+        ExportGradesJob::dispatch($filters, $sorting, $this->exportStatus, $exportId, $this->getAuthUser());
 
         return response()->json(['message' => 'Export has been queued.']);
     }

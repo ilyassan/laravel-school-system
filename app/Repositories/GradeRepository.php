@@ -25,14 +25,11 @@ class GradeRepository extends AbstractRepository
 
         $perPage = (int) Arr::get($filters, 'per-page', 10);
 
-        $orderBy = Arr::get($sorting, 'order-by', $this->model::CREATED_AT);
-        $sort = Arr::get($sorting, 'sort', 'desc');
-
-        $query = $this->sortGrades($query, $orderBy, $sort);
+        list($orderByColumn, $sortDirection) = $this->sortGradesQuery($sorting);
 
         $colums = Arr::get($filters, 'colums', ['*']);
 
-        return $query->paginate($perPage, $colums);
+        return $query->orderBy($orderByColumn, $sortDirection)->paginate($perPage, $colums);
     }
 
     public function getFilteredQuery(array $filters): Builder
@@ -81,8 +78,11 @@ class GradeRepository extends AbstractRepository
         return $query;
     }
 
-    public function sortGrades($query, $orderBy, $sort)
+    public function sortGradesQuery($sorting)
     {
+        $orderBy = Arr::get($sorting, 'order-by', $this->model::CREATED_AT);
+        $sortDirection = Arr::get($sorting, 'sort', 'desc');
+
         $orderQuery = null;
 
         switch ($orderBy) {
@@ -106,7 +106,7 @@ class GradeRepository extends AbstractRepository
                 break;
         }
 
-        return $query->orderBy($orderQuery, $sort);
+        return [$orderQuery, $sortDirection];
     }
 
     public function getSingleGradeQuery(string $id, array $with = null): Builder
