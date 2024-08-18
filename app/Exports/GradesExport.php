@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Collection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Box\Spout\Common\Entity\Style\CellAlignment;
+use Box\Spout\Writer\Common\Creator\Style\StyleBuilder;
 use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
 use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
 use Illuminate\Support\Facades\Log;
@@ -116,6 +118,16 @@ class GradesExport extends BaseExport implements FromCollection, WithHeadings
 
         $isFirstFile = true;
 
+        // Define styles
+        $headerStyle = (new StyleBuilder())
+            ->setFontBold()
+            ->setCellAlignment(CellAlignment::CENTER)
+            ->build();
+
+        $cellStyle = (new StyleBuilder())
+            ->setCellAlignment(CellAlignment::CENTER)
+            ->build();
+
         // Iterate through each temporary file
         for ($index = 1; $index <= $tempFilesCount; $index++) {
             $filePath = $tempFilePath . "-$index" . '.xlsx';
@@ -137,20 +149,21 @@ class GradesExport extends BaseExport implements FromCollection, WithHeadings
             // Iterate through each sheet in the input file
             foreach ($reader->getSheetIterator() as $sheet) {
                 $isFirstRow = true;
+
                 // Iterate through each row in the sheet
                 foreach ($sheet->getRowIterator() as $row) {
                     // Skip the header row for all but the first file
                     if ($isFirstFile && $isFirstRow) {
-                        // Write the first row of the first file
-                        $writer->addRow($row);
+                        // Write the first row of the first file with header style
+                        $writer->addRow($row->setStyle($headerStyle));
                         $isFirstRow = false;
                         $isFirstFile = false;
                     } elseif (!$isFirstFile && $isFirstRow) {
                         // Skip the header row for subsequent files
                         $isFirstRow = false;
                     } else {
-                        // Write all other rows
-                        $writer->addRow($row);
+                        // Write all other rows with cell style
+                        $writer->addRow($row->setStyle($cellStyle));
                     }
                 }
             }
