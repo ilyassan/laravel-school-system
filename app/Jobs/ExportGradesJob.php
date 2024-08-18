@@ -17,6 +17,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Log;
 
 class ExportGradesJob implements ShouldQueue
 {
@@ -54,7 +55,7 @@ class ExportGradesJob implements ShouldQueue
         $query = clone $gradesQuery;
 
         // Sorting Grades
-        list($sortingColumnQuery, $sortDirection) = $gradeRepo->sortGradesQuery($this->sorting);
+        [$sortingColumnQuery, $sortDirection] = $gradeRepo->sortGradesQuery($this->sorting);
 
         $query->orderBy($sortingColumnQuery, $sortDirection);
 
@@ -65,7 +66,8 @@ class ExportGradesJob implements ShouldQueue
                 return false;
             }
             $count++;
-            Excel::store(new GradesExport($grades, $this->user), GradesExport::$tempFolder . '/' . $tempFilePattern . "-$count" . '.xlsx', 'public');
+            $uniqueFileName = $tempFilePattern . "-$count" . '.xlsx';
+            Excel::store(new GradesExport($grades, $this->user), GradesExport::$tempFolder . '/' . $uniqueFileName, 'public');
         });
 
         $fileName = GradesExport::getUniqueDownloadFileName($this->exportId);

@@ -2,12 +2,13 @@
 
 namespace App\Repositories;
 
-use App\Models\Classes;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Grade;
+use App\Models\Classes;
 use App\Models\Subject;
 use Illuminate\Support\Arr;
+use Laravel\Reverb\Loggers\Log;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -78,10 +79,14 @@ class GradeRepository extends AbstractRepository
         return $query;
     }
 
-    public function sortGradesQuery($sorting)
+    public function sortGradesQuery($sorting = [])
     {
-        $orderBy = Arr::get($sorting, 'order-by', $this->model::CREATED_AT);
-        $sortDirection = Arr::get($sorting, 'sort', 'desc');
+        $orderBy = Arr::get($sorting, 'order-by');
+
+        $sortDirection = Arr::get($sorting, 'sort');
+        if (!$sortDirection) {
+            $sortDirection = 'desc';
+        }
 
         $orderQuery = null;
 
@@ -99,10 +104,10 @@ class GradeRepository extends AbstractRepository
                 $orderQuery = Classes::select('classes.name')->join('users', 'users.class_id', '=', 'classes.id')->whereColumn('users.id', 'grades.student_id');
                 break;
             case 'grade':
-                $orderQuery = Grade::GRADE_COLUMN;
+                $orderQuery = $this->model::GRADE_COLUMN;
                 break;
             default:
-                $orderQuery = Grade::CREATED_AT;
+                $orderQuery = $this->model::CREATED_AT;
                 break;
         }
 
