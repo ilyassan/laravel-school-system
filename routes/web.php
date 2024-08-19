@@ -26,6 +26,7 @@ Route::get('/dashboard', DashboardController::class)->middleware('auth')->name('
 Route::middleware('auth')->prefix('profile')->name('profile.')->group(function () {
     Route::get('/', [ProfileController::class, 'index'])->name('index');
     Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
+    Route::get('/{user}', [ProfileController::class, 'show'])->name('show');
     Route::patch('/update', [ProfileController::class, 'update'])->name('update');
     Route::get('/reset-password', [ProfileController::class, 'showResetPassword'])->name('show-reset-password');
     Route::patch('/reset-password', [ProfileController::class, 'resetPassword'])->name('reset-password');

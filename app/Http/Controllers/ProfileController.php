@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Helpers\Helper;
 use Illuminate\View\View;
+use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -11,12 +13,11 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Http\Requests\ResetPasswordRequest;
-use Illuminate\Support\Arr;
 
 class ProfileController extends BaseController
 {
     /**
-     * Display the user's profile form.
+     * Display the user's profile information.
      */
     public function index(): View
     {
@@ -24,7 +25,15 @@ class ProfileController extends BaseController
     }
 
     /**
-     * Display the user's profile form.
+     * Display the user's profile information.
+     */
+    public function show(User $user)
+    {
+        return view('profile.show', compact('user'));
+    }
+
+    /**
+     * Display the user's profile information.
      */
     public function edit(): View
     {

@@ -44,9 +44,25 @@ class User extends Authenticatable
     ];
 
 
-    public function getRoleId()
+    public function getRoleId(): string
     {
         return $this->getAttributeValue(self::ROLE_COLUMN);
+    }
+
+    public function getRoleName(): ?string
+    {
+        $roles = [
+            UserRole::ADMIN => 'Admin',
+            UserRole::TEACHER => 'Teacher',
+            UserRole::STUDENT => 'Student',
+        ];
+
+        return $roles[$this->getRoleId()] ?? null;
+    }
+
+    public function getGender(): string
+    {
+        return $this->getAttributeValue(self::GENDER_COLUMN) == self::GENDER_MALE ? 'Male' : 'Female';
     }
 
     /* ### Check Role ### */
