@@ -122,8 +122,7 @@ class User extends Authenticatable
     }
 
 
-    /* ### Student Relations ### */
-
+    /* ### Student Relations And Methods ### */
 
     // Relationship: Student belongs to a class
     public function class()
@@ -148,8 +147,21 @@ class User extends Authenticatable
         return $this->class->teachers();
     }
 
-    /* ### Teacher Relations ### */
 
+    // Calculate the average grade for all student subjects.
+    public function avgGradesOfSubjects()
+    {
+        return $this->grades()
+            ->join('users', 'grades.teacher_id', '=', 'users.id')
+            ->join('subjects', 'users.subject_id', '=', 'subjects.id')
+            ->select('subjects.name as subject_name', DB::raw('AVG(grades.grade) as average_grade'))
+            ->groupBy('subjects.name')
+            ->pluck('average_grade', 'subject_name');
+    }
+
+
+
+    /* ### Teacher Relations ### */
 
     // Relationship: Teacher has one subject
     public function subject()

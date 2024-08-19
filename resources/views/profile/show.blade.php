@@ -111,19 +111,25 @@
                             @endif
                             @if ($user->isStudent())
                                 <hr class="mg-y-30">
-                                <h6>Subjects Levels</h6>
-                                <div class="skill-bar mb-4 clearfix mt-3">
-                                    <span>Mathematics</span>
-                                    <div class="progress mt-2">
-                                        <div class="progress-bar bg-primary-gradient" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style="width: 85%"></div>
+                                <h6>Subjects Level</h6>
+
+                                @php
+                                    $subjectsAndAverageGrades = $user->avgGradesOfSubjects();
+                                    
+                                    foreach ($subjectsAndAverageGrades as $key => $avgGrade) {
+                                        $subjectsAndAverageGrades[$key] = ($avgGrade / 20 * 100); // Change the range of the grade from 0->20 to 0->100
+                                    }
+                                    $barsColor = ['primary', 'danger', 'success', 'info', 'dark', 'warning', 'secondary', 'muted'];
+                                @endphp
+
+                                @foreach ($subjectsAndAverageGrades as $subject => $avgGrade)
+                                    <div class="skill-bar {{ ! $loop->last ? 'mb-4': '' }} clearfix {{$loop->first ? 'mt-3': ''}}">
+                                        <span>{{ $subject }}</span>
+                                        <div class="progress mt-2">
+                                            <div class="progress-bar bg-{{ $barsColor[$loop->index] }}-gradient" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{$avgGrade}}%"></div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="skill-bar mb-4 clearfix">
-                                    <span>History</span>
-                                    <div class="progress mt-2">
-                                        <div class="progress-bar bg-danger-gradient" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style="width: 89%"></div>
-                                    </div>
-                                </div>
+                                @endforeach
                             @endif
                         </div>
                     </div>
