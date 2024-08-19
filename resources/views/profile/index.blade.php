@@ -66,6 +66,16 @@
                             <div class="form-group ">
                                 <div class="row">
                                     <div class="col-md-3 d-flex align-items-center">
+                                        <label class="form-label m-0">Bio</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ auth()->user()->getBio() }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <div class="row">
+                                    <div class="col-md-3 d-flex align-items-center">
                                         <label class="form-label m-0">Role</label>
                                     </div>
                                     <div class="col-md-9">
@@ -99,7 +109,7 @@
                             <div class="form-group ">
                                 <div class="row">
                                     <div class="col-md-3 d-flex align-items-center">
-                                        <label class="form-label m-0">Classes ({{auth()->user()->classes->count()}})</label>
+                                        <label class="form-label m-0">Classes ({{ auth()->user()->classes->count() }})</label>
                                     </div>
                                     <div class="col-md-9">
                                         @php
@@ -119,7 +129,7 @@
                                         <label class="form-label m-0">Salary</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{auth()->user()->salary}} DH">
+                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ auth()->user()->salary }} DH">
                                     </div>
                                 </div>
                             </div>
