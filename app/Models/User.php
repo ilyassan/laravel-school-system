@@ -33,6 +33,8 @@ class User extends Authenticatable
 
     public const GENDER_FEMALE = "F";
 
+    public const BIO_COLUMN = "bio";
+
 
     protected $hidden = [
         'password',
@@ -63,6 +65,11 @@ class User extends Authenticatable
     public function getGender(): string
     {
         return $this->getAttributeValue(self::GENDER_COLUMN) == self::GENDER_MALE ? 'Male' : 'Female';
+    }
+
+    public function getBio(): string
+    {
+        return $this->getAttributeValue(self::BIO_COLUMN) ?? "Hi, I'm " . $this->fullname . " and I am a " . $this->getRoleName() . " at this school.";
     }
 
     /* ### Check Role ### */

@@ -2,15 +2,15 @@
 @section('title', 'Profile')
 
 @section('page-header')
-				<!-- breadcrumb -->
-                <div class="breadcrumb-header justify-content-between">
-                    <div class="my-auto">
-                        <div class="d-flex">
-                            <h4 class="content-title mb-0 my-auto">Profile</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ {{ $user->fullname }}</span>
-                        </div>
-                    </div>
-                </div>
-				<!-- /breadcrumb -->
+    <!-- breadcrumb -->
+    <div class="breadcrumb-header justify-content-between">
+        <div class="my-auto">
+            <div class="d-flex">
+                <h4 class="content-title mb-0 my-auto">Profile</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ {{ $user->fullname }}</span>
+            </div>
+        </div>
+    </div>
+    <!-- /breadcrumb -->
 @endsection
 
 @section('content')
@@ -33,7 +33,7 @@
                             </div>
                             <h6>Bio</h6>
                             <div class="main-profile-bio">
-                                pleasure rationally encounter but because pursue consequences that are extremely painful.occur in which toil and pain can procure him some great pleasure.
+                                {{ $user->getBio() }}
                             </div>
                             <hr class="mg-y-30">
                             <label class="main-content-label tx-13 mg-b-20">Contact Info</label>
