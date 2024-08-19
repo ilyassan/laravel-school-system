@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            TruncateAllTablesSeeder::class,
             RoleSeeder::class,
             ClassSeeder::class,
             SubjectSeeder::class,

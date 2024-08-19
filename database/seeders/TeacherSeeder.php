@@ -14,31 +14,32 @@ class TeacherSeeder extends Seeder
      */
     public function run(): void
     {
-        $subjectsIds = Subject::pluck('id'); // Get all subject IDs
-        $classesIds = Classes::pluck('id'); // Get all class IDs
+        $subjects = Subject::all(); // Get all subjects
+        $classes = Classes::all(); // Get all classes
 
-        $teachersCount = $classesIds->count() * 5 - 1;
-
-        $teachers = TeacherFactory::new()->count($teachersCount)->create();
+        $teachers = TeacherFactory::new()->count($subjects->count() * 4 - 1)->create();
         $teachers[] = TeacherFactory::new()->create([
             'email' => 'teacher@gmail.com'
         ]);
 
-        foreach ($teachers as $index => $teacher) {
-            // Assign each teacher to a class
-            if ($index < $classesIds->count()) {
-                $classId = $classesIds[$index];
-            }
-            $randomClassesId = $classesIds->filter(fn($id) => $id !== $classId)->shuffle()->unique()->take(3);
-            $teacher->classes()->attach([$classId, ...$randomClassesId]);
+        $subjectTeacherMap = [];
 
-            // give teacher a subject
-            $subjectId = $subjectsIds->random();
-            if ($index < $subjectsIds->count()) {
-                $subjectId = $subjectsIds[$index];
+        foreach ($subjects as $subject) {
+            $subjectTeacherMap[$subject->id] = $teachers->where('subject_id', null)->take(4)->each(function ($teacher) use ($subject) {
+                $teacher->subject_id = $subject->id;
+                $teacher->save();
+            });
+        }
+
+        foreach ($classes as $class) {
+            foreach ($subjects as $subject) {
+                $availableTeachers = $subjectTeacherMap[$subject->id]->filter(function ($teacher) {
+                    return $teacher->classes->count() < 4;
+                });
+
+                $teacher = $availableTeachers->random();
+                $teacher->classes()->attach($class->id);
             }
-            $teacher->subject_id = $subjectId;
-            $teacher->save();
         }
     }
 }
