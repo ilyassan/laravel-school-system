@@ -14,31 +14,34 @@ class TeacherSeeder extends Seeder
      */
     public function run(): void
     {
-        $subjects = Subject::all(); // Get all subjects
-        $classes = Classes::all(); // Get all classes
+        $subjects = Subject::pluck('id'); // Get subjects Id's
+        $classes = Classes::pluck('id'); // Get classes Id's
 
-        $teachers = TeacherFactory::new()->count($subjects->count() * 4 - 1)->create();
+        $maxClassesForTeacher = 4;
+
+        $teachersCount = floor($classes->count() / $maxClassesForTeacher) * $subjects->count() +
+            ($classes->count() % $maxClassesForTeacher) * $subjects->count();
+
+        $teachers = TeacherFactory::new()->count($teachersCount - 1)->create();
         $teachers[] = TeacherFactory::new()->create([
             'email' => 'teacher@gmail.com'
         ]);
 
-        $subjectTeacherMap = [];
-
-        foreach ($subjects as $subject) {
-            $subjectTeacherMap[$subject->id] = $teachers->where('subject_id', null)->take(4)->each(function ($teacher) use ($subject) {
-                $teacher->subject_id = $subject->id;
-                $teacher->save();
-            });
+        // Give each teacher a subject
+        for ($i = 0; $i < $teachers->count(); $i++) {
+            $teachers[$i]->subject_id = $subjects[$i % $subjects->count()];
+            $teachers[$i]->save();
         }
 
-        foreach ($classes as $class) {
-            foreach ($subjects as $subject) {
-                $availableTeachers = $subjectTeacherMap[$subject->id]->filter(function ($teacher) {
-                    return $teacher->classes->count() < 4;
-                });
-
-                $teacher = $availableTeachers->random();
-                $teacher->classes()->attach($class->id);
+        // Ensure that every teacher attach to a class
+        // Ensure that every teacher have less or equale than 4 classes
+        $h = 0;
+        foreach ($teachers as $i => $teacher) {
+            if ($i != 0 && $i % $subjects->count() == 0) {
+                $h += $maxClassesForTeacher;
+            }
+            for ($j = 0 + $h; ($j < $maxClassesForTeacher + $h && $j < $classes->count()); $j++) {
+                $teacher->classes()->attach($classes[$j]);
             }
         }
     }
