@@ -82,7 +82,7 @@
                                 <div class="form-group ">
                                     <div class="row">
                                         <div class="col-md-3 d-flex align-items-center">
-                                            <label class="form-label m-0">Classes ({{ $user->classes->count()}})</label>
+                                            <label class="form-label m-0">Classes ({{ $user->classes->count() }})</label>
                                         </div>
                                         <div class="col-md-9">
                                             @php
@@ -108,8 +108,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            @endif
-                            @if ($user->isStudent())
+
                                 <hr class="mg-y-30">
                                 <h6>Subjects Level</h6>
 

@@ -35,7 +35,7 @@
 				<div class="row row-sm">
                     <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
 						<div class="card overflow-hidden sales-card bg-success-gradient">
-							<div class="pl-3 pt-3 pr-3 pb-2 pt-0">
+							<div class="pl-3 pt-3 pr-3 pb-2">
 								<div class="">
 									<h6 class="mb-2 tx-12 text-white">YOUR AVG STUDENTS GRADES</h6>
 								</div>
@@ -56,7 +56,7 @@
 					</div>
                     <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
 						<div class="card overflow-hidden sales-card bg-danger-gradient">
-							<div class="pl-3 pt-3 pr-3 pb-2 pt-0">
+							<div class="pl-3 pt-3 pr-3 pb-2">
 								<div class="">
 									<h6 class="mb-2 tx-12 text-white">YOUR STUDENTS</h6>
 								</div>
@@ -77,7 +77,7 @@
 					</div>
                     <div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
 						<div class="card overflow-hidden sales-card bg-warning-gradient">
-							<div class="pl-3 pt-3 pr-3 pb-2 pt-0">
+							<div class="pl-3 pt-3 pr-3 pb-2">
 								<div class="">
 									<h6 class="mb-2 tx-12 text-white">YOUR CLASSES</h6>
 								</div>
@@ -98,7 +98,7 @@
 					</div>
 					<div class="col-xl-3 col-lg-6 col-md-6 col-xm-12">
 						<div class="card overflow-hidden sales-card bg-primary-gradient">
-							<div class="pl-3 pt-3 pr-3 pb-2 pt-0">
+							<div class="pl-3 pt-3 pr-3 pb-2">
 								<div class="">
 									<h6 class="mb-2 tx-12 text-white">SALARY</h6>
 								</div>
@@ -158,10 +158,12 @@
 							<h6 class="card-title">Top 5 Students</h6><span class="d-block mg-b-10 text-muted tx-12">The top 5 students in your classes based on grades.</span>
 							<div class="list-group h-100 justify-content-around">
 								@foreach ($topTeacherStudents as $student)					
-									<div class="list-group-item border-top-0 {{$loop->last ? 'border-bottom-0 mb-0' : ''}}">
-										<i class="mdi mdi-account"></i>
-										<p class="text-capitalize">{{$student->fullname}}</p><span>{{$student->class_name}}</span>
-									</div>
+									<a href="{{ route('profile.show', $student->id) }}" class="text-reset text-decoration-none">
+										<div class="list-group-item border-top-0 {{$loop->last ? 'border-bottom-0 mb-0' : ''}}">
+											<i class="mdi mdi-account"></i>
+											<p class="text-capitalize">{{$student->fullname}}</p><span>{{$student->class_name}}</span>
+										</div>
+									</a>
 								@endforeach
 							</div>
 						</div>
