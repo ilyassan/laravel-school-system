@@ -52,8 +52,10 @@ class DashboardService
         $topStudentsLimit = 5;
         $latestHomeworksLimit = 3;
 
-        $teacherId = auth()->id();
-        $teacherClasses = auth()->user()->classes()->pluck('id');
+        /** @var \App\Models\User */
+        $teacher = auth()->user();
+        $teacherId = $teacher->id;
+        $teacherClasses = $teacher->classes->pluck('id');
 
         return [
             'ratings' => $this->getRatings(),
@@ -92,8 +94,7 @@ class DashboardService
 
     public function getRatings()
     {
-        $ratings = Rating::selectRaw('COUNT(*) as count, AVG(' . Rating::RATING_COLUMN . ') as avg')
-            ->first();
+        $ratings = Rating::selectRaw('COUNT(*) as count, AVG(' . Rating::RATING_COLUMN . ') as avg')->first();
 
         return (object) [
             'count' => number_format($ratings->count),
@@ -103,14 +104,13 @@ class DashboardService
 
     public function getCharges(Carbon $month, Carbon $monthComparedTo)
     {
-        $chargesCollection = $this->collectionOfTwoMonths(Charge::class, $month, $monthComparedTo)
-            ->get([Charge::CREATED_AT, Charge::PRICE_COLUMN, Charge::QUANTITY_COLUMN]);
+        $chargesCollection = $this->collectionOfTwoMonths(Charge::class, $month, $monthComparedTo);
 
-        $monthCharges = $this->filterByMonth($chargesCollection, $month, Charge::CREATED_AT)
-            ->sum(fn($charge) => $charge->{Charge::PRICE_COLUMN} * $charge->{Charge::QUANTITY_COLUMN});
+        $monthCharges = $this->filterByMonth(clone $chargesCollection, $month, Charge::CREATED_AT)
+            ->sum(DB::raw(Charge::PRICE_COLUMN . ' * ' . Charge::QUANTITY_COLUMN));
 
         $monthComparedToCharges = $this->filterByMonth($chargesCollection, $monthComparedTo, Charge::CREATED_AT)
-            ->sum(fn($charge) => $charge->{Charge::PRICE_COLUMN} * $charge->{Charge::QUANTITY_COLUMN});
+            ->sum(DB::raw(Charge::PRICE_COLUMN . ' * ' . Charge::QUANTITY_COLUMN));
 
         return $this->formatData($monthCharges, $monthComparedToCharges);
     }
@@ -129,13 +129,10 @@ class DashboardService
             $query->where(Grade::TEACHER_COLUMN, $teacherId);
         }
 
-        $studentGradesCollection = $query->get([Grade::CREATED_AT, Grade::GRADE_COLUMN]);
-
-
-        $monthAvgStudentGrade = $this->filterByMonth($studentGradesCollection, $month, Grade::CREATED_AT)
+        $monthAvgStudentGrade = $this->filterByMonth(clone $query, $month, Grade::CREATED_AT)
             ->avg(Grade::GRADE_COLUMN);
 
-        $monthComparedToAvgStudentGrade = $this->filterByMonth($studentGradesCollection, $monthComparedTo, Grade::CREATED_AT)
+        $monthComparedToAvgStudentGrade = $this->filterByMonth(clone $query, $monthComparedTo, Grade::CREATED_AT)
             ->avg(Grade::GRADE_COLUMN);
 
         return $this->formatData($monthAvgStudentGrade, $monthComparedToAvgStudentGrade);
@@ -143,22 +140,22 @@ class DashboardService
 
     public function getTeachers(Carbon $year)
     {
-        $teachersCollection = User::teachers()->get([User::CREATED_AT]);
+        $teachersQuery = User::teachers();
 
-        $currentTeachers = $teachersCollection->count();
-        $previousYearTeachers = $teachersCollection->where(User::CREATED_AT, '<', $year->startOfYear())->count();
+        $currentTeachers = (clone $teachersQuery)->count();
+        $previousYearTeachers = $teachersQuery->where(User::CREATED_AT, '<', $year->startOfYear())->count();
 
         return $this->formatData($currentTeachers, $previousYearTeachers);
     }
 
     public function getStudents(Carbon $year)
     {
-        $studentCollection = User::students()->get([User::CREATED_AT, User::GENDER_COLUMN]);
+        $studentsQuery = User::students();
 
-        $currentStudents = $studentCollection->count();
-        $previousYearStudents = $studentCollection->where(User::CREATED_AT, '<', $year->startOfYear())->count();
-        $maleStudents = $studentCollection->where(User::GENDER_COLUMN, User::GENDER_MALE)->count();
-        $femaleStudents = $studentCollection->where(User::GENDER_COLUMN, User::GENDER_FEMALE)->count();
+        $currentStudents = (clone $studentsQuery)->count();
+        $previousYearStudents = (clone $studentsQuery)->where(User::CREATED_AT, '<', $year->startOfYear())->count();
+        $maleStudents = (clone $studentsQuery)->where(User::GENDER_COLUMN, User::GENDER_MALE)->count();
+        $femaleStudents = $studentsQuery->where(User::GENDER_COLUMN, User::GENDER_FEMALE)->count();
 
         return $this->formatData($currentStudents, $previousYearStudents, [
             'boys' => $maleStudents,
@@ -194,14 +191,10 @@ class DashboardService
         $relationship = strtolower(UserRole::nameForKey($role)) . 'Reports';
 
         return Report::$relationship()
-            ->latest('reports.created_at')
+            ->latest(Report::CREATED_AT)
+            ->with('user')
+            ->selectRaw("LEFT(" . Report::DESCRIPTION_COLUMN . ", $descriptionLimit) AS shortDescription, user_id")
             ->limit($reportsLimit)
-            ->selectRaw("LEFT(description, $descriptionLimit) AS shortDescription")
-            ->addSelect([
-                'user_name' => User::select(DB::raw("CONCAT(" . User::FIRST_NAME_COLUMN . ", ' ', " . User::LAST_NAME_COLUMN . ")"))
-                    ->whereColumn('users.id', 'reports.user_id')
-                    ->limit(1)
-            ])
             ->get();
     }
 
@@ -246,14 +239,13 @@ class DashboardService
 
     public function getTopStudents($classId, $limit)
     {
+        if (is_int($classId)) {
+            $classId = [$classId];
+        }
         $query = User::students();
 
         // Grades of a teacher students
-        if (is_array($classId)) {
-            $query->whereIn(User::CLASS_COLUMN, $classId);
-        } else if (is_int($classId)) {
-            $query->where(User::CLASS_COLUMN, $classId);
-        }
+        $query->whereIn(User::CLASS_COLUMN, $classId);
 
         return $query
             ->select(['id', User::FIRST_NAME_COLUMN, User::LAST_NAME_COLUMN])
@@ -311,9 +303,12 @@ class DashboardService
 
         return $query
             ->whereBetween(Grade::CREATED_AT, [$date, $toDate])
-            ->get([Grade::GRADE_COLUMN, Grade::CREATED_AT])
-            ->groupBy(fn($grade) => Carbon::parse($grade->created_at)->format('M'))
-            ->map(fn($monthGrades) => number_format($monthGrades->avg(Grade::GRADE_COLUMN), 2));
+            ->select(DB::raw("MONTH(" . Grade::CREATED_AT . ") as month"), DB::raw("AVG(" . Grade::GRADE_COLUMN . ") as avg_grade"))
+            ->groupBy(DB::raw("MONTH(" . Grade::CREATED_AT . ")"))
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return [Carbon::createFromFormat('m', $item->month)->format('M') => number_format($item->avg_grade, 2)];
+            });
     }
 
     // -- Auxiliary methods --
@@ -326,9 +321,9 @@ class DashboardService
         });
     }
 
-    public function filterByMonth($collection, Carbon $month, string $dateColumn)
+    public function filterByMonth($query, Carbon $month, string $dateColumn)
     {
-        return $collection->whereBetween(
+        return $query->whereBetween(
             $dateColumn,
             [
                 $month->startOfMonth()->toDateTime(),

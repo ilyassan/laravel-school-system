@@ -169,9 +169,9 @@
 									<div class="chips">
 										@foreach ($latestTeacherReports as $report)
 											<div class="team">
-												<a href="#" class="chip">
-													<span class="avatar cover-image" data-image-src="{{URL::asset('assets/img/faces/1.webp')}}"></span>
-													{{$report->user_name}}
+												<a href="{{ route('profile.show', $report->user_id) }}" class="chip">
+													<span class="avatar cover-image" data-image-src="{{ $report->user->image }}"></span>
+													{{$report->user->fullname}}
 												</a>
 												<i class="fas fa-envelope text-primary" aria-hidden="true"></i>
 												<p class="{{$loop->last ? 'mb-0' : 'mb-2'}}">{{$report->shortDescription}} ...</p>
@@ -229,9 +229,9 @@
 									<div class="chips">
 										@foreach ($latestStudentsReports as $report)
 											<div class="team">
-												<a href="#" class="chip">
-													<span class="avatar cover-image" data-image-src="{{URL::asset('assets/img/faces/1.webp')}}"></span>
-													{{$report->user_name}}
+												<a href="{{ route('profile.show', $report->user_id) }}" class="chip">
+													<span class="avatar cover-image" data-image-src="{{ $report->user->image }}"></span>
+													{{$report->user->fullname}}
 												</a>
 												<i class="fas fa-envelope text-primary" aria-hidden="true"></i>
 												<p class="{{$loop->last ? 'mb-0' : 'mb-2'}}">{{$report->shortDescription}} ...</p>
@@ -244,7 +244,7 @@
 					</div>
 					<div class="col-md-12 col-lg-4 col-xl-4">
 						<div class="card card-dashboard-eight pb-2">
-							<h6 class="card-title">Top 5 Classes</h6><span class="d-block mg-b-10 text-muted tx-12">The top 5 classes based on grades average of the last 3 month.</span>
+							<h6 class="card-title">Top {{ $topClasses->count() }} Classes</h6><span class="d-block mg-b-10 text-muted tx-12">The top {{ $topClasses->count() }} classes based on grades average of the last 3 month.</span>
 							<div class="list-group h-100 justify-content-around">
 								@foreach ($topClasses as $class)									
 									<div class="list-group-item border-top-0 {{$loop->last ? 'border-bottom-0 mb-0' : ''}}">

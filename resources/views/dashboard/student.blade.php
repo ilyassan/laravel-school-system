@@ -54,7 +54,7 @@
 									<h4 class="card-title mg-b-0">LATEST ENTERED GRADES</h4>
 									<i class="mdi mdi-dots-horizontal text-gray"></i>
 								</div>
-								<p class="tx-12 tx-gray-500 mb-2">Your latest grades entered by your teachers.<a href="">Learn more</a></p>
+								<p class="tx-12 tx-gray-500 mb-2">Your latest grades entered by your teachers.<a href="{{ route('grades.index') }}">Learn more</a></p>
 							</div>
 							<div class="card-body">
 								<div class="table-responsive">
@@ -89,9 +89,9 @@
 				<div class="row row-sm row-deck">
 					<div class="col-md-12 col-lg-4 col-xl-4">
 						<div class="card card-dashboard-eight pb-2">
-							<h6 class="card-title">Top 5 Students</h6>
+							<h6 class="card-title">Top {{ $topClassStudents->count() }} Students</h6>
                             <span class="d-block mg-b-10 text-muted tx-12">
-                                The top 5 students in your class based on grades.
+                                The top {{ $topClassStudents->count() }} students in your class based on grades.
                             </span>
 							<div class="list-group h-100 justify-content-around">
 								@foreach ($topClassStudents as $student)					

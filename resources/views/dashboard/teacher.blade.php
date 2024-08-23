@@ -155,7 +155,7 @@
 				<div class="row row-sm row-deck">
 					<div class="col-md-12 col-lg-4 col-xl-4">
 						<div class="card card-dashboard-eight pb-2">
-							<h6 class="card-title">Top 5 Students</h6><span class="d-block mg-b-10 text-muted tx-12">The top 5 students in your classes based on grades.</span>
+							<h6 class="card-title">Top {{ $topTeacherStudents->count() }} Students</h6><span class="d-block mg-b-10 text-muted tx-12">The top {{ $topTeacherStudents->count() }} students in your classes based on grades.</span>
 							<div class="list-group h-100 justify-content-around">
 								@foreach ($topTeacherStudents as $student)					
 									<a href="{{ route('profile.show', $student->id) }}" class="text-reset text-decoration-none">
