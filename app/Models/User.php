@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserGender;
 use App\Enums\UserRole;
 use App\Helpers\Helper;
 use Laravel\Sanctum\HasApiTokens;
@@ -15,25 +16,38 @@ class User extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 
-    protected $guarded = [];
-
     public const TABLE = "users";
+
+    protected $fillable = [
+        self::PRIMARY_KEY_COLUMN_NAME,
+        self::ROLE_COLUMN,
+        self::FIRST_NAME_COLUMN,
+        self::LAST_NAME_COLUMN,
+        self::EMAIL_COLUMN,
+        self::PHONE_COLUMN,
+        self::PASSWORD_COLUMN,
+        self::BIO_COLUMN,
+        self::SALARY_COLUMN,
+        self::GENDER_COLUMN,
+
+        self::CLASS_COLUMN,
+        self::SUBJECT_COLUMN,
+        self::IMAGE_PATH_COLUMN,
+    ];
+
     public const PRIMARY_KEY_COLUMN_NAME = "id";
     public const ROLE_COLUMN = "role_id";
-
     public const FIRST_NAME_COLUMN = "first_name";
-
     public const LAST_NAME_COLUMN = "last_name";
-
-    public const CLASS_COLUMN = "class_id";
-
-    public const GENDER_COLUMN = "gender";
-
-    public const GENDER_MALE = "M";
-
-    public const GENDER_FEMALE = "F";
-
+    public const EMAIL_COLUMN = "email";
+    public const PHONE_COLUMN = "phone";
+    public const PASSWORD_COLUMN = "password";
     public const BIO_COLUMN = "bio";
+    public const SALARY_COLUMN = "salary";
+    public const GENDER_COLUMN = "gender";
+    public const CLASS_COLUMN = "class_id";
+    public const SUBJECT_COLUMN = "subject_id";
+    public const IMAGE_PATH_COLUMN = "image_path";
 
 
     protected $hidden = [
@@ -46,11 +60,14 @@ class User extends Authenticatable
     ];
 
 
+    public function getKey(): string
+    {
+        return $this->getAttributeValue(self::PRIMARY_KEY_COLUMN_NAME);
+    }
     public function getRoleId(): string
     {
         return $this->getAttributeValue(self::ROLE_COLUMN);
     }
-
     public function getRoleName(): ?string
     {
         $roles = [
@@ -61,15 +78,50 @@ class User extends Authenticatable
 
         return $roles[$this->getRoleId()] ?? null;
     }
-
-    public function getGender(): string
+    public function getFirstName(): string
     {
-        return $this->getAttributeValue(self::GENDER_COLUMN) == self::GENDER_MALE ? 'Male' : 'Female';
+        return $this->getAttributeValue(self::FIRST_NAME_COLUMN);
     }
-
+    public function getLastName(): string
+    {
+        return $this->getAttributeValue(self::LAST_NAME_COLUMN);
+    }
+    public function getFullName(): string
+    {
+        return "{$this->getFirstName()} {$this->getLastName()}";
+    }
+    public function getEmail(): string
+    {
+        return $this->getAttributeValue(self::EMAIL_COLUMN);
+    }
+    public function getPhone(): string
+    {
+        return $this->getAttributeValue(self::PHONE_COLUMN);
+    }
+    public function getSalary(): string
+    {
+        return $this->getAttributeValue(self::SALARY_COLUMN);
+    }
     public function getBio(): string
     {
-        return $this->getAttributeValue(self::BIO_COLUMN) ?? "Hi, I'm " . $this->fullname . " and I am a " . $this->getRoleName() . " at this school.";
+        return $this->getAttributeValue(self::BIO_COLUMN) ?? "Hi, I'm " . $this->getFullName() . " and I am a " . $this->getRoleName() . " at this school.";
+    }
+    public function getGender(): string
+    {
+        return $this->getAttributeValue(self::GENDER_COLUMN) == UserGender::GENDER_MALE ? 'Male' : 'Female';
+    }
+    public function getClassId(): string
+    {
+        return $this->getAttributeValue(self::CLASS_COLUMN);
+    }
+    public function getSubjectId(): string
+    {
+        return $this->getAttributeValue(self::SUBJECT_COLUMN);
+    }
+    public function getImage(): string
+    {
+        $image_path = $this->getAttributeValue(self::IMAGE_PATH_COLUMN);
+        return $image_path ? Storage::url(Helper::profile_images_folder() . $image_path) : asset('assets/img/faces/1.webp');
     }
 
     /* ### Check Role ### */
