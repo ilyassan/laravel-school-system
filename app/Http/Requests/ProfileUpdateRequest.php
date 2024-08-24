@@ -17,8 +17,8 @@ class ProfileUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'email', Rule::unique(User::class)->ignore($this->user()->id)], // Check if email already taken
-            'phone' => ['required', 'numeric', 'digits:10', Rule::unique(User::class)->ignore($this->user()->id)], // Check if phone number already used
+            'email' => ['required', 'email', Rule::unique(User::class)->ignore($this->user()->getKey())], // Check if email already taken
+            'phone' => ['required', 'numeric', 'digits:10', Rule::unique(User::class)->ignore($this->user()->getKey())], // Check if phone number already used
             'bio' => ['required', 'string', 'min:1', 'max:150'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048', new SquareImageRule],
         ];

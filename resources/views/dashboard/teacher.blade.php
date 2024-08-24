@@ -6,7 +6,7 @@
 				<div class="breadcrumb-header justify-content-between">
 					<div class="left-content">
 						<div>
-						  <h2 class="main-content-title tx-24 mg-b-1 mg-b-lg-1">Hi, {{auth()->user()->fullname}}</h2>
+						  <h2 class="main-content-title tx-24 mg-b-1 mg-b-lg-1">Hi, {{auth()->user()->getFullName()}}</h2>
 						  <p class="mg-b-0">Teacher Dashboard</p>
 						</div>
 					</div>
@@ -158,10 +158,10 @@
 							<h6 class="card-title">Top {{ $topTeacherStudents->count() }} Students</h6><span class="d-block mg-b-10 text-muted tx-12">The top {{ $topTeacherStudents->count() }} students in your classes based on grades.</span>
 							<div class="list-group h-100 justify-content-around">
 								@foreach ($topTeacherStudents as $student)					
-									<a href="{{ route('profile.show', $student->id) }}" class="text-reset text-decoration-none">
+									<a href="{{ route('profile.show', $student->getKey()) }}" class="text-reset text-decoration-none">
 										<div class="list-group-item border-top-0 {{$loop->last ? 'border-bottom-0 mb-0' : ''}}">
 											<i class="mdi mdi-account"></i>
-											<p class="text-capitalize">{{$student->fullname}}</p><span>{{$student->class_name}}</span>
+											<p class="text-capitalize">{{$student->getFullName()}}</p><span>{{$student->class_name}}</span>
 										</div>
 									</a>
 								@endforeach
@@ -174,7 +174,7 @@
 								<h4 class="card-title mb-1">Assigned Homeworks</h4>
 								<i class="mdi mdi-dots-horizontal text-gray"></i>
 							</div>
-							<span class="tx-12 tx-muted mb-3 ">Your latest assigned homeworks to students.</span>
+							<span class="d-block mg-b-10 text-muted tx-12 mb-3 ">Your latest assigned homeworks to students.</span>
 							<div class="table-responsive country-table">
 								<table class="table table-striped table-bordered mb-0 text-sm-nowrap text-lg-nowrap text-xl-nowrap">
 									<thead>

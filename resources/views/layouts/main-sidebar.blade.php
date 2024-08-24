@@ -9,12 +9,12 @@
 					<div class="dropdown user-pro-body">
 						<div class="">
 							<a href="{{ route('profile.edit') }}">
-								<img alt="user-img" class="avatar avatar-xl brround" src="{{ auth()->user()->image }}"><span class="avatar-status profile-status bg-green"></span>
+								<img alt="user-img" class="avatar avatar-xl brround" src="{{ auth()->user()->getImage() }}"><span class="avatar-status profile-status bg-green"></span>
 							</a>
 						</div>
 						<div class="user-info">
-							<h4 class="font-weight-semibold mt-3 mb-0">{{auth()->user()->fullname}}</h4>
-							<span class="mb-0 text-muted">{{auth()->user()->email}}</span>
+							<h4 class="font-weight-semibold mt-3 mb-0">{{auth()->user()->getFullName()}}</h4>
+							<span class="mb-0 text-muted">{{auth()->user()->getEmail()}}</span>
 						</div>
 					</div>
 				</div>

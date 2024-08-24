@@ -151,9 +151,9 @@
                                 @foreach ($grades as $grade)
                                     <tr onclick="window.location='{{ route('grades.show', $grade->id) }}'" style="cursor: pointer">
                                         <td>{{ $loop->index + 1 }}</td>
-                                        <td>{{ $grade->teacher->fullname }}</td>
+                                        <td>{{ $grade->teacher->getFullName() }}</td>
                                         <td>{{ $grade->teacher->subject->name }}</td>
-                                        <td>{{ $grade->student->fullname }}</td>
+                                        <td>{{ $grade->student->getFullName() }}</td>
                                         <td>{{ $grade->student->class->name }}</td>
                                         <td>{{ $grade->grade }}</td>
                                         <td>{{ $grade->created_at->format('m/d/Y') }}</td>
@@ -164,9 +164,9 @@
                                 @foreach ($grades as $grade)
                                     <tr onclick="window.location='{{ route('grades.show', $grade->id) }}'" style="cursor: pointer">
                                         <td>{{ $loop->index + 1 }}</td>
-                                        <td>{{ auth()->user()->fullname }}</td>
+                                        <td>{{ auth()->user()->getFullName() }}</td>
                                         <td>{{ auth()->user()->subject->name }}</td>
-                                        <td>{{ $grade->student->fullname }}</td>
+                                        <td>{{ $grade->student->getFullName() }}</td>
                                         <td>{{ $grade->student->class->name }}</td>
                                         <td>{{ $grade->grade }}</td>
                                         <td>{{ $grade->created_at->format('m/d/Y') }}</td>
@@ -177,9 +177,9 @@
                                 @foreach ($grades as $grade)
                                     <tr onclick="window.location='{{ route('grades.show', $grade->id) }}'" style="cursor: pointer">
                                         <td>{{ $loop->index + 1 }}</td>
-                                        <td>{{ $grade->teacher->fullname }}</td>
+                                        <td>{{ $grade->teacher->getFullName() }}</td>
                                         <td>{{ $grade->teacher->subject->name }}</td>
-                                        <td>{{ auth()->user()->fullname }}</td>
+                                        <td>{{ auth()->user()->getFullName() }}</td>
                                         <td>{{ auth()->user()->class->name }}</td>
                                         <td>{{ $grade->grade }}</td>
                                         <td>{{ $grade->created_at->format('m/d/Y') }}</td>

@@ -25,18 +25,20 @@
                     <form action="{{ route('profile.update') }}" class="form-horizontal" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PATCH')
-                    
+                        @php
+                            $user = auth()->user();
+                        @endphp
                         <!-- Form fields -->
                         <div class="mb-4 main-content-label">Profile Image</div>
                         <div class="form-group">
                             <div class="row justify-content-center">
-                                <div class="profile-pic">
+                                <div class="profile-pic" style="z-index: 1">
                                     <label class="-label" for="file" style="margin: 0%">
                                       <span class="glyphicon glyphicon-camera"></span>
                                       <span>Change Image</span>
                                     </label>
                                     <input id="file" type="file" name="image" onchange="loadFile(event)"/>
-                                    <img src="{{ auth()->user()->image }}" id="output" width="200" />
+                                    <img src="{{ $user->getImage() }}" id="output" width="200" />
                                   </div>
                             </div>
                             @error('image')
@@ -50,7 +52,7 @@
                                     <label class="form-label m-0">Email</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" id="email" name="email" class="form-control" required value="{{ old('email', auth()->user()->email) }}">
+                                    <input type="text" id="email" name="email" class="form-control" required value="{{ old('email', $user->getEmail() ) }}">
                                     @error('email')
                                         <small class="text-danger mt-1">{{$message}}</small>
                                     @enderror
@@ -63,7 +65,7 @@
                                     <label class="form-label m-0">Phone</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" id="phone" name="phone" class="form-control" required value="{{ old('phone', auth()->user()->phone) }}">
+                                    <input type="text" id="phone" name="phone" class="form-control" required value="{{ old('phone', $user->getPhone() ) }}">
                                     @error('phone')
                                         <small class="text-danger mt-1">{{$message}}</small>
                                     @enderror
@@ -76,7 +78,7 @@
                                     <label class="form-label m-0">Bio</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" id="bio" name="bio" class="form-control" required value="{{ old( 'bio', auth()->user()->getBio() ) }}" maxlength="150">
+                                    <input type="text" id="bio" name="bio" class="form-control" required value="{{ old( 'bio', $user->getBio() ) }}" maxlength="150">
                                     @error('bio')
                                         <small class="text-danger mt-1">{{$message}}</small>
                                     @enderror
@@ -85,7 +87,7 @@
                         </div>
                         <div class="card-footer text-left pl-0">
                             <button type="submit" class="btn btn-primary waves-effect waves-light">Update Profile</button>
-                            <a href="{{route('profile.reset-password')}}" class="btn btn-primary waves-effect waves-light ml-5">Reset Password</a>
+                            <a href="{{route('profile.show-reset-password')}}" class="btn btn-primary waves-effect waves-light ml-5">Reset Password</a>
                             <a href="{{route('profile.reset-image')}}" class="btn btn-primary waves-effect waves-light ml-5">Reset Image</a>
                         </div>
                     </form>

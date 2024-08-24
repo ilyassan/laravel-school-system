@@ -1,12 +1,14 @@
 @extends('layouts.master')
-@section('title', 'Profile')
+@section('title')
+    {{ $user->getFirstName() }} Profile
+@endsection
 
 @section('page-header')
     <!-- breadcrumb -->
     <div class="breadcrumb-header justify-content-between">
         <div class="my-auto">
             <div class="d-flex">
-                <h4 class="content-title mb-0 my-auto">Profile</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ {{ $user->fullname }}</span>
+                <h4 class="content-title mb-0 my-auto">Profile</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ {{ $user->getFullName() }}</span>
             </div>
         </div>
     </div>
@@ -22,12 +24,12 @@
                         <div class="main-profile-overview">
                             <div class="d-flex justify-content-center">
                                 <div class="main-img-user profile-user mb-5">
-                                    <img alt="" src="{{ $user->image }}"><span class="fas fa-camera profile-edit text-primary"></span>
+                                    <img alt="" src="{{ $user->getImage() }}"><span class="fas fa-camera profile-edit text-primary"></span>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between mg-b-20">
                                 <div>
-                                    <h5 class="main-profile-name">{{ $user->fullname }}</h5>
+                                    <h5 class="main-profile-name">{{ $user->getFullName() }}</h5>
                                     <p class="main-profile-name-text">{{ $user->getRoleName() }}</p>
                                 </div>
                             </div>
@@ -43,7 +45,7 @@
                                         <label class="form-label m-0">Email</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control bg-light" value="{{ $user->email }}" readonly>
+                                        <input type="text" class="form-control bg-light" value="{{ $user->getEmail() }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -53,7 +55,7 @@
                                         <label class="form-label m-0">Phone</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control bg-light" value="{{ $user->phone}}" readonly>
+                                        <input type="text" class="form-control bg-light" value="{{ $user->getPhone() }}" readonly>
                                     </div>
                                 </div>
                             </div>

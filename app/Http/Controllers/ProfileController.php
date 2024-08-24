@@ -56,8 +56,8 @@ class ProfileController extends BaseController
                 $validatedData['image_path'] = basename($imagePath);
 
                 // Delete old image if exists
-                if ($user->image_path) {
-                    Storage::delete(Helper::profile_images_path() . $user->image_path);
+                if ($user->getImagePath()) {
+                    Storage::delete(Helper::profile_images_path() . $user->getImagePath());
                 }
             } else {
                 return back()->withErrors(['image' => 'The uploaded image is not valid.']);
@@ -78,11 +78,11 @@ class ProfileController extends BaseController
         $user = $this->getAuthUser();
 
         // Delete old image if exists
-        if ($user->image_path) {
-            Storage::delete(Helper::profile_images_path() . $user->image_path);
+        if ($user->getImage()) {
+            Storage::delete(Helper::profile_images_path() . $user->getImage());
         }
 
-        $user->update(['image_path' => NULL]);
+        $user->update([User::IMAGE_PATH_COLUMN => NULL]);
 
         return redirect()->route('profile.index')->with('success', 'Your informations has been updated successfully!');
     }

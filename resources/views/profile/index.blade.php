@@ -15,6 +15,10 @@
 @endsection
 
 @section('content')
+    @php
+        $user = auth()->user();
+    @endphp
+
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -27,7 +31,7 @@
                                     <label class="form-label m-0">First Name</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{auth()->user()->first_name}}">
+                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{$user->getFirstName()}}">
                                 </div>
                             </div>
                         </div>
@@ -37,7 +41,7 @@
                                     <label class="form-label m-0">Last Name</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{auth()->user()->last_name}}">
+                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{$user->getLastName()}}">
                                 </div>
                             </div>
                         </div>
@@ -48,7 +52,7 @@
                                     <label class="form-label m-0">Email</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{auth()->user()->email}}">
+                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{$user->getEmail()}}">
                                 </div>
                             </div>
                         </div>
@@ -58,7 +62,7 @@
                                     <label class="form-label m-0">Phone</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{auth()->user()->phone}}">
+                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{$user->getPhone()}}">
                                 </div>
                             </div>
                         </div>
@@ -69,7 +73,7 @@
                                         <label class="form-label m-0">Bio</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ auth()->user()->getBio() }}">
+                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ $user->getBio() }}">
                                     </div>
                                 </div>
                             </div>
@@ -79,42 +83,42 @@
                                         <label class="form-label m-0">Role</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ auth()->user()->getRoleName()}}">
+                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ $user->getRoleName()}}">
                                     </div>
                                 </div>
                             </div>
-                        @if (auth()->user()->isStudent())
+                        @if ($user->isStudent())
                             <div class="form-group ">
                                 <div class="row">
                                     <div class="col-md-3 d-flex align-items-center">
                                         <label class="form-label m-0">Class</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{auth()->user()->class->name}}">
+                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{$user->class->name}}">
                                     </div>
                                 </div>
                             </div>
                         @endif
-                        @if (auth()->user()->isTeacher())
+                        @if ($user->isTeacher())
                             <div class="form-group ">
                                 <div class="row">
                                     <div class="col-md-3 d-flex align-items-center">
                                         <label class="form-label m-0">Subject</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{auth()->user()->subject->name}}">
+                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{$user->subject->name}}">
                                     </div>
                                 </div>
                             </div>
                             <div class="form-group ">
                                 <div class="row">
                                     <div class="col-md-3 d-flex align-items-center">
-                                        <label class="form-label m-0">Classes ({{ auth()->user()->classes->count() }})</label>
+                                        <label class="form-label m-0">Classes ({{ $user->classes->count() }})</label>
                                     </div>
                                     <div class="col-md-9">
                                         @php
                                             $classes = "";
-                                            foreach (auth()->user()->classes as $class) {
+                                            foreach ($user->classes as $class) {
                                                 $classes .= "$class->name, ";
                                             }
                                             $classes = rtrim($classes, ', ');
@@ -129,7 +133,7 @@
                                         <label class="form-label m-0">Salary</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ auth()->user()->salary }} DH">
+                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ $user->getSalary() }} DH">
                                     </div>
                                 </div>
                             </div>

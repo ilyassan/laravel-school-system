@@ -76,9 +76,9 @@ class GradesExport extends BaseExport implements FromCollection, WithHeadings
     protected function adminRowData($grade)
     {
         return [
-            'Teacher' => $grade->teacher->fullname,
+            'Teacher' => $grade->teacher->getFullName(),
             'Subject' => $grade->teacher->subject->name,
-            'Student' => $grade->student->fullname,
+            'Student' => $grade->student->getFullName(),
             'Class' => $grade->student->class->name,
             'Grade' => $grade->grade,
             'Entered Date' => $grade->created_at->format('m/d/Y'),
@@ -88,9 +88,9 @@ class GradesExport extends BaseExport implements FromCollection, WithHeadings
     protected function teacherRowData($grade, $user)
     {
         return [
-            'Teacher' => $user->fullname,
+            'Teacher' => $user->getFullName(),
             'Subject' => $user->subject->name,
-            'Student' => $grade->student->fullname,
+            'Student' => $grade->student->getFullName(),
             'Class' => $grade->student->class->name,
             'Grade' => $grade->grade,
             'Entered Date' => $grade->created_at->format('m/d/Y'),
@@ -100,9 +100,9 @@ class GradesExport extends BaseExport implements FromCollection, WithHeadings
     protected function studentRowData($grade, $user)
     {
         return [
-            'Teacher' => $grade->teacher->fullname,
+            'Teacher' => $grade->teacher->getFullName(),
             'Subject' => $grade->teacher->subject->name,
-            'Student' => $user->fullname,
+            'Student' => $user->getFullName(),
             'Class' => $user->class->name,
             'Grade' => $grade->grade,
             'Entered Date' => $grade->created_at->format('m/d/Y'),

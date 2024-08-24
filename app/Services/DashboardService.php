@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\UserGender;
 use Carbon\Carbon;
 use App\Enums\UserRole;
 use Illuminate\Support\Facades\DB;
@@ -54,15 +55,15 @@ class DashboardService
 
         /** @var \App\Models\User */
         $teacher = auth()->user();
-        $teacherId = $teacher->id;
-        $teacherClasses = $teacher->classes->pluck('id');
+        $teacherId = $teacher->getKey();
+        $teacherClasses = $teacher->classes->pluck(User::PRIMARY_KEY_COLUMN_NAME);
 
         return [
             'ratings' => $this->getRatings(),
             'teacherClasses' => $this->getTeacherClasses($this->currentYear),
             'teacherStudentsAvgGrades' => $this->getAvgStudentsGrades($this->currentMonth, $this->previousMonth, $teacherId),
             'teacherStudents' => $this->getTeacherStudents($this->currentYear, $teacherClasses),
-            'salary' => auth()->user()->salary,
+            'salary' => $teacher->getSalary(),
             'teacherClassesWithAbsences' => $this->getClassesWithAbsences($this->lastWeek, $teacherClasses),
             'topTeacherStudents' => $this->getTopStudents($teacherClasses, $topStudentsLimit),
             'latestHomeworks' => $this->getTeacherHomeworks($teacherId, $latestHomeworksLimit),
@@ -75,8 +76,11 @@ class DashboardService
         $topStudentsLimit = 5;
         $classHomeworksLimit = 5;
 
-        $studentId = auth()->id();
-        $classId = auth()->user()->class_id;
+        /** @var \App\Models\User */
+        $student = auth()->user();
+
+        $studentId = $student->getKey();
+        $classId = $student->getClassId();
 
         $startOfYear = $this->currentYear;
         $endOfYear = $this->currentYear->clone()->endOfYear();
@@ -154,8 +158,8 @@ class DashboardService
 
         $currentStudents = (clone $studentsQuery)->count();
         $previousYearStudents = (clone $studentsQuery)->where(User::CREATED_AT, '<', $year->startOfYear())->count();
-        $maleStudents = (clone $studentsQuery)->where(User::GENDER_COLUMN, User::GENDER_MALE)->count();
-        $femaleStudents = $studentsQuery->where(User::GENDER_COLUMN, User::GENDER_FEMALE)->count();
+        $maleStudents = (clone $studentsQuery)->where(User::GENDER_COLUMN, UserGender::GENDER_MALE)->count();
+        $femaleStudents = $studentsQuery->where(User::GENDER_COLUMN, UserGender::GENDER_FEMALE)->count();
 
         return $this->formatData($currentStudents, $previousYearStudents, [
             'boys' => $maleStudents,
@@ -239,8 +243,8 @@ class DashboardService
 
     public function getTopStudents($classId, $limit)
     {
-        if (is_int($classId)) {
-            $classId = [$classId];
+        if (!is_array($classId)) {
+            $classId = (array) $classId;
         }
         $query = User::students();
 

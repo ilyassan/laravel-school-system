@@ -33,7 +33,7 @@ class StoreGradeRequest extends FormRequest
                     $student = User::select([User::PRIMARY_KEY_COLUMN_NAME, User::CLASS_COLUMN])->find($value);
                     if (!$student) {
                         $fail("Selected student not found.");
-                    } elseif ($student->class_id != $this->input('class_id')) {
+                    } elseif ($student->getClassId() != $this->input('class_id')) {
                         $fail("Selected student not belong to the selected class.");
                     }
                 }

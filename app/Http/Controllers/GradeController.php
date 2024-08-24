@@ -68,7 +68,7 @@ class GradeController extends BaseController
     {
         $this->gradeService->createGrade(
             [
-                'teacher_id' => $this->getAuthUser()->id,
+                'teacher_id' => $this->getAuthUser()->getKey(),
                 ...$request->validated()
             ]
         );

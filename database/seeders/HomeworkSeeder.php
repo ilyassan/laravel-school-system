@@ -14,18 +14,18 @@ class HomeworkSeeder extends Seeder
     public function run(): void
     {
         $teachers = User::teachers()->with('classes:id')->get('id');
-        
+
         $homeworks = [];
         foreach ($teachers as $teacher) {
-            for($i = 0; $i < 4; $i++) {
+            for ($i = 0; $i < 4; $i++) {
                 $createdAt = now()->instance(fake()->dateTimeBetween('-5 months', 'now'));
                 $title = fake()->sentence(3);
                 $classes = $teacher->classes;
-    
+
                 foreach ($classes as $class) {
                     $homeworks[] = [
                         'title' => $title,
-                        'teacher_id' => $teacher->id,
+                        'teacher_id' => $teacher->getKey(),
                         'class_id' => $class->id,
                         'end_date' => $createdAt->clone()->addWeeks(rand(1, 2)),
                         'created_at' => $createdAt,

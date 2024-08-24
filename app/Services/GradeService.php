@@ -60,13 +60,13 @@ class GradeService
                 'teacher.subject',
                 'student.class:id,name',
             ];
-            $arr['teacher_id'] = $user->id;
+            $arr['teacher_id'] = $user->getKey();
         } elseif ($user->isStudent()) {
             $arr['with'] = [
                 'teacher:id,first_name,last_name,subject_id',
                 'teacher.subject',
             ];
-            $arr['student_id'] = $user->id;
+            $arr['student_id'] = $user->getKey();
         }
 
         return $arr;

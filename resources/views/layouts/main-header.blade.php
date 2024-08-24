@@ -165,17 +165,17 @@
 					<a class="new nav-link d-flex justify-content-center align-items-center full-screen-link" href="#"><svg xmlns="http://www.w3.org/2000/svg" class="header-icon-svgs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-maximize"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg></a>
 				</div>
 				<div class="dropdown main-profile-menu nav nav-item nav-link">
-					<a class="profile-user d-flex" href=""><img alt="" src="{{ auth()->user()->image }}"></a>
+					<a class="profile-user d-flex" href=""><img alt="" src="{{ auth()->user()->getImage() }}"></a>
 					<div class="dropdown-menu">
 						<div class="main-header-profile bg-primary p-3">
 							<div class="d-flex wd-100p">
 								<div class="main-img-user">
 									<a href="{{ route('profile.edit') }}">
-										<img alt="" src="{{ auth()->user()->image }}" class="">
+										<img alt="" src="{{ auth()->user()->getImage() }}" class="">
 									</a>
 								</div>
 								<div class="ml-2 my-auto">
-									<h6>{{auth()->user()->fullname}}</h6><span>{{auth()->user()->fullname}}</span>
+									<h6>{{auth()->user()->getFullName()}}</h6><span>{{auth()->user()->getEmail()}}</span>
 								</div>
 							</div>
 						</div>

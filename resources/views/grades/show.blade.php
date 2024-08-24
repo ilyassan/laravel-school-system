@@ -26,7 +26,7 @@
                                     <label class="form-label m-0">First Name</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ $grade->teacher->first_name }}">
+                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ $grade->teacher->getFirstName() }}">
                                 </div>
                             </div>
                         </div>
@@ -36,7 +36,7 @@
                                     <label class="form-label m-0">Last Name</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ $grade->teacher->last_name }}">
+                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ $grade->teacher->getLastName() }}">
                                 </div>
                             </div>
                         </div>
@@ -57,7 +57,7 @@
                                     <label class="form-label m-0">First Name</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ $grade->student->first_name }}">
+                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ $grade->student->getFirstName() }}">
                                 </div>
                             </div>
                         </div>
@@ -67,7 +67,7 @@
                                     <label class="form-label m-0">Last Name</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ $grade->student->last_name }}">
+                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ $grade->student->getLastName() }}">
                                 </div>
                             </div>
                         </div>

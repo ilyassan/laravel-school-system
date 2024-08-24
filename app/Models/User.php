@@ -118,9 +118,13 @@ class User extends Authenticatable
     {
         return $this->getAttributeValue(self::SUBJECT_COLUMN);
     }
+    public function getImagePath(): ?string
+    {
+        return $this->getAttributeValue(self::IMAGE_PATH_COLUMN);
+    }
     public function getImage(): string
     {
-        $image_path = $this->getAttributeValue(self::IMAGE_PATH_COLUMN);
+        $image_path = $this->getImagePath();
         return $image_path ? Storage::url(Helper::profile_images_folder() . $image_path) : asset('assets/img/faces/1.webp');
     }
 
@@ -194,12 +198,6 @@ class User extends Authenticatable
         return $this->hasMany(Absence::class, 'student_id');
     }
 
-    public function studentTeachers()
-    {
-        return $this->class->teachers();
-    }
-
-
     // Calculate the average grade for all student subjects.
     public function avgGradesOfSubjects()
     {
@@ -244,17 +242,5 @@ class User extends Authenticatable
     public function reports()
     {
         return $this->hasMany(Report::class, 'user_id');
-    }
-
-    /* ### Attributes ### */
-
-    public function getFullnameAttribute()
-    {
-        return "{$this->first_name} {$this->last_name}";
-    }
-
-    public function getImageAttribute()
-    {
-        return $this->image_path ? Storage::url(Helper::profile_images_folder() . $this->image_path) : asset('assets/img/faces/1.webp');
     }
 }

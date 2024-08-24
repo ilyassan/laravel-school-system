@@ -37,7 +37,7 @@
                                     <label class="form-label m-0">Teacher</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" style="pointer-events: none" id="teacher" class="form-control bg-light" required value="{{ auth()->user()->fullname }}">
+                                    <input type="text" style="pointer-events: none" id="teacher" class="form-control bg-light" required value="{{ auth()->user()->getFullName() }}">
                                 </div>
                             </div>
                         </div>

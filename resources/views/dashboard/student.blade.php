@@ -6,7 +6,7 @@
 				<div class="breadcrumb-header justify-content-between">
 					<div class="left-content">
 						<div>
-						  <h2 class="main-content-title tx-24 mg-b-1 mg-b-lg-1">Hi, {{auth()->user()->fullname}}</h2>
+						  <h2 class="main-content-title tx-24 mg-b-1 mg-b-lg-1">Hi, {{auth()->user()->getFullName()}}</h2>
 						  <p class="mg-b-0">Student Dashboard</p>
 						</div>
 					</div>
@@ -71,7 +71,7 @@
                                             @foreach ($latestStudentGrades as $grade)
                                                 <tr onclick="window.location='{{ route('grades.show', $grade->id) }}'" style="cursor: pointer">
                                                     <td>{{$grade->created_at->format('m/d/Y')}}</td>
-                                                    <td>{{$grade->teacher->fullname}}</td>
+                                                    <td>{{$grade->teacher->getFullName()}}</td>
                                                     <td>{{$grade->teacher->subject->name}}</td>
                                                     <td>{{$grade->grade}}/20</td>
                                                 </tr>                                          
@@ -95,10 +95,10 @@
                             </span>
 							<div class="list-group h-100 justify-content-around">
 								@foreach ($topClassStudents as $student)					
-								<a href="{{ route('profile.show', $student->id) }}" class="text-reset text-decoration-none">
+								<a href="{{ route('profile.show', $student->getKey() ) }}" class="text-reset text-decoration-none">
 									<div class="list-group-item border-top-0 {{$loop->last ? 'border-bottom-0 mb-0' : ''}}">
 										<i class="mdi mdi-account"></i>
-										<p class="text-capitalize">{{$student->id === auth()->id() ? 'You': $student->fullname}}</p><span>{{$loop->index + 1}}</span>
+										<p class="text-capitalize">{{$student->getKey() === auth()->user()->getKey() ? 'You': $student->getFullName()}}</p><span>{{$loop->index + 1}}</span>
 									</div>
 								</a>
 								@endforeach	
