@@ -21,16 +21,18 @@ Route::get('/', function () {
     return redirect()->route('dashboard');
 });
 
-Route::get('/dashboard', DashboardController::class)->middleware('auth')->name('dashboard');
+Route::middleware('auth')->get('/dashboard', DashboardController::class)->name('dashboard');
 
-Route::middleware('auth')->prefix('profile')->name('profile.')->group(function () {
-    Route::get('/', [ProfileController::class, 'index'])->name('index');
-    Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
-    Route::get('/{user}', [ProfileController::class, 'show'])->name('show');
-    Route::patch('/update', [ProfileController::class, 'update'])->name('update');
-    Route::get('/reset-password', [ProfileController::class, 'showResetPassword'])->name('show-reset-password');
-    Route::patch('/reset-password', [ProfileController::class, 'resetPassword'])->name('reset-password');
-    Route::get('/reset-image', [ProfileController::class, 'resetImage'])->name('reset-image');
+Route::middleware('auth')->prefix('profile')->name('profile.')->controller(ProfileController::class)->group(function () {
+    Route::get('/', 'index')->name('index');
+    Route::get('/edit', 'edit')->name('edit');
+    Route::patch('/update', 'update')->name('update');
+
+    Route::get('/reset-password', 'showResetPassword')->name('show-reset-password');
+    Route::patch('/reset-password', 'resetPassword')->name('reset-password');
+    Route::get('/reset-image', 'resetImage')->name('reset-image');
+
+    Route::get('/{user}', 'show')->name('show');
 });
 
 Route::middleware('auth')->group(function () {
