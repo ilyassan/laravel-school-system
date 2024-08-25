@@ -27,8 +27,14 @@ class ProfileController extends BaseController
     /**
      * Display the user's profile information.
      */
-    public function show(User $user)
+    public function show(string $id)
     {
+        $user = User::find($id);
+
+        if (is_null($user)) { // If user does not exits then redirect back
+            return back();
+        }
+
         return view('profile.show', compact('user'));
     }
 

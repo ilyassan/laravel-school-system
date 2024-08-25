@@ -32,7 +32,7 @@ Route::middleware('auth')->prefix('profile')->name('profile.')->controller(Profi
     Route::patch('/reset-password', 'resetPassword')->name('reset-password');
     Route::get('/reset-image', 'resetImage')->name('reset-image');
 
-    Route::get('/{user}', 'show')->name('show');
+    Route::get('/{id}', 'show')->name('show');
 });
 
 Route::middleware('auth')->group(function () {
