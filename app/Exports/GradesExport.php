@@ -81,7 +81,7 @@ class GradesExport extends BaseExport implements FromCollection, WithHeadings
             'Student' => $grade->student->getFullName(),
             'Class' => $grade->student->class->name,
             'Grade' => $grade->grade,
-            'Entered Date' => $grade->created_at->format('m/d/Y'),
+            'Entered Date' => $grade->getCreatedAtFormated(),
         ];
     }
 
@@ -93,7 +93,7 @@ class GradesExport extends BaseExport implements FromCollection, WithHeadings
             'Student' => $grade->student->getFullName(),
             'Class' => $grade->student->class->name,
             'Grade' => $grade->grade,
-            'Entered Date' => $grade->created_at->format('m/d/Y'),
+            'Entered Date' => $grade->getCreatedAtFormated(),
         ];
     }
 
@@ -105,7 +105,7 @@ class GradesExport extends BaseExport implements FromCollection, WithHeadings
             'Student' => $user->getFullName(),
             'Class' => $user->class->name,
             'Grade' => $grade->grade,
-            'Entered Date' => $grade->created_at->format('m/d/Y'),
+            'Entered Date' => $grade->getCreatedAtFormated(),
         ];
     }
 

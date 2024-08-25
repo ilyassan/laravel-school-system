@@ -156,7 +156,7 @@
                                         <td>{{ $grade->student->getFullName() }}</td>
                                         <td>{{ $grade->student->class->name }}</td>
                                         <td>{{ $grade->grade }}</td>
-                                        <td>{{ $grade->created_at->format('m/d/Y') }}</td>
+                                        <td>{{ $grade->getCreatedAtFormated() }}</td>
                                     </tr>
                                 @endforeach
                             @endif
@@ -169,7 +169,7 @@
                                         <td>{{ $grade->student->getFullName() }}</td>
                                         <td>{{ $grade->student->class->name }}</td>
                                         <td>{{ $grade->grade }}</td>
-                                        <td>{{ $grade->created_at->format('m/d/Y') }}</td>
+                                        <td>{{ $grade->getCreatedAtFormated() }}</td>
                                     </tr>
                                 @endforeach
                             @endif
@@ -182,7 +182,7 @@
                                         <td>{{ auth()->user()->getFullName() }}</td>
                                         <td>{{ auth()->user()->class->name }}</td>
                                         <td>{{ $grade->grade }}</td>
-                                        <td>{{ $grade->created_at->format('m/d/Y') }}</td>
+                                        <td>{{ $grade->getCreatedAtFormated() }}</td>
                                     </tr>
                                 @endforeach
                             @endif

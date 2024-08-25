@@ -23,6 +23,22 @@ class Grade extends Model
 
     public const STUDENT_COLUMN = 'student_id';
 
+    public function getCreatedAtFormated(): string
+    {
+        return $this->getAttributeValue(self::CREATED_AT)->format('m/d/Y');
+    }
+    public function getCreatedAtDetailsFormated(): string
+    {
+        return $this->getAttributeValue(self::CREATED_AT)->format('m/d/Y \A\t H:i:s');
+    }
+    public function getUpdatedAtDetailsFormated(): ?string
+    {
+        return $this->getAttributeValue(self::UPDATED_AT)?->format('m/d/Y \A\t H:i:s');
+    }
+
+
+    // Relations
+
     public function student()
     {
         return $this->belongsTo(User::class, 'student_id');

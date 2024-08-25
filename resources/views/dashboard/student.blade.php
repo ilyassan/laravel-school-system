@@ -70,7 +70,7 @@
 										<tbody>
                                             @foreach ($latestStudentGrades as $grade)
                                                 <tr onclick="window.location='{{ route('grades.show', $grade->id) }}'" style="cursor: pointer">
-                                                    <td>{{$grade->created_at->format('m/d/Y')}}</td>
+                                                    <td>{{$grade->getCreatedAtFormated()}}</td>
                                                     <td>{{$grade->teacher->getFullName()}}</td>
                                                     <td>{{$grade->teacher->subject->name}}</td>
                                                     <td>{{$grade->grade}}/20</td>

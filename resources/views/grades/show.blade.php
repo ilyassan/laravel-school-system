@@ -98,7 +98,7 @@
                                     <label class="form-label m-0">Created At</label>
                                 </div>
                                 <div class="col-md-9">
-                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ (new DateTime($grade->created_at))->format('m/d/Y \A\t H:i:s') }}">
+                                    <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ $grade->getCreatedAtDetailsFormated() }}">
                                 </div>
                             </div>
                         </div>
@@ -109,7 +109,7 @@
                                         <label class="form-label m-0">Updated At</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ (new DateTime($grade->updated_at))->format('m/d/Y \A\t H:i:s')}}">
+                                        <input type="text" style="pointer-events: none" class="form-control bg-light" value="{{ $grade->getUpdatedAtDetailsFormated() }}">
                                     </div>
                                 </div>
                             </div>
