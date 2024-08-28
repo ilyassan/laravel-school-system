@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use App\Enums\UserRole;
 use Illuminate\Support\Facades\DB;
 
-use App\Models\{User, Grade, Charge, Report, Absence, Classes, Homework, Rating};
+use App\Models\{User, Grade, Invoice, Report, Absence, Classes, Homework, Rating};
 
 class DashboardService
 {
@@ -28,7 +28,7 @@ class DashboardService
 
     public function adminDashboardData()
     {
-        $latestChargesLimit = 5;
+        $latestInvoicesLimit = 5;
         $latestReportsLimit = 3;
         $topClassesLimit = 5;
         $teacherReportsDescriptionChars = 80;
@@ -37,7 +37,7 @@ class DashboardService
         return [
             'ratings' => $this->getRatings(),
             'charges' => $this->getCharges($this->currentMonth, $this->previousMonth),
-            'latestCharges' => $this->getLatestCharges($latestChargesLimit),
+            'latestInvoices' => $this->getLatestInvoices($latestInvoicesLimit),
             'avgStudentGrade' => $this->getAvgStudentsGrades($this->currentMonth, $this->previousMonth),
             'teachers' => $this->getTeachers($this->currentYear),
             'students' => $this->getStudents($this->currentYear),
@@ -108,20 +108,20 @@ class DashboardService
 
     public function getCharges(Carbon $month, Carbon $monthComparedTo)
     {
-        $chargesCollection = $this->collectionOfTwoMonths(Charge::class, $month, $monthComparedTo);
+        $chargesCollection = $this->collectionOfTwoMonths(Invoice::class, $month, $monthComparedTo);
 
-        $monthCharges = $this->filterByMonth(clone $chargesCollection, $month, Charge::CREATED_AT)
-            ->sum(DB::raw(Charge::PRICE_COLUMN . ' * ' . Charge::QUANTITY_COLUMN));
+        $monthCharges = $this->filterByMonth(clone $chargesCollection, $month, Invoice::CREATED_AT)
+            ->sum(DB::raw(Invoice::PRICE_COLUMN . ' * ' . Invoice::QUANTITY_COLUMN));
 
-        $monthComparedToCharges = $this->filterByMonth($chargesCollection, $monthComparedTo, Charge::CREATED_AT)
-            ->sum(DB::raw(Charge::PRICE_COLUMN . ' * ' . Charge::QUANTITY_COLUMN));
+        $monthComparedToCharges = $this->filterByMonth($chargesCollection, $monthComparedTo, Invoice::CREATED_AT)
+            ->sum(DB::raw(Invoice::PRICE_COLUMN . ' * ' . Invoice::QUANTITY_COLUMN));
 
         return $this->formatData($monthCharges, $monthComparedToCharges);
     }
 
-    public function getLatestCharges($limit)
+    public function getLatestInvoices($limit)
     {
-        return Charge::latest()->limit($limit)->get();
+        return Invoice::latest()->limit($limit)->get();
     }
 
     public function getAvgStudentsGrades(Carbon $month, Carbon $monthComparedTo, $teacherId = null)

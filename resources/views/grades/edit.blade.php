@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'Show Grade')
+@section('title', 'Edit Grade')
 
 @section('page-header')
     <!-- breadcrumb -->

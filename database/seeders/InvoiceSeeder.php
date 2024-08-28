@@ -2,16 +2,16 @@
 
 namespace Database\Seeders;
 
-use App\Models\Charge;
+use App\Models\Invoice;
 use Illuminate\Database\Seeder;
 
-class ChargeSeeder extends Seeder
+class InvoiceSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Charge::factory(150)->create();
+        Invoice::factory(150)->create();
     }
 }

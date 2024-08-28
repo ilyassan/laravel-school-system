@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
             GradeSeeder::class,
             RatingSeeder::class,
             ReportSeeder::class,
-            ChargeSeeder::class,
+            InvoiceSeeder::class,
         ]);
     }
 }

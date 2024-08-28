@@ -1,19 +1,18 @@
 <?php
 
-use App\Models\User;
+use App\Enums\UserGender;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('gender', [User::GENDER_MALE, User::GENDER_FEMALE]);
+            $table->enum('gender', [UserGender::GENDER_MALE, UserGender::GENDER_FEMALE]);
         });
     }
 

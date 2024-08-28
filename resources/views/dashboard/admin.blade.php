@@ -185,10 +185,10 @@
 					<div class="col-md-12 col-xl-8">
 						<div class="card card-table-two">
 							<div class="d-flex justify-content-between">
-								<h4 class="card-title mb-1">Latest Charges</h4>
+								<h4 class="card-title mb-1">Latest Invoices</h4>
 								<i class="mdi mdi-dots-horizontal text-gray"></i>
 							</div>
-							<span class="tx-12 tx-muted mb-3 ">Latest charges paying by the school.</span>
+							<span class="tx-12 tx-muted mb-3 ">Latest Invoices paying by the school.</span>
 							<div class="table-responsive country-table">
 								<table class="table table-striped table-bordered mb-0 text-sm-nowrap text-lg-nowrap text-xl-nowrap">
 									<thead>
@@ -200,12 +200,12 @@
 										</tr>
 									</thead>
 									<tbody>
-										@foreach ($latestCharges as $charge)
+										@foreach ($latestInvoices as $invoice)
 											<tr>
-												<td>{{$charge->created_at->format('m/d/Y')}}</td>
-												<td class="tx-right tx-medium tx-inverse">{{$charge->title}}</td>
-												<td class="tx-right tx-medium tx-inverse">{{$charge->quantity}}</td>
-												<td class="tx-right tx-medium tx-danger">{{$charge->price * $charge->quantity}} DH</td>
+												<td>{{ $invoice->created_at->format('m/d/Y') }}</td>
+												<td class="tx-right tx-medium tx-inverse">{{$invoice->title}}</td>
+												<td class="tx-right tx-medium tx-inverse">{{$invoice->quantity}}</td>
+												<td class="tx-right tx-medium tx-danger">{{$invoice->price * $invoice->quantity}} DH</td>
 											</tr>
 										@endforeach
 									</tbody>
