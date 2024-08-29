@@ -315,6 +315,19 @@
         // Redirect to the new URL
         window.location = href;
     }
-    </script>
+</script>
 
-
+@if (Session::has('success'))
+    @section('tag-js')
+        Swal.fire({
+            title: 'Message',
+            text: '{{ Session::get("success") }}',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            customClass: {
+                confirmButton: 'btn btn-primary'
+            }
+        });
+    @endsection
+    {{ Session::forget("success") }}
+@endif

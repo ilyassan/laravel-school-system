@@ -83,6 +83,10 @@ class GradeController extends BaseController
     {
         $grade = $this->gradeService->getFullGrade($id);
 
+        if (!$grade) {
+            return abort(404, 'The grade not found');
+        }
+
         return view('grades.show', compact('grade'));
     }
 
@@ -129,7 +133,14 @@ class GradeController extends BaseController
      */
     public function destroy(string $id)
     {
-        //
+        $grade = $this->gradeService->getGrade($id);
+
+        if (!$grade) {
+            return back()->with('warning', "Grade not found.");
+        }
+
+        $grade->delete();
+        return redirect()->route('grades.index')->with("success", "The grade has been deleted successfully.");
     }
 
     /**
@@ -141,7 +152,7 @@ class GradeController extends BaseController
             return abort(404, 'The grade not found');
         }
 
-        if ($grade->teacher_id !== $this->getAuthUser()->id) {
+        if ($grade->teacher_id !== $this->getAuthUser()->getKey()) {
             return abort(403, "You dont't have the permission to access this grade");
         }
 

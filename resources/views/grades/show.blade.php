@@ -18,7 +18,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <form class="form-horizontal">
+                    <div class="form-horizontal">
                         <div class="mb-4 main-content-label">Teacher</div>
                         <div class="form-group ">
                             <div class="row">
@@ -115,16 +115,44 @@
                             </div>
                         @endif
                         @if (auth()->user()->isTeacher())
-                            <div class="card-footer text-left pl-0">
-                                <a href="{{route('grades.edit', $grade->id)}}" class="btn btn-primary waves-effect waves-light">Edit Grade</a>
+                            <div class="card-footer text-left pl-0 d-flex align-items-start">
+                                <a href="{{route('grades.edit', $grade->id)}}" class="btn btn-primary waves-effect waves-light mr-5">Edit Grade</a>
+                                <form id="deleteGradeForm" action="{{route('grades.destroy', $grade->id)}}" method="POST">
+                                    @method('DELETE')
+                                    @csrf
+                                    <button onclick="handleSubmit(event)" type="button" class="btn btn-danger waves-effect waves-light">Delete Grade</button>
+                                </form>
                             </div>
                         @endif
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 @endsection
+
+<script type="text/javascript">
+	function handleSubmit(e){
+        
+        Swal.fire({
+            title: 'Warning',
+            text: 'Are you sure you want to delete this grade ?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+			customClass: {
+				confirmButton: 'btn btn-danger btn-lg',
+				icon: 'text-danger border-danger',
+			},
+        })
+        .then((result) => {
+			if (result.isConfirmed) {
+                const form = document.querySelector('#deleteGradeForm');
+				form.submit();
+			}
+		});
+	}
+</script>
 
 @if (Session::has('success'))
     @section('tag-js')
@@ -154,4 +182,19 @@
         });
     @endsection
     {{ Session::forget("warning") }}
+@endif
+
+@if (Session::has('error'))
+    @section('tag-js')
+        Swal.fire({
+            title: 'Message',
+            text: '{{ Session::get("error") }}',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            customClass: {
+                confirmButton: 'btn btn-primary'
+            }
+        });
+    @endsection
+    {{ Session::forget("error") }}
 @endif

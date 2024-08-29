@@ -185,7 +185,7 @@
 						<a class="dropdown-item" href="{{ route('profile.show-reset-password') }}"><i class="bx bx-cog"></i>Reset Password</a>
 						<form action="{{route('logout')}}" method="POST">
 							@csrf
-							<button class="dropdown-item btn" type="submit" onclick="confirmation(event)"><i class="bx bx-log-out"></i> Sign Out</button>
+							<button class="dropdown-item btn" type="button" onclick="logoutConfirmation(event)"><i class="bx bx-log-out"></i> Sign Out</button>
 						</form>
 					</div>
 				</div>
@@ -197,8 +197,7 @@
 
 
 <script type="text/javascript">
-	function confirmation(e){
-		e.preventDefault();
+	function logoutConfirmation(e){
 		
 		Swal.fire({
 			title: 'Are you sure?',
