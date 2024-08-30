@@ -5,6 +5,7 @@ use App\Http\Controllers\GradeController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InvoiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +17,8 @@ use App\Http\Controllers\DashboardController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+require __DIR__ . '/auth.php';
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -42,7 +45,9 @@ Route::middleware('auth')->group(function () {
     Route::post('grades/download', [GradeController::class, 'download'])->name('grades.download');
 });
 
-require __DIR__ . '/auth.php';
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::resource('invoices', InvoiceController::class);
+});
 
 
 // theme route
