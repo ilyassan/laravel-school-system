@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Grades Table')
+@section('title', 'Invoices Table')
 
 @section('css')
     <!-- Internal Data table css -->
@@ -14,7 +14,7 @@
 <div class="breadcrumb-header justify-content-between">
     <div class="my-auto">
         <div class="d-flex">
-            <h4 class="content-title mb-0 my-auto">Grades</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ Grades Table</span>
+            <h4 class="content-title mb-0 my-auto">Invoices</h4><span class="text-muted mt-1 tx-13 mr-2 mb-0">/ Invoices Table</span>
         </div>
     </div>
 </div>
@@ -28,19 +28,11 @@
         <div class="card">
             <div class="card-header pb-0">
                 <div class="d-flex justify-content-between">
-                    <h4 class="card-title mg-b-0">GRADES TABLE</h4>
+                    <h4 class="card-title mg-b-0">INVOICES TABLE</h4>
                     <i class="mdi mdi-dots-horizontal text-gray"></i>
                 </div>
                 <p class="tx-12 tx-gray-500 mb-2">
-                    @if (auth()->user()->isAdmin())
-                        All The Grades Entered To The System By Teachers.
-                    @endif
-                    @if (auth()->user()->isTeacher())
-                        All The Grades You Entered The System.
-                    @endif
-                    @if (auth()->user()->isStudent())
-                        All Your Grades Entered By Your Teacher.
-                    @endif
+                    All The Payed and UnPayed Invoices Entered To The System.
                 </p>
             </div>
             <div class="card-body">
@@ -57,16 +49,19 @@
                                 </div>
         
                                 <div class="dataTables_length col-sm-3 px-0" id="example1_length">
-                                    <select name="subject" class="custom-select custom-select-sm form-control form-control-sm pr-1">
-                                        <option value={{null}}>Select A Subject</option>
-                                        @foreach($subjects as $subject)
-                                            <option value="{{$subject->id}}" {{request()->get('subject') == $subject->id ? 'selected' : ''}}>{{$subject->name}}</option>
+                                    <select name="status" class="custom-select custom-select-sm form-control form-control-sm pr-1">
+                                        <option value={{null}}>Select Status</option>
+                                        @php
+                                            $options = ['all', 'payed', 'unpayed']
+                                        @endphp
+                                        @foreach($options as $i => $option)
+                                            <option value="{{$i}}" {{request()->get('status') == $i ? 'selected' : ''}}>{{ ucfirst($option) }}</option>
                                         @endforeach
                                     </select>
                                 </div>
         
                                 <div id="example1_filter" class="dataTables_filter col-sm-6 px-0">
-                                    <input type="search" name="keyword" value="{{request()->get('keyword')}}" class="form-control form-control-sm" placeholder="Class, Student's name, Teacher's name">
+                                    <input type="search" name="keyword" value="{{request()->get('keyword')}}" class="form-control form-control-sm" placeholder="Title, Price, Quantity">
                                 </div>
                             </div>
     
@@ -89,8 +84,8 @@
                         </div>
                         <div class="d-flex flex-1 justify-content-between">
                             <div class="d-flex flex-column mr-4" style="gap: 10px">
-                                <button type="submit" formaction="{{ route('grades.index') }}" class="btn btn-primary py-1">Filter</button>
-                                <a href="{{route('grades.index')}}" class="btn btn-primary py-1">Reset</a>
+                                <button type="submit" formaction="{{ route('invoices.index') }}" class="btn btn-primary py-1">Filter</button>
+                                <a href="{{route('invoices.index')}}" class="btn btn-primary py-1">Reset</a>
                             </div>
                             <div class="d-flex flex-column" style="gap: 10px">
                                 <button type="button" onclick="handleExport()" class="btn btn-success py-1">Export to EXCEL</button>
@@ -103,37 +98,43 @@
                         <thead>
                             <tr>
                                 <th class="wd-5p border-bottom-0">#</th>
-                                <th class="wd-20p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="teacher">
-                                    Teacher
-                                    @if (request()->get('order-by') == 'teacher')
+                                <th class="wd-20p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="title">
+                                    Title
+                                    @if (request()->get('order-by') == 'title')
                                         <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
                                     @endif
                                 </th>
-                                <th class="wd-15p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="subject">
-                                    Subject
-                                    @if (request()->get('order-by') == 'subject')
+                                <th class="wd-15p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="price_excl_tax">
+                                    Price Excl. TAX
+                                    @if (request()->get('order-by') == 'price_excl_tax')
                                         <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
                                     @endif
                                 </th>
-                                <th class="wd-20p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="student">
-                                    Student
-                                    @if (request()->get('order-by') == 'student')
+                                <th class="wd-15p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="price_incl_tax">
+                                    Price Incl. TAX
+                                    @if (request()->get('order-by') == 'price_incl_tax')
                                         <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
                                     @endif
                                 </th>
-                                <th class="wd-15p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="class">
-                                    Class
-                                    @if (request()->get('order-by') == 'class')
+                                <th class="wd-5p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="quantite">
+                                    Quantite
+                                    @if (request()->get('order-by') == 'quantite')
                                         <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
                                     @endif
                                 </th>
-                                <th class="wd-10p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="grade">
-                                    Grade
-                                    @if (request()->get('order-by') == 'grade')
+                                <th class="wd-15p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="total_incl_tax">
+                                    Total Incl. TAX
+                                    @if (request()->get('order-by') == 'total_incl_tax')
                                         <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
                                     @endif
                                 </th>
-                                <th class="wd-15p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="entered_date">
+                                <th class="wd-5p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="status">
+                                    Status
+                                    @if (request()->get('order-by') == 'status')
+                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
+                                    @endif
+                                </th>
+                                <th class="wd-20p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="entered_date">
                                     Entered Date
                                     @if (request()->get('order-by') == 'entered_date')
                                         <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
@@ -142,65 +143,38 @@
                             </tr>                      
                         </thead>
                         <tbody>
-                            @if ($grades->count() == 0)
+                            @if ($invoices->count() == 0)
                                 <tr>
-                                    <td colspan="7" class="text-center">No Grades To Show</td>
+                                    <td colspan="7" class="text-center">No Invoices To Show</td>
                                 </tr>
                             @endif
-                            @if (auth()->user()->isAdmin())
-                                @foreach ($grades as $grade)
-                                    <tr onclick="window.location='{{ route('grades.show', $grade->id) }}'" style="cursor: pointer">
-                                        <td>{{ $loop->index + 1 }}</td>
-                                        <td>{{ $grade->teacher->getFullName() }}</td>
-                                        <td>{{ $grade->teacher->subject->name }}</td>
-                                        <td>{{ $grade->student->getFullName() }}</td>
-                                        <td>{{ $grade->student->class->name }}</td>
-                                        <td>{{ $grade->grade }}</td>
-                                        <td>{{ $grade->getCreatedAtFormated() }}</td>
-                                    </tr>
-                                @endforeach
-                            @endif
-                            @if (auth()->user()->isTeacher())
-                                @foreach ($grades as $grade)
-                                    <tr onclick="window.location='{{ route('grades.show', $grade->id) }}'" style="cursor: pointer">
-                                        <td>{{ $loop->index + 1 }}</td>
-                                        <td>{{ auth()->user()->getFullName() }}</td>
-                                        <td>{{ auth()->user()->subject->name }}</td>
-                                        <td>{{ $grade->student->getFullName() }}</td>
-                                        <td>{{ $grade->student->class->name }}</td>
-                                        <td>{{ $grade->grade }}</td>
-                                        <td>{{ $grade->getCreatedAtFormated() }}</td>
-                                    </tr>
-                                @endforeach
-                            @endif
-                            @if (auth()->user()->isStudent())
-                                @foreach ($grades as $grade)
-                                    <tr onclick="window.location='{{ route('grades.show', $grade->id) }}'" style="cursor: pointer">
-                                        <td>{{ $loop->index + 1 }}</td>
-                                        <td>{{ $grade->teacher->getFullName() }}</td>
-                                        <td>{{ $grade->teacher->subject->name }}</td>
-                                        <td>{{ auth()->user()->getFullName() }}</td>
-                                        <td>{{ auth()->user()->class->name }}</td>
-                                        <td>{{ $grade->grade }}</td>
-                                        <td>{{ $grade->getCreatedAtFormated() }}</td>
-                                    </tr>
-                                @endforeach
-                            @endif
+                            @foreach ($invoices as $invoice)
+                                <tr onclick="window.location='{{ route('invoices.show', $invoice->id) }}'" style="cursor: pointer">
+                                    <td>{{ $loop->index + 1 }}</td>
+                                    <td>{{ $invoice->title }}</td>
+                                    <td>{{ $invoice->price }}</td>
+                                    <td>{{ $invoice->price * 1.2 }}</td>
+                                    <td>{{ $invoice->quantity }}</td>
+                                    <td>{{ $invoice->price * 1.2 * $invoice->quantity}}</td>
+                                    <td>{{ $invoice->payed }}</td>
+                                    <td>{{ $invoice->created_at }}</td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
-                {{$grades->withQueryString()->links()}}
+                {{-- {{$invoices->withQueryString()->links()}} --}}
             </div>
         </div>
     </div>
 </div>
-<form id="downloadForm" action='{{ route('grades.download') }}' method="POST" style="display: none;">
+{{-- <form id="downloadForm" action='{{ route('grades.download') }}' method="POST" style="display: none;">
     @method('POST')
     @csrf
     <input type="hidden" name="export_id" id="exportIdInput">
     <input type="hidden" name="file_name" id="fileName">
     <button type="submit">Download</button>
-</form>
+</form> --}}
 @endsection
 
 @section('js')
@@ -310,14 +284,14 @@
         params.set('order-by', field);
         params.set('sort', sortOrder);
 
-        const href = "{{ route('grades.index') }}" + '?' + params.toString();
+        const href = "{{ route('invoices.index') }}" + '?' + params.toString();
 
         // Redirect to the new URL
         window.location = href;
     }
 </script>
 
-@if (Session::has('success'))
+{{-- @if (Session::has('success'))
     @section('tag-js')
         Swal.fire({
             title: 'Message',
@@ -330,4 +304,4 @@
         });
     @endsection
     {{ Session::forget("success") }}
-@endif
+@endif --}}
