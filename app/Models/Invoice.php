@@ -14,6 +14,7 @@ class Invoice extends Model
         'description',
         'price_excl_tax',
         'quantity',
+        'tax_ratio',
         'payed',
     ];
 

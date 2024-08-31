@@ -104,13 +104,19 @@
                                         <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
                                     @endif
                                 </th>
-                                <th class="wd-15p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="price_excl_tax">
+                                <th class="wd-10p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="price_excl_tax">
                                     Price Excl. TAX
                                     @if (request()->get('order-by') == 'price_excl_tax')
                                         <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
                                     @endif
                                 </th>
-                                <th class="wd-15p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="price_incl_tax">
+                                <th class="wd-10p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="tax_ratio">
+                                    TAX ratio
+                                    @if (request()->get('order-by') == 'tax_ratio')
+                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
+                                    @endif
+                                </th>
+                                <th class="wd-10p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="price_incl_tax">
                                     Price Incl. TAX
                                     @if (request()->get('order-by') == 'price_incl_tax')
                                         <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
@@ -145,7 +151,7 @@
                         <tbody>
                             @if ($invoices->count() == 0)
                                 <tr>
-                                    <td colspan="7" class="text-center">No Invoices To Show</td>
+                                    <td colspan="9" class="text-center">No Invoices To Show</td>
                                 </tr>
                             @endif
                             @foreach ($invoices as $invoice)
@@ -153,6 +159,7 @@
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>{{ $invoice->title }}</td>
                                     <td>{{ $invoice->price_excl_tax }}</td>
+                                    <td>{{ $invoice->tax_ratio }}</td>
                                     <td>{{ $invoice->price_excl_tax * 1.2 }}</td>
                                     <td>{{ $invoice->quantity }}</td>
                                     <td>{{ $invoice->price_excl_tax * 1.2 * $invoice->quantity}}</td>

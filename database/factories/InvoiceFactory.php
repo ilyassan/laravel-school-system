@@ -21,6 +21,7 @@ class InvoiceFactory extends Factory
             'description' => fake()->paragraph(),
             'price_excl_tax' => fake()->numberBetween(1, 150) * 10,
             'quantity' => fake()->numberBetween(1, 10),
+            'tax_ratio' => fake()->randomElement([0.07, 0.10, 0.14, 0.20]),
             'payed' => fake()->boolean(),
             'created_at' => fake()->dateTimeBetween('-1 year', 'now'),
         ];
