@@ -88,7 +88,7 @@
                                 <a href="{{route('invoices.index')}}" class="btn btn-primary py-1">Reset</a>
                             </div>
                             <div class="d-flex flex-column" style="gap: 10px">
-                                <button type="button" onclick="handleExport()" class="btn btn-success py-1">Export to EXCEL</button>
+                                {{-- <button type="button" onclick="handleExport()" class="btn btn-success py-1">Export to EXCEL</button> --}}
                             </div>
                         </div>
 
@@ -98,55 +98,27 @@
                         <thead>
                             <tr>
                                 <th class="wd-5p border-bottom-0">#</th>
-                                <th class="wd-20p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="title">
-                                    Title
-                                    @if (request()->get('order-by') == 'title')
-                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
-                                    @endif
-                                </th>
-                                <th class="wd-10p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="price_excl_tax">
-                                    Price Excl. TAX
-                                    @if (request()->get('order-by') == 'price_excl_tax')
-                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
-                                    @endif
-                                </th>
-                                <th class="wd-10p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="tax_ratio">
-                                    TAX Ratio
-                                    @if (request()->get('order-by') == 'tax_ratio')
-                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
-                                    @endif
-                                </th>
-                                <th class="wd-10p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="price_incl_tax">
-                                    Price Incl. TAX
-                                    @if (request()->get('order-by') == 'price_incl_tax')
-                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
-                                    @endif
-                                </th>
-                                <th class="wd-5p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="quantity">
-                                    Quantity
-                                    @if (request()->get('order-by') == 'quantity')
-                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
-                                    @endif
-                                </th>
-                                <th class="wd-15p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="total_incl_tax">
-                                    Total Incl. TAX
-                                    @if (request()->get('order-by') == 'total_incl_tax')
-                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
-                                    @endif
-                                </th>
-                                <th class="wd-10p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="status">
-                                    Status
-                                    @if (request()->get('order-by') == 'status')
-                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
-                                    @endif
-                                </th>
-                                <th class="wd-15p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="entered_date">
-                                    Entered Date
-                                    @if (request()->get('order-by') == 'entered_date')
-                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
-                                    @endif
-                                </th>
-                            </tr>                      
+                                @php
+                                    $headers = [
+                                        'Title' => ['field' => 'title', 'width' => '20'],
+                                        'Price Excl. TAX' => ['field' => 'price_excl_tax', 'width' => '10'],
+                                        'TAX Ratio' => ['field' => 'tax_ratio', 'width' => '10'],
+                                        'Price Incl. TAX' => ['field' => 'price_incl_tax', 'width' => '10'],
+                                        'Quantity' => ['field' => 'quantity', 'width' => '5'],
+                                        'Total Incl. TAX' => ['field' => 'total_incl_tax', 'width' => '15'],
+                                        'Status' => ['field' => 'status', 'width' => '10'],
+                                        'Entered Date' => ['field' => 'entered_date', 'width' => '15'],
+                                    ];
+                                @endphp
+                                @foreach ($headers as $key => $value)
+                                    <th class="wd-{{$value['width']}}p border-bottom-0 sortable align-middle" style="cursor: pointer" onclick="sort(event)" data-value="{{$value['field']}}">
+                                        {{$key}}
+                                        @if (request()->get('order-by') == $value['field'])
+                                            <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
+                                        @endif
+                                    </th>
+                                @endforeach
+                            </tr>                
                         </thead>
                         <tbody>
                             @if ($invoices->count() == 0)

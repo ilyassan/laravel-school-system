@@ -103,42 +103,24 @@
                         <thead>
                             <tr>
                                 <th class="wd-5p border-bottom-0">#</th>
-                                <th class="wd-20p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="teacher">
-                                    Teacher
-                                    @if (request()->get('order-by') == 'teacher')
-                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
-                                    @endif
-                                </th>
-                                <th class="wd-15p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="subject">
-                                    Subject
-                                    @if (request()->get('order-by') == 'subject')
-                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
-                                    @endif
-                                </th>
-                                <th class="wd-20p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="student">
-                                    Student
-                                    @if (request()->get('order-by') == 'student')
-                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
-                                    @endif
-                                </th>
-                                <th class="wd-15p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="class">
-                                    Class
-                                    @if (request()->get('order-by') == 'class')
-                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
-                                    @endif
-                                </th>
-                                <th class="wd-10p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="grade">
-                                    Grade
-                                    @if (request()->get('order-by') == 'grade')
-                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
-                                    @endif
-                                </th>
-                                <th class="wd-15p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="entered_date">
-                                    Entered Date
-                                    @if (request()->get('order-by') == 'entered_date')
-                                        <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
-                                    @endif
-                                </th>
+                                @php
+                                    $headers = [
+                                        'Teacher' => ['field' => 'teacher', 'width' => '20'],
+                                        'Subject' => ['field' => 'subject', 'width' => '15'],
+                                        'Student' => ['field' => 'student', 'width' => '20'],
+                                        'Class' => ['field' => 'class', 'width' => '15'],
+                                        'Grade' => ['field' => 'grade', 'width' => '20'],
+                                        'Entered Date' => ['field' => 'entered_date', 'width' => '15'],
+                                    ];
+                                @endphp
+                                @foreach ($headers as $key => $value)
+                                    <th class="wd-{{$value['width']}}p border-bottom-0 sortable align-middle" style="cursor: pointer" onclick="sort(event)" data-value="{{$value['field']}}">
+                                        {{$key}}
+                                        @if (request()->get('order-by') == $value['field'])
+                                            <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
+                                        @endif
+                                    </th>
+                                @endforeach
                             </tr>                      
                         </thead>
                         <tbody>
