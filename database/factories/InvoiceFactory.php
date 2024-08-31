@@ -21,6 +21,7 @@ class InvoiceFactory extends Factory
             'description' => fake()->paragraph(),
             'price' => fake()->numberBetween(1, 150) * 10,
             'quantity' => fake()->numberBetween(1, 10),
+            'payed' => fake()->boolean(),
             'created_at' => fake()->dateTimeBetween('-1 year', 'now'),
         ];
     }

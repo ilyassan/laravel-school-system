@@ -14,9 +14,12 @@ class Invoice extends Model
         'description',
         'price',
         'quantity',
+        'payed',
     ];
 
+    public const TITLE_COLUMN = 'title';
+    public const DESCRIPTION_COLUMN = 'description';
     public const PRICE_COLUMN = 'price';
-
     public const QUANTITY_COLUMN = 'quantity';
+    public const PAYED_COLUMN = 'quantity';
 }
