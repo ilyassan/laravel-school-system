@@ -2,17 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Invoice;
+use App\Services\InvoiceService;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
+
+    private $invoiceService;
+    private $filterInputs;
+    private $sortGrades;
+
+    public function __construct(InvoiceService $invoiceService)
+    {
+        $this->invoiceService = $invoiceService;
+        $this->filterInputs = ['per-page', 'status', 'keyword', 'from-date', 'to-date'];
+        $this->sortGrades = ['order-by', 'sort'];
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $invoices = Invoice::all();
+        $filters = $request->only($this->filterInputs);
+        $sorting = $request->only($this->sortGrades);
+
+        $invoices = $this->invoiceService->getPaginateInvoices($filters, $sorting);
 
         return view('invoices.index', compact('invoices') );
     }

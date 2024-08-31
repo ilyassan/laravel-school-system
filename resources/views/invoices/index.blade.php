@@ -52,10 +52,10 @@
                                     <select name="status" class="custom-select custom-select-sm form-control form-control-sm pr-1">
                                         <option value={{null}}>Select Status</option>
                                         @php
-                                            $options = ['all', 'payed', 'unpayed']
+                                            $options = ['payed' => 1, 'unpayed' => -1]
                                         @endphp
-                                        @foreach($options as $i => $option)
-                                            <option value="{{$i}}" {{request()->get('status') == $i ? 'selected' : ''}}>{{ ucfirst($option) }}</option>
+                                        @foreach($options as $option => $value)
+                                            <option value="{{$value}}" {{request()->get('status') == $value ? 'selected' : ''}}>{{ ucfirst($option) }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -116,9 +116,9 @@
                                         <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
                                     @endif
                                 </th>
-                                <th class="wd-5p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="quantite">
-                                    Quantite
-                                    @if (request()->get('order-by') == 'quantite')
+                                <th class="wd-5p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="quantity">
+                                    Quantity
+                                    @if (request()->get('order-by') == 'quantity')
                                         <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
                                     @endif
                                 </th>
@@ -152,10 +152,10 @@
                                 <tr onclick="window.location='{{ route('invoices.show', $invoice->id) }}'" style="cursor: pointer">
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>{{ $invoice->title }}</td>
-                                    <td>{{ $invoice->price }}</td>
-                                    <td>{{ $invoice->price * 1.2 }}</td>
+                                    <td>{{ $invoice->price_excl_tax }}</td>
+                                    <td>{{ $invoice->price_excl_tax * 1.2 }}</td>
                                     <td>{{ $invoice->quantity }}</td>
-                                    <td>{{ $invoice->price * 1.2 * $invoice->quantity}}</td>
+                                    <td>{{ $invoice->price_excl_tax * 1.2 * $invoice->quantity}}</td>
                                     <td>{{ $invoice->payed }}</td>
                                     <td>{{ $invoice->created_at }}</td>
                                 </tr>

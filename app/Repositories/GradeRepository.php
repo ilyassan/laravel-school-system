@@ -26,7 +26,7 @@ class GradeRepository extends AbstractRepository
 
         $perPage = (int) Arr::get($filters, 'per-page', 10);
 
-        list($orderByColumn, $sortDirection) = $this->sortGradesQuery($sorting);
+        [ $orderByColumn, $sortDirection ] = $this->sortGradesQuery($sorting);
 
         $colums = Arr::get($filters, 'colums', ['*']);
 
@@ -59,7 +59,7 @@ class GradeRepository extends AbstractRepository
                     $q->whereFullNameLike($keyword)
                         // Filter by class
                         ->orWhereHas('class', function (Builder $q) use ($keyword) {
-                            $q->where('name', $keyword);
+                            $q->where('name', 'like', '%'.$keyword.'%');
                         });
                 })
                     // Filter by fullname
