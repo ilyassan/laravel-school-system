@@ -12,14 +12,14 @@ class Invoice extends Model
     protected $fillable = [
         'title',
         'description',
-        'price',
+        'price_excl_tax',
         'quantity',
         'payed',
     ];
 
     public const TITLE_COLUMN = 'title';
     public const DESCRIPTION_COLUMN = 'description';
-    public const PRICE_COLUMN = 'price';
+    public const PRICE_EXCL_TAX_COLUMN = 'price_excl_tax';
     public const QUANTITY_COLUMN = 'quantity';
     public const PAYED_COLUMN = 'payed';
 }
