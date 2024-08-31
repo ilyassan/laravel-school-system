@@ -80,6 +80,9 @@ class InvoiceRepository extends AbstractRepository
             case 'price_excl_tax':
                 $orderQuery = $this->model::PRICE_EXCL_TAX_COLUMN;
                 break;
+            case 'tax_ratio':
+                $orderQuery = $this->model::TAX_RATIO_COLUMN;
+                break;
             case 'price_incl_tax':
                 $orderQuery = DB::raw($this->model::PRICE_EXCL_TAX_COLUMN . ' * (1 + ' . $this->model::TAX_RATIO_COLUMN . ')');
                 break;

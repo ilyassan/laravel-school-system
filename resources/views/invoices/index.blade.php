@@ -111,7 +111,7 @@
                                     @endif
                                 </th>
                                 <th class="wd-10p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="tax_ratio">
-                                    TAX ratio
+                                    TAX Ratio
                                     @if (request()->get('order-by') == 'tax_ratio')
                                         <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
                                     @endif
@@ -134,13 +134,13 @@
                                         <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
                                     @endif
                                 </th>
-                                <th class="wd-5p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="status">
+                                <th class="wd-10p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="status">
                                     Status
                                     @if (request()->get('order-by') == 'status')
                                         <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
                                     @endif
                                 </th>
-                                <th class="wd-20p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="entered_date">
+                                <th class="wd-15p border-bottom-0 sortable" style="cursor: pointer" onclick="sort(event)" data-value="entered_date">
                                     Entered Date
                                     @if (request()->get('order-by') == 'entered_date')
                                         <span class="mdi mdi-chevron-{{ request()->get('sort') == 'asc' ? 'up' : 'down' }}"></span>
@@ -157,20 +157,20 @@
                             @foreach ($invoices as $invoice)
                                 <tr onclick="window.location='{{ route('invoices.show', $invoice->id) }}'" style="cursor: pointer">
                                     <td>{{ $loop->index + 1 }}</td>
-                                    <td>{{ $invoice->title }}</td>
-                                    <td>{{ $invoice->price_excl_tax }}</td>
-                                    <td>{{ $invoice->tax_ratio }}</td>
-                                    <td>{{ $invoice->price_excl_tax * 1.2 }}</td>
-                                    <td>{{ $invoice->quantity }}</td>
-                                    <td>{{ $invoice->price_excl_tax * 1.2 * $invoice->quantity}}</td>
-                                    <td>{{ $invoice->payed }}</td>
-                                    <td>{{ $invoice->created_at }}</td>
+                                    <td>{{ $invoice->getTitle() }}</td>
+                                    <td>{{ $invoice->getPriceExclTax() }}</td>
+                                    <td>{{ $invoice->getTaxRatio() }}</td>
+                                    <td>{{ $invoice->getPriceInclTax() }}</td>
+                                    <td>{{ $invoice->getQuantity() }}</td>
+                                    <td>{{ $invoice->getTotalInclTax() }}</td>
+                                    <td class={{ $invoice->isPayed() ? 'text-success': 'text-danger'  }}>{{ $invoice->getStatus() }}</td>
+                                    <td>{{ $invoice->getCreatedAtFormated() }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
-                {{-- {{$invoices->withQueryString()->links()}} --}}
+                {{$invoices->withQueryString()->links()}}
             </div>
         </div>
     </div>
